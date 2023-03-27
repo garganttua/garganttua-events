@@ -1,0 +1,71 @@
+{
+	"tenantId": "1",
+	"clusterId": "1",
+	
+	"topics": 
+	[
+	{
+		"ref":"/test"
+	}
+	],
+	"dataflows": 
+	[
+	{
+		"uuid": "b9a68675-20a6-494f-b921-356e3a84dfac",
+		"name": "test",
+		"type": "test",
+		"garanteeOrder": "true",
+		"version": "1.0",
+		"encapsulated": "true"
+	}
+	],
+	"subscriptions": 
+	[
+	{
+		"dataflow": "b9a68675-20a6-494f-b921-356e3a84dfac",
+		"topic": "/test",
+		"connector": "kafka",
+		"publicationMode": "ON_CHANGE",
+		"buffered": "false",
+		"bufferPersisted": "false",
+		"producerConfiguration": 
+		{
+			"destinationPolicy": "TO_ANY"
+		},
+		"consumerConfiguration": 
+		{
+			"inClusterProcessingMode": "ONLY_ONE_CLUSTER_NODE",
+			"originPolicy": "FROM_ANY",
+			"destinationPolicy": "TO_ANY",
+			"tenantPartioningPolicy": "NOT_PARTITIONED",
+			"ignoreAssetMessages": "false"
+		}
+	}
+	],
+	"connectors": 
+	[
+	{
+		"name": "kafka",
+		"type": "kafka",
+		"version": "1.0.0",
+		"configuration": "url=localhost:9092&maxPollRecords=1&enableAutoCommit=false&autoOffsetReset=latest&partitionsAutoScalling=true"
+	}
+	],
+	"routes": 
+	[
+	{
+		"uuid": "7fd3397d-0f1a-4779-8cd3-5f2ab9b4ae6b",
+		"from": "kafka://b9a68675-20a6-494f-b921-356e3a84dfac/test",
+		"processors": 
+		{
+			"1": 
+			{
+				"uuid":"7fd3397d-0f1a-4779-8cd3-5f2ab9b4ae6b-1",
+				"type": "log",
+				"version": "1.0.0",
+				"configuration": "level=INFO"
+			}
+		}
+	}
+	]
+}
