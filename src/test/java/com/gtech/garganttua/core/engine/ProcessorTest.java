@@ -3,31 +3,31 @@
  *******************************************************************************/
 package com.gtech.garganttua.core.engine;
 
-import com.gtech.garganttua.core.spec.annotations.GGProcessor;
-import com.gtech.garganttua.core.spec.exceptions.GGCoreException;
-import com.gtech.garganttua.core.spec.interfaces.IGGObjectRegistryHub;
-import com.gtech.garganttua.core.spec.objects.GGAbstractProcessor;
-import com.gtech.garganttua.core.spec.objects.GGContextObjDescriptor;
-import com.gtech.garganttua.core.spec.objects.GGExchange;
+import com.garganttua.events.spec.annotations.GGEventsProcessor;
+import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
+import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@GGProcessor(type="GGProcessorTest", version="1.0.0")
-public class ProcessorTest extends GGAbstractProcessor {
+@GGEventsProcessor(type="GGEventsProcessorTest", version="1.0.0")
+public class ProcessorTest extends GGEventsAbstractProcessor {
 
 	private String type;
 	
 	@Override
-	public void handle(GGExchange exchange) {
+	public void handle(GGEventsExchange exchange) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -39,13 +39,13 @@ public class ProcessorTest extends GGAbstractProcessor {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGCoreException {
+	public void applyConfiguration() throws GGEventsCoreException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public GGContextObjDescriptor getDescriptor() {
+	public GGEventsContextObjDescriptor getDescriptor() {
 		// TODO Auto-generated method stub
 		return null;
 	}

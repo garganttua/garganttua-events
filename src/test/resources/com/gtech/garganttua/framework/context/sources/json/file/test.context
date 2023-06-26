@@ -47,7 +47,7 @@
 	"connectors": [
 	{
 		"name": "Kafka",
-		"type": "GGKafkaConnector",
+		"type": "GGEventsKafkaConnector",
 		"configuration": {
 			"conf1": "configuration1",
 			"conf2": "configuration2"
@@ -61,15 +61,15 @@
 	    "from": "1154/temperature",
 		"processors": {
 			"1": {
-				"type": "GGProcessorJsonPath",
+				"type": "GGEventsProcessorJsonPath",
 				"configuration": "x.meter.data.temp"
 			},
 			"2": {
-				"type": "GGProcessorCondition",
+				"type": "GGEventsProcessorCondition",
 				"configuration": "{body.data}>20"
 			},
 			"3": {
-				"type": "GGProcessorCreateJson",
+				"type": "GGEventsProcessorCreateJson",
 				"configuration": {
 					"fields": [
 						{

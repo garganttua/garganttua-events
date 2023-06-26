@@ -1,3 +1,3 @@
-# garganttua-core
+# garganttua-events
 
 Hello World

@@ -12,22 +12,22 @@ import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gtech.garganttua.core.context.GGContextSubscription;
-import com.gtech.garganttua.core.spec.annotations.GGConnector;
-import com.gtech.garganttua.core.spec.exceptions.GGCoreException;
-import com.gtech.garganttua.core.spec.exceptions.GGCoreProcessingException;
-import com.gtech.garganttua.core.spec.interfaces.IGGConnector;
-import com.gtech.garganttua.core.spec.interfaces.IGGMessageHandler;
-import com.gtech.garganttua.core.spec.interfaces.IGGObjectRegistryHub;
-import com.gtech.garganttua.core.spec.objects.GGContextObjDescriptor;
-import com.gtech.garganttua.core.spec.objects.GGExchange;
-import com.gtech.garganttua.core.spec.objects.GGMessage;
-import com.gtech.garganttua.core.spec.objects.GGRJourneyStep;
+import com.garganttua.events.context.GGEventsContextSubscription;
+import com.garganttua.events.spec.annotations.GGEventsConnector;
+import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsConnector;
+import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
+import com.garganttua.events.spec.objects.GGEventsExchange;
+import com.garganttua.events.spec.objects.GGEventsMessage;
+import com.garganttua.events.spec.objects.GGEventsRJourneyStep;
 
-@GGConnector(type="TestConnector" , version ="1.0")
-public class ConnectorTest implements IGGConnector {
+@GGEventsConnector(type="TestConnector" , version ="1.0")
+public class ConnectorTest implements IGGEventsConnector {
 
-	private IGGMessageHandler consumer;
+	private IGGEventsMessageHandler consumer;
 
 
 	@Override
@@ -42,14 +42,14 @@ public class ConnectorTest implements IGGConnector {
 		
 	}
 
-	public void receivedMessage(byte[] bytes) throws JsonProcessingException, GGCoreException, GGCoreProcessingException {
-		GGMessage message = new GGMessage(new HashMap<String, String>(), "1", "1", ((List) new ArrayList<GGRJourneyStep>()), "", bytes, MediaType.APPLICATION_JSON_TYPE.toString(), null, null);
+	public void receivedMessage(byte[] bytes) throws JsonProcessingException, GGEventsCoreException, GGEventsCoreProcessingException {
+		GGEventsMessage message = new GGEventsMessage(new HashMap<String, String>(), "1", "1", ((List) new ArrayList<GGEventsRJourneyStep>()), "", bytes, MediaType.APPLICATION_JSON_TYPE.toString(), null, null);
 		
 		ObjectMapper mapper = new ObjectMapper();
 
 		byte[] tata = mapper.writeValueAsBytes(message);
 		
-		GGExchange toto = GGExchange.emptyExchange("", "", "", tata);
+		GGEventsExchange toto = GGEventsExchange.emptyExchange("", "", "", tata);
 		
 		this.consumer.handle(toto);
 	}
@@ -62,7 +62,7 @@ public class ConnectorTest implements IGGConnector {
 	}
 
 	@Override
-	public void handle(GGExchange exchange) throws GGCoreProcessingException, GGCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -75,7 +75,7 @@ public class ConnectorTest implements IGGConnector {
 
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -89,7 +89,7 @@ public class ConnectorTest implements IGGConnector {
 
 
 	@Override
-	public void applyConfiguration() throws GGCoreException {
+	public void applyConfiguration() throws GGEventsCoreException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -110,21 +110,21 @@ public class ConnectorTest implements IGGConnector {
 	}
 
 	@Override
-	public void registerConsumer(GGContextSubscription subscription, IGGMessageHandler messageHandler, String tenantId,
+	public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
 			String clusterId, String assetId) {
 		this.consumer = messageHandler;
 		
 	}
 
 	@Override
-	public void registerProducer(GGContextSubscription subscription, String tenantId, String clusterId,
+	public void registerProducer(GGEventsContextSubscription subscription, String tenantId, String clusterId,
 			String assetId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public GGContextObjDescriptor getDescriptor() {
+	public GGEventsContextObjDescriptor getDescriptor() {
 		// TODO Auto-generated method stub
 		return null;
 	}

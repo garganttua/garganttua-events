@@ -7,24 +7,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.gtech.garganttua.core.context.GGContext;
-import com.gtech.garganttua.core.spec.annotations.GGContextSource;
-import com.gtech.garganttua.core.spec.exceptions.GGCoreException;
-import com.gtech.garganttua.core.spec.interfaces.IGGContextSource;
+import com.garganttua.events.context.GGEventsContext;
+import com.garganttua.events.spec.annotations.GGEventsContextSource;
+import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 
-@GGContextSource( name="GGFileContextSource" )
-public class ContextSourceTest implements IGGContextSource {
+@GGEventsContextSource( name="GGEventsFileContextSource" )
+public class ContextSourceTest implements IGGEventsContextSource {
 
 	@Override
-	public void init(String assetId, String[] configuration) throws GGCoreException {
+	public void init(String assetId, String[] configuration) throws GGEventsCoreException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public List<GGContext> getContexts(Date now) throws GGCoreException {
-		List<GGContext> ret = new ArrayList<GGContext>();
-		ret.add(GGCoreTest.context);
+	public List<GGEventsContext> getContexts(Date now) throws GGEventsCoreException {
+		List<GGEventsContext> ret = new ArrayList<GGEventsContext>();
+		ret.add(GGEventsCoreTest.context);
 		return ret;
 	}
 
