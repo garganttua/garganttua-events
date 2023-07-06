@@ -24,19 +24,19 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
 import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
 import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
-import com.gtech.pegasus.core.execution.PGApplicationEngine;
-import com.gtech.pegasus.core.services.IPGService;
-import com.gtech.pegasus.core.services.PGServiceCommandRight;
-import com.gtech.pegasus.core.services.PGServiceException;
-import com.gtech.pegasus.core.services.PGServicePriority;
-import com.gtech.pegasus.core.services.PGServiceStatus;
+import com.garganttua.server.core.execution.GGServerApplicationEngine;
+import com.garganttua.server.core.services.GGServerServiceCommandRight;
+import com.garganttua.server.core.services.GGServerServiceException;
+import com.garganttua.server.core.services.GGServerServicePriority;
+import com.garganttua.server.core.services.GGServerServiceStatus;
+import com.garganttua.server.core.services.IGGServerService;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class GGEventsCorePegasusService implements IPGService {
+public class GGEventsCorePegasusService implements IGGServerService {
 	
 	@Value("${garganttua.backend.assetId:1}")
 	private String assetId;
@@ -86,7 +86,7 @@ public class GGEventsCorePegasusService implements IPGService {
 	@Inject
 	private SpringApplication application;
 	
-	private PGServiceStatus status = PGServiceStatus.flushed;
+	private GGServerServiceStatus status = GGServerServiceStatus.flushed;
 	
 	@Bean
 	@Qualifier(value="coreContextEngine")
@@ -103,27 +103,27 @@ public class GGEventsCorePegasusService implements IPGService {
 	}	
 
 	@Override
-	public void start(PGServiceCommandRight right) throws PGServiceException{
+	public void start(GGServerServiceCommandRight right) throws GGServerServiceException{
 		log.info("Starting Garganttua Core Engine.");
-		this.status = PGServiceStatus.starting;
+		this.status = GGServerServiceStatus.starting;
 		this.contextEngine.start();
-		this.status = PGServiceStatus.running;
+		this.status = GGServerServiceStatus.running;
 		log.info("Garganttua Core Engine started");
 	}
 
 	@Override
-	public void stop(PGServiceCommandRight right) throws PGServiceException{
+	public void stop(GGServerServiceCommandRight right) throws GGServerServiceException{
 		log.info("Stopping Garganttua Core Engine.");
-		this.status = PGServiceStatus.stopping;
+		this.status = GGServerServiceStatus.stopping;
 		this.contextEngine.stop();
-		this.status = PGServiceStatus.stopped;
+		this.status = GGServerServiceStatus.stopped;
 		log.info("Garganttua Core Engine stopped");
 	}
 
 	@Override
-	public void init(PGServiceCommandRight right, String[] arguments) throws PGServiceException {
+	public void init(GGServerServiceCommandRight right, String[] arguments) throws GGServerServiceException {
 		log.info("Garganttua Core Context Engine Initialisation");
-		this.status = PGServiceStatus.initializing;
+		this.status = GGServerServiceStatus.initializing;
 		this.contextEngine.getObjectRegistries().addObjectRegistry("bean", new GGEventsSpringBeanRegistry(this.context));
 		
 		List<String> contexts = new ArrayList<String>();
@@ -139,7 +139,7 @@ public class GGEventsCorePegasusService implements IPGService {
 				}
 				break;
 			}
-			if( arg.equals(PGApplicationEngine.PEGASUS_ARGUMENT_CONFIGURATIONS) ) {
+			if( arg.equals(GGServerApplicationEngine.PEGASUS_ARGUMENT_CONFIGURATIONS) ) {
 				contextArgument = true;
 			}
 		}
@@ -163,7 +163,7 @@ public class GGEventsCorePegasusService implements IPGService {
 		this.contextEngine.registerContextSourceConfiguratorRegistry(this.configRegistry);
 		this.contextEngine.init(this.assetId, this.contextBuilder, this.packages, this.executorService, this.scheduledExecutorService, this.assetName, this.assetVersion);
 		log.info("Garganttua Core Context Engine Initialized");
-		this.status = PGServiceStatus.initialized;
+		this.status = GGServerServiceStatus.initialized;
 	}
 
 	@Override
@@ -172,24 +172,24 @@ public class GGEventsCorePegasusService implements IPGService {
 	}
 
 	@Override
-	public PGServiceStatus getStatus() {
+	public GGServerServiceStatus getStatus() {
 		return this.status;
 	}
 	
 	@Override
-	public void flush(PGServiceCommandRight right) throws PGServiceException {
-		this.status = PGServiceStatus.flushing;
+	public void flush(GGServerServiceCommandRight right) throws GGServerServiceException {
+		this.status = GGServerServiceStatus.flushing;
 		this.contextBuilder.flush();
-		this.status = PGServiceStatus.flushed;
+		this.status = GGServerServiceStatus.flushed;
 	}
 	
 	@Override
-	public PGServicePriority getPriority() {
-		return PGServicePriority.medium;
+	public GGServerServicePriority getPriority() {
+		return GGServerServicePriority.medium;
 	}
 
 	@Override
-	public void restart(PGServiceCommandRight right, String[] arguments) throws PGServiceException {
+	public void restart(GGServerServiceCommandRight right, String[] arguments) throws GGServerServiceException {
 		this.stop(right);
 		this.flush(right);
 		this.init(right, arguments);

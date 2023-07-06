@@ -37,8 +37,8 @@
 	
 	<repositories>
 		<repository>
-			<id>github pegasus core</id>
-			<name>github pegasus core</name>
+			<id>github Garganttua core</id>
+			<name>github Garganttua core</name>
 			<url>https://maven.pkg.github.com/garganttua/garganttua-server</url>
 			<snapshots>
 				<enabled>true</enabled>
@@ -122,8 +122,8 @@
 			<version>3.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.gtech</groupId>
-			<artifactId>pegasus-core</artifactId>
+			<groupId>com.garganttua</groupId>
+			<artifactId>garganttua-server-core</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
