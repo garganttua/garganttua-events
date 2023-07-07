@@ -9,7 +9,7 @@
    id="svg5"
    sodipodi:docname="garganttua-events.svg"
    inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
-   inkscape:export-filename="garganttua-events.png"
+   inkscape:export-filename="garganttua-api.png"
    inkscape:export-xdpi="141.35451"
    inkscape:export-ydpi="141.35451"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -33,7 +33,7 @@
      inkscape:lockguides="true"
      inkscape:guide-bbox="true"
      inkscape:zoom="2.0000001"
-     inkscape:cx="367.24998"
+     inkscape:cx="367.74998"
      inkscape:cy="87.749996"
      inkscape:window-width="1920"
      inkscape:window-height="1027"
@@ -111,15 +111,15 @@
         <text
            xml:space="preserve"
            style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:62.5098px;font-family:Arial;-inkscape-font-specification:'Arial, Bold Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.05138"
-           x="209.40891"
-           y="149.4415"
+           x="211.58832"
+           y="150.68271"
            id="text344"
            transform="scale(1.0671949,0.93703596)"><tspan
              sodipodi:role="line"
              id="tspan342"
              style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:62.5098px;font-family:Arial;-inkscape-font-specification:'Arial, Bold Italic';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.05138;stroke-opacity:1"
-             x="209.40891"
-             y="149.4415">Events</tspan></text>
+             x="211.58832"
+             y="150.68271">Events</tspan></text>
       </g>
     </g>
   </g>
