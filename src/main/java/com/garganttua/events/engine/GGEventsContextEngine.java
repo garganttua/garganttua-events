@@ -112,7 +112,11 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 		
 		this.objectRegistries.addObjectRegistry("class", new GGEventsObjectCreatorRegistry());
 		
-		log.info("==== GARGANTTUA FRAMEWORK ====");
+		log.info("============================================");
+		log.info("======                                ======");
+		log.info("====== Starting Garganttua Events     ======");
+		log.info("======                                ======");
+		log.info("============================================");
 		log.info("==== CONTEXT CONSTRUCTION ====");
 
 		this.executorService = executorService;
