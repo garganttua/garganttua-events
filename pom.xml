@@ -36,14 +36,14 @@
 	</distributionManagement>
 	
 	<repositories>
-		<repository>
-			<id>github garganttua server core</id>
-			<name>github garganttua server core</name>
-			<url>https://maven.pkg.github.com/garganttua/garganttua-server-core</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+<!--		<repository>-->
+<!--			<id>github garganttua server core</id>-->
+<!--			<name>github garganttua server core</name>-->
+<!--			<url>https://maven.pkg.github.com/garganttua/garganttua-server-core</url>-->
+<!--			<snapshots>-->
+<!--				<enabled>true</enabled>-->
+<!--			</snapshots>-->
+<!--		</repository>-->
 		<repository>
 			<id>mulesoft</id>
 			<name>mulesoft</name>
@@ -120,11 +120,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<version>3.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.garganttua</groupId>
-			<artifactId>garganttua-server-core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
