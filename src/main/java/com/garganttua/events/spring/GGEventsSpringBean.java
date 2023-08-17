@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,6 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfiguration
 import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
 import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 
 @Service
