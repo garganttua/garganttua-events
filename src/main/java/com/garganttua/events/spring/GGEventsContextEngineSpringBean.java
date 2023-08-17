@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,12 +20,14 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
 import com.garganttua.events.spec.interfaces.IGGEventsContextEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
 import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistry;
 import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 
 @Service
-public class GGEventsSpringBean {
+public class GGEventsContextEngineSpringBean {
 	
 	@Value("${garganttua.events.assetId:1}")
 	private String assetId;
@@ -40,7 +41,7 @@ public class GGEventsSpringBean {
 	private String assetVersion;
 	
 	@Getter
-	private IGGEventsContextEngine contextEngine = new GGEventsContextEngine();;
+	private IGGEventsContextEngine contextEngine = new GGEventsContextEngine();
 	
 	@Getter
 	private IGGEventsContextBuilder contextBuilder = new GGEventsContextBuilder();
@@ -48,6 +49,10 @@ public class GGEventsSpringBean {
 	@Inject
 	@Getter
 	private IGGEventsContextSourceConfigurationRegistry configRegistry;
+	
+	@Inject
+	@Getter
+	private List<IGGEventsObjectRegistry> objectsRegistries;
 	
 	@Inject
 	@Getter
@@ -73,14 +78,18 @@ public class GGEventsSpringBean {
 	@Qualifier(value="GGEventsEngine")
 	public IGGEventsContextEngine getEngine() {
 		return this.contextEngine;
-	};
+	}
 	
 	@PostConstruct
 	public void init() {
-//		this.contextEngine.getObjectRegistries().addObjectRegistry("bean", new GGEventsSpringBeanRegistry(this.context));
+		this.objectsRegistries.forEach(c -> {
+			this.contextEngine.getObjectRegistries().addObjectRegistry(c.getLabel(), c);
+		});
+	
 		this.contextSourcesConfigurations.forEach(c -> {
 			this.configRegistry.registerContextSourceConfiguration(c);
 		});
+		
 		this.contextEngine.registerContextSourceConfiguratorRegistry(this.configRegistry);
 		this.contextEngine.registerEventHandler(this.eventHandler);
 		this.contextEngine.init(this.assetId, this.contextBuilder, this.packages, this.executorService, this.scheduledExecutorService, this.assetName, this.assetVersion);

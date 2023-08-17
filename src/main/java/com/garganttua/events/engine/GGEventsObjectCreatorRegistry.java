@@ -8,6 +8,8 @@ import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistry;
 
 public class GGEventsObjectCreatorRegistry implements IGGEventsObjectRegistry {
 
+	public static final String LABEL = "class";
+	
 	@Override
 	public Object getObject(String ref) throws GGEventsCoreException {
 		Object obj = null;
@@ -35,6 +37,11 @@ public class GGEventsObjectCreatorRegistry implements IGGEventsObjectRegistry {
 			throw new GGEventsCoreException(e);
 		}
 		return obj;
+	}
+
+	@Override
+	public String getLabel() {
+		return null;
 	}
 
 }

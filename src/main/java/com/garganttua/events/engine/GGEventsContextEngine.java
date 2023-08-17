@@ -110,7 +110,7 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 		this.assetVersion = assetVersion;
 		this.now = new Date();
 		
-		this.objectRegistries.addObjectRegistry("class", new GGEventsObjectCreatorRegistry());
+		this.objectRegistries.addObjectRegistry(GGEventsObjectCreatorRegistry.LABEL, new GGEventsObjectCreatorRegistry());
 		
 		log.info("============================================");
 		log.info("======                                ======");
