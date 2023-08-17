@@ -13,11 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GGEventsCoreEventHandler implements IGGEventsCoreEventHandler {
 
-	private SpringApplication application;
 	private ApplicationContext context;
 
-	public GGEventsCoreEventHandler(SpringApplication application, ApplicationContext context) {
-		this.application = application;
+	public GGEventsCoreEventHandler(ApplicationContext context) {
 		this.context = context;
 	}
 
@@ -34,7 +32,7 @@ public class GGEventsCoreEventHandler implements IGGEventsCoreEventHandler {
 //				e.printStackTrace();
 //			}
 			log.error("Fatal error during startup", event.getException());
-			this.application.exit(this.context, null);
+			SpringApplication.exit(this.context);
 		}
 	}
 

@@ -6,10 +6,9 @@ package com.garganttua.events.spec.objects;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 
 import lombok.AllArgsConstructor;
@@ -42,7 +41,7 @@ public class GGEventsMessage {
 	protected byte[] value;
 	
 	@JsonProperty
-	protected String contentType = MediaType.APPLICATION_JSON_TYPE.toString();
+	protected String contentType = GGEventsMediaType.APPLICATION_JSON.toString();
 	
 //	@JsonProperty
 //	@JsonDeserialize(using = GGEventsFrameworkExceptionDeserializer.class)

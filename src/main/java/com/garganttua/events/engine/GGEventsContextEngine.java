@@ -727,7 +727,6 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 
 		for (String pack : this.scanPackages) {
 			log.info(" -> Scanning package " + pack);
-//			Reflections reflections = new Reflections(pack, GGEventsContextEngine.class.getClassLoader());
 			Reflections reflections = new Reflections(pack);
 			Set<Class<?>> sources = reflections.getTypesAnnotatedWith(GGEventsContextSource.class);
 
@@ -854,6 +853,7 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 			});
 		});
 		this.raiseEvent(new GGEventsCoreEvent("Garganttua Core Context Engine started", GGEventsCoreEventCriticity.INFO, GGEventsCoreExecutionStage.STARTUP, null));
+		
 	}
 
 	/**
