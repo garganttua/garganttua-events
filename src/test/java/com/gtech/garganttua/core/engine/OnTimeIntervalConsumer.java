@@ -121,7 +121,7 @@ class OnTimeIntervalConsumer {
 
 		};
 		
-		GGEventsContextSubscription subscritpion = new GGEventsContextSubscription("1", "/test", "test", null, false, false, new GGEventsContextTimeInterval(5, TimeUnit.SECONDS), null, null, null);
+		GGEventsContextSubscription subscritpion = new GGEventsContextSubscription("1", "/test", "test", null, new GGEventsContextTimeInterval(5, TimeUnit.SECONDS), null, null, null);
 		GGEventsSubscription sub = new GGEventsSubscription(dataflow, subscritpion, connector, topic, null, null);
 
 		ScheduledExecutorService exec = new ScheduledThreadPoolExecutor(10);

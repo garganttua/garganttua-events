@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.garganttua.events.engine.processors.GGEventsProtocolOutProcessor;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
@@ -146,8 +145,8 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 		clone.setValue(message);
 		clone.setContentType(contentType);
 
-		GGEventsProtocolOutProcessor protproc = new GGEventsProtocolOutProcessor(sub.getDataflow().isEncapsulated(), this.assetId, this.clusterId, sub.getSubscription().getTopic(), sub.getDataflow().getVersion(), sub.getId() );
-		IGGEventsProcessor pproc = sub.getProducerProcessor();
+		IGGEventsProcessor pproc = sub.getOutFilterProcessor();
+		IGGEventsProcessor protproc = sub.getProtocolOutProcessor();
 		IGGEventsProducer prod = sub.getProducer();
 
 		protproc.handle(clone);

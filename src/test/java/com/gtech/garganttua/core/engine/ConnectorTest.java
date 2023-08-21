@@ -8,12 +8,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
+import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
@@ -21,8 +20,8 @@ import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
+import com.garganttua.events.spec.objects.GGEventsJourneyStep;
 import com.garganttua.events.spec.objects.GGEventsMessage;
-import com.garganttua.events.spec.objects.GGEventsRJourneyStep;
 
 @GGEventsConnector(type="TestConnector" , version ="1.0")
 public class ConnectorTest implements IGGEventsConnector {
@@ -43,7 +42,7 @@ public class ConnectorTest implements IGGEventsConnector {
 	}
 
 	public void receivedMessage(byte[] bytes) throws JsonProcessingException, GGEventsCoreException, GGEventsCoreProcessingException {
-		GGEventsMessage message = new GGEventsMessage(new HashMap<String, String>(), "1", "1", ((List) new ArrayList<GGEventsRJourneyStep>()), "", bytes, MediaType.APPLICATION_JSON_TYPE.toString(), null, null);
+		GGEventsMessage message = new GGEventsMessage(new HashMap<String, String>(), "1", "1", ((List) new ArrayList<GGEventsJourneyStep>()), "", bytes, GGEventsMediaType.APPLICATION_JSON.toString(), null, null, "1.0");
 		
 		ObjectMapper mapper = new ObjectMapper();
 

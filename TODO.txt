@@ -1,0 +1,37 @@
+Ajouter fonction "monitoring/metrics" dans les routes pour envoyer les événements sur un dataflow + stockage en BDD lors du signup
+
+Ajouter la version pour les connecteurs/processors/lock + revoir l'APi et l'organisation des connectors et instances (idem pour processors et locks)
+
+autoriser les mises à jours d'objets depuis IHM WEB que si sources est vide => faire étude spécifique à chaque objet
+
+Supprimer le eventexternalHandler connecteur et faire un processor à la place 
+
+Lors du signUp lever une exception si objet envoyé par l'asset != objet en base et que source non vide : les assets ne sont pas autorisés à modifier les objets context
+
+dans signUp ajouter liste des processors disponibles => créer un nouveau domain et nouvelle API pour consulter la liste des processors d'un asset et nouvelle api pour consulter la liste des processors et assets dispo.
+
+implémenter le démarrage étagée des routes et abonnemnets
+
+Mettre à niveau les connectors autre que kafka pour les rendre multi -tenant et multi -cluster
+
+connector kafka => rendre les producers mutli-tenant et multi-cluster
+
+Vérifier si busConnector et l'tuilisation des queue est thread safe
+
+GGTimeIntervalConsumer => a terminer d'implémenter
+
+Implémenter l'option "garantee order" pour tous les connecteurs
+
+bug boucles infini sur serialization exception dans GGMEssage uniquement en mode java -jar, non reproductible dans IDE Eclipse
+
+Implémenter la possibilité de transmettre un fichier + notification au lieu de tout mettre dans le exchange
+
+Implémenter le connecteur Mail
+
+Améliorer le dynamiquesplitter pour recevoir une configuration plutot que implémenter l'algo de split
+
+Sortir tous les setHeader domain des enricher et les remplacer par des processeurs setHeader dans les routes du context signup
+
+Topics => supprimer le tenant- dans l'identifiant (champ id) 
+
+Ajouter option kafka partition auto scalling => le nomùbre de partitions sur un topic kafka augmente si nb de consommer > nb de ^partitions

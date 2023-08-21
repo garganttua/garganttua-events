@@ -8,6 +8,8 @@ import com.garganttua.events.context.GGEventsContextProducerConfiguration;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.engine.consumers.GGEventsOnChangeConsumer;
+import com.garganttua.events.engine.processors.GGEventsEncapsulatedProtocolInProcessor;
+import com.garganttua.events.engine.processors.GGEventsEncapsulatedProtocolOutProcessor;
 import com.garganttua.events.engine.processors.GGEventsInFilterProcessor;
 import com.garganttua.events.engine.processors.GGEventsOutFilterProcessor;
 import com.garganttua.events.engine.producers.GGEventsOnChangeProducer;
@@ -30,6 +32,7 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 	
 	private GGEventsContextSubscription subscription;
 	private IGGEventsConnector connector;
+	
 	@Getter
 	private GGEventsTopic topic;
 	private GGEventsInFilterProcessor inFilter;
@@ -38,6 +41,8 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 	private IGGEventsProducer producer;
 	private String assetId;
 	private String clusterId;
+	private IGGEventsProcessor protocolInProcessor;
+	private IGGEventsProcessor protocolOutProcessor;
 	
 	public GGEventsSubscription(IGGEventsDataflow dataflow, GGEventsContextSubscription subscription, IGGEventsConnector connector, GGEventsTopic topic, String assetId, String clusterId) {
 		this.subscription = subscription;
@@ -49,31 +54,44 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 		this.dataflow = dataflow;
 		
 		GGEventsContextConsumerConfiguration consumerConfiguration = this.subscription.getCconfiguration();
-		this.inFilter = new GGEventsInFilterProcessor(consumerConfiguration, assetId, clusterId);
+		this.inFilter = new GGEventsInFilterProcessor(consumerConfiguration, assetId, clusterId, dataflow.getVersion());
 		
 		GGEventsContextProducerConfiguration producerConfiguration = this.subscription.getPconfiguration();
 		this.outFilter = new GGEventsOutFilterProcessor(producerConfiguration);
 		
 		if( this.subscription.getPublicationMode() == GGEventsContextPublicationMode.ON_CHANGE ) {
 			this.consumer = new GGEventsOnChangeConsumer(this.subscription.getId());
-		} else if(this.subscription.getPublicationMode() == GGEventsContextPublicationMode.TIME_INTERVAL ) {
-//			this.consumer = new GGEventsTimeIntervalConsumer(this.subscription.getId());
-		}
-		
-		if( this.subscription.getPublicationMode() == GGEventsContextPublicationMode.ON_CHANGE ) {
 			this.producer = new GGEventsOnChangeProducer(this.subscription.getId(), this.connector);
 		} else if(this.subscription.getPublicationMode() == GGEventsContextPublicationMode.TIME_INTERVAL ) {
+//			this.consumer = new GGEventsTimeIntervalConsumer(this.subscription.getId());
 			this.producer = new GGEventsTimeIntervalProducer(this.subscription.getId(), this.connector, this.subscription.getTimeInterval());
+		}
+		
+		if( dataflow.isEncapsulated() ) {
+			this.protocolInProcessor = new GGEventsEncapsulatedProtocolInProcessor(this.assetId, this.clusterId, this.getId(), this.getDataflow().getVersion());
+			this.protocolOutProcessor = new GGEventsEncapsulatedProtocolOutProcessor(this.assetId, this.clusterId, this.topic.getRef(), this.dataflow.getVersion(), this.dataflow.getUuid(), this.connector.getName());
+		} else {
+			
 		}
 	}
 
 	@Override
-	public IGGEventsProcessor getConsumerProcessor() {
+	public IGGEventsProcessor getProtocolInProcessor() {
+		return this.protocolInProcessor;
+	}
+	
+	@Override
+	public IGGEventsProcessor getProtocolOutProcessor() {
+		return this.protocolOutProcessor;
+	}
+	
+	@Override
+	public IGGEventsProcessor getInFilterProcessor() {
 		return this.inFilter;
 	}
 
 	@Override
-	public IGGEventsProcessor getProducerProcessor() {
+	public IGGEventsProcessor getOutFilterProcessor() {
 		return this.outFilter;
 	}
 
@@ -87,12 +105,12 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 		return this.producer;
 	}
 
-	public static String getConnector(String subscriptionId) {
-		return subscriptionId.split("://")[0];
+	public static String getConnectorFromSubscriptionId(String subscriptionUrl) {
+		return subscriptionUrl.split("://")[0];
 	}
 
-	public static String getSubscription(String subscriptionId) {
-		return subscriptionId.split("://")[1].split("/")[0];
+	public static String getDataflowIdFromSubscriptionId(String subscriptionUrl) {
+		return subscriptionUrl.split("://")[1].split("/")[0];
 	}
 
 }

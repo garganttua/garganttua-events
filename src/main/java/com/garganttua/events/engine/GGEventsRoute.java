@@ -14,8 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.engine.processors.GGEventsCoreFilterException;
-import com.garganttua.events.engine.processors.GGEventsProtocolInProcessor;
-import com.garganttua.events.engine.processors.GGEventsProtocolOutProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsExceptionSubscription;
@@ -41,13 +39,15 @@ public class GGEventsRoute implements IGGEventsRoute {
 	private IGGEventsExceptionSubscription exceptionSubscription;
 	private IGGEventsProducer producer;
 	private GGEventsLockObject lock;
+	private String tenantId;
 
-	public GGEventsRoute(IGGEventsSubscription fromSubscription, IGGEventsSubscription toSubscription, IGGEventsSubscription exceptionSubscription, GGEventsLockObject lock, Map<Integer, IGGEventsProcessor> processors, String routeUuid, String clusterId, String assetId) {
+	public GGEventsRoute(IGGEventsSubscription fromSubscription, IGGEventsSubscription toSubscription, IGGEventsSubscription exceptionSubscription, GGEventsLockObject lock, Map<Integer, IGGEventsProcessor> processors, String routeUuid, String tenantId, String clusterId, String assetId) {
 		this.lock = lock;
 		this.exceptionSubscription = (IGGEventsExceptionSubscription) exceptionSubscription;
 		this.routeUuid = routeUuid;
 		this.clusterId = clusterId;
 		this.assetId = assetId;
+		this.tenantId = tenantId;
 		this.processorsList = new GGEventsSynchronizedLinkedProcessorList();
 		this.exceptionList = new GGEventsSynchronizedLinkedProcessorList();
 		
@@ -66,26 +66,30 @@ public class GGEventsRoute implements IGGEventsRoute {
 			}
 		});
 		
-		this.processorsList.add(new GGEventsProtocolInProcessor(fromSubscription.getDataflow().isEncapsulated(), this.assetId, this.clusterId, fromSubscription.getId(), fromSubscription.getDataflow().getVersion()));
-		if( fromSubscription.getDataflow().isEncapsulated() )
-			this.processorsList.add(fromSubscription.getConsumerProcessor());
+		fromSubscription.getConsumer().registerRoute(this);
+		fromSubscription.getConnector().registerConsumer(fromSubscription.getSubscription(), this, this.tenantId, this.clusterId, this.assetId);
+		
+		this.processorsList.add(fromSubscription.getProtocolInProcessor());
+		this.processorsList.add(fromSubscription.getInFilterProcessor());
+
 		list.forEach(integer -> {
 			IGGEventsProcessor proc = processors.get(integer);
 			processorsList.add(proc);
 		});
 		
 		if( toSubscription != null ) {
-			this.processorsList.add(new GGEventsProtocolOutProcessor(toSubscription.getDataflow().isEncapsulated(), this.assetId, this.clusterId, toSubscription.getSubscription().getTopic(), toSubscription.getDataflow().getVersion(), toSubscription.getId() ));
-			this.processorsList.add(toSubscription.getProducerProcessor());
+			this.processorsList.add(toSubscription.getOutFilterProcessor());
+			this.processorsList.add(toSubscription.getProtocolOutProcessor());
 			this.producer = toSubscription.getProducer();
 			this.processorsList.add(this.producer);
+			toSubscription.getConnector().registerProducer(toSubscription.getSubscription(), this.tenantId, this.clusterId, this.assetId);
 		}
 		if( exceptionSubscription != null ) {
-			this.exceptionList.add(exceptionSubscription.getProducerProcessor());
-			this.exceptionList.add(new GGEventsProtocolOutProcessor(exceptionSubscription.getDataflow().isEncapsulated(), this.assetId, this.clusterId, exceptionSubscription.getSubscription().getTopic(), exceptionSubscription.getDataflow().getVersion(), exceptionSubscription.getId() ));
+			this.exceptionList.add(exceptionSubscription.getOutFilterProcessor());
+			this.processorsList.add(toSubscription.getProtocolOutProcessor());
 			this.exceptionList.add(exceptionSubscription.getProducer());
-		}
-			
+			exceptionSubscription.getConnector().registerProducer(exceptionSubscription.getSubscription(), this.tenantId, this.clusterId, this.assetId);
+		}	
 	}
 
 	@Override

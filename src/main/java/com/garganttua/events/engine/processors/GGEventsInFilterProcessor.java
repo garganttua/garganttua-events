@@ -24,11 +24,13 @@ public class GGEventsInFilterProcessor extends GGEventsAbstractProcessor {
 	private String clusterId;
 	private String infos;
 	private String manual;
+	private Object dataflowVersion;
 
-	public GGEventsInFilterProcessor(GGEventsContextConsumerConfiguration consumerConfiguration, String assetId, String clusterId) {
+	public GGEventsInFilterProcessor(GGEventsContextConsumerConfiguration consumerConfiguration, String assetId, String clusterId, String dataflowVersion) {
 		this.consumerConfiguration = consumerConfiguration;
 		this.assetId = assetId;
 		this.clusterId = clusterId;
+		this.dataflowVersion = dataflowVersion;
 		this.type = "IGGEventsProcessor::GGEventsInFilterProcessor";
 	}
 
@@ -42,6 +44,11 @@ public class GGEventsInFilterProcessor extends GGEventsAbstractProcessor {
 	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
 		GGEventsContextOriginPolicy originPolicy = this.consumerConfiguration.getOpolicy();
 		GGEventsContextDestinationPolicy destinationPolicy = this.consumerConfiguration.getDpolicy();
+		
+		//Check dataflow Version 
+		if( exchange.getDataflowVersion() == null || !exchange.getDataflowVersion().equals(this.dataflowVersion) ) {
+			throw new GGEventsCoreFilterException("version mismatch");
+		}
 		
 		if( destinationPolicy != null ) {
 			switch(destinationPolicy) {

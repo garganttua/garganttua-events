@@ -6,10 +6,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
+import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -49,10 +48,10 @@ public class GGEventsTransformProcessor extends GGEventsAbstractProcessor {
 		try {
 			Object fromObject = null;
 			
-			if( MediaType.valueOf(exchange.getContentType()).toString().equals(MediaType.TEXT_PLAIN.toString()) ) {
+			if( GGEventsMediaType.valueOf(exchange.getContentType()).toString().equals(GGEventsMediaType.TEXT_PLAIN.toString()) ) {
 				fromObject = new String(fromByte);
 			}
-			if( MediaType.valueOf(exchange.getContentType()).toString().equals(MediaType.APPLICATION_JSON.toString()) ) {
+			if( GGEventsMediaType.valueOf(exchange.getContentType()).toString().equals(GGEventsMediaType.APPLICATION_JSON.toString()) ) {
 				fromObject = mapper.readValue(fromByte, this.fromClazz);
 			}
 			

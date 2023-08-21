@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 @GGEventsContextSource(name="GGEventsContextFileSource")
 public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	
+	public static final String SOURCE_NAME = "GGEventsContextFileSource";
+	
 	private String[] files;
 	private String assetId;
 

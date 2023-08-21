@@ -8,13 +8,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.enums.GGEventsCoreEventCriticity;
 import com.garganttua.events.spec.enums.GGEventsCoreExecutionStage;
+import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
@@ -26,8 +25,8 @@ import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsCoreEvent;
 import com.garganttua.events.spec.objects.GGEventsExchange;
+import com.garganttua.events.spec.objects.GGEventsJourneyStep;
 import com.garganttua.events.spec.objects.GGEventsMessage;
-import com.garganttua.events.spec.objects.GGEventsRJourneyStep;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -181,7 +180,7 @@ public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEvent
 	
 			try {
 				bytes = mapper.writeValueAsString(event).getBytes();
-				GGEventsMessage message = new GGEventsMessage(new HashMap<String, String>(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), new ArrayList<GGEventsRJourneyStep>(), this.tenantId, bytes, MediaType.APPLICATION_JSON_TYPE.toString(), null, null);
+				GGEventsMessage message = new GGEventsMessage(new HashMap<String, String>(), UUID.randomUUID().toString(), UUID.randomUUID().toString(), new ArrayList<GGEventsJourneyStep>(), this.tenantId, bytes, GGEventsMediaType.APPLICATION_JSON.toString(), null, null, "1.0");
 
 				__bytes__ = mapper.writeValueAsString(message).getBytes();
 				

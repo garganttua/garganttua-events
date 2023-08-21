@@ -22,6 +22,7 @@ import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.leansoft.bigqueue.BigQueueImpl;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @GGEventsConnector(type="bus", version="1.0.0")
 public class GGEventsCoreBusConnector implements IGGEventsConnector {
@@ -35,6 +36,7 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 	private ExecutorService poolExecutor;
 
 	@Getter
+	@Setter
 	private String name;
 	private Map<String, BigQueueImpl> queues = new HashMap<String, BigQueueImpl>();
 	private String queuesDir;
@@ -43,7 +45,6 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 	private TimeUnit gcIntervalUnit;
 	private Integer gcInterval;
 	private Map<String, GGEventsCoreBusConsumer> consumers = new HashMap<String, GGEventsCoreBusConsumer>();
-	private int counter = 0;
 	private String infos;
 	private String manual;
 
@@ -153,12 +154,6 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 
 	@Override
 	public void applyConfiguration() throws GGEventsCoreException {
-		
-	}
-
-	@Override
-	public void setName(String name) {
-		this.name = name;
 		
 	}
 

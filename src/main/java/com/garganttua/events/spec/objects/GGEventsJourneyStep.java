@@ -5,7 +5,7 @@ package com.garganttua.events.spec.objects;
 
 import java.util.Date;
 
-import com.garganttua.events.spec.enums.GGEventsRJourneyStepDirection;
+import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GGEventsRJourneyStep {
+public class GGEventsJourneyStep {
 
 	protected Date date; 
 	
@@ -24,7 +24,7 @@ public class GGEventsRJourneyStep {
 	
 	protected String subscriptionId;
 	
-	protected GGEventsRJourneyStepDirection stepDirection;
+	protected GGEventsJourneyStepDirection stepDirection;
 	
 	protected String dataflowVersion;
 	

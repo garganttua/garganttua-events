@@ -7,9 +7,9 @@ import com.garganttua.events.context.GGEventsContextSubscription;
 
 public interface IGGEventsSubscription {
 
-	IGGEventsProcessor getConsumerProcessor();
+	IGGEventsProcessor getInFilterProcessor();
 
-	IGGEventsProcessor getProducerProcessor();
+	IGGEventsProcessor getOutFilterProcessor();
 
 	IGGEventsConsumer getConsumer();
 
@@ -20,6 +20,11 @@ public interface IGGEventsSubscription {
 	IGGEventsConnector getConnector();
 	
 	GGEventsContextSubscription getSubscription();
+	
 	String getId();
+
+	IGGEventsProcessor getProtocolInProcessor();
+	
+	IGGEventsProcessor getProtocolOutProcessor();
 	
 }

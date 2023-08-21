@@ -110,7 +110,7 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 		this.assetVersion = assetVersion;
 		this.now = new Date();
 		
-		this.objectRegistries.addObjectRegistry("class", new GGEventsObjectCreatorRegistry());
+		this.objectRegistries.addObjectRegistry(GGEventsObjectCreatorRegistry.LABEL, new GGEventsObjectCreatorRegistry());
 		
 		log.info("============================================");
 		log.info("======                                ======");
@@ -394,19 +394,8 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 				
 			}
 
-			GGEventsRoute r = new GGEventsRoute(fromSubscription, toSubscription, exceptionSubscription, lock, processorsList, route.getUuid(), clusterId, this.assetId);
-			IGGEventsConsumer consumer = fromSubscription.getConsumer();
-			consumer.registerRoute(r);
-			IGGEventsConnector connector = fromSubscription.getConnector();
-			connector.registerConsumer(fromSubscription.getSubscription(), r, tenantId, clusterId, this.assetId);
+			GGEventsRoute r = new GGEventsRoute(fromSubscription, toSubscription, exceptionSubscription, lock, processorsList, route.getUuid(), tenantId, clusterId, this.assetId);
 			
-			if (toSubscription != null) {
-				toSubscription.getConnector().registerProducer(toSubscription.getSubscription(), tenantId, clusterId, this.assetId);
-			}
-			
-			if (exceptionSubscription != null) {
-				exceptionSubscription.getConnector().registerProducer(exceptionSubscription.getSubscription(), tenantId, clusterId, this.assetId);
-			}
 			this.routes.get(tenantId).get(clusterId).put(r.getRouteUuid(), r);
 			
 			log.info("[" + tenantId + "][" + clusterId + "] -> Route " + route.getUuid() + " registered");
@@ -727,7 +716,6 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 
 		for (String pack : this.scanPackages) {
 			log.info(" -> Scanning package " + pack);
-//			Reflections reflections = new Reflections(pack, GGEventsContextEngine.class.getClassLoader());
 			Reflections reflections = new Reflections(pack);
 			Set<Class<?>> sources = reflections.getTypesAnnotatedWith(GGEventsContextSource.class);
 
@@ -854,6 +842,7 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 			});
 		});
 		this.raiseEvent(new GGEventsCoreEvent("Garganttua Core Context Engine started", GGEventsCoreEventCriticity.INFO, GGEventsCoreExecutionStage.STARTUP, null));
+		
 	}
 
 	/**
