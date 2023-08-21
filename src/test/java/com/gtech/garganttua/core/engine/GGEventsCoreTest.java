@@ -70,8 +70,8 @@ public class GGEventsCoreTest {
 	
 		this.context.setDataflows(this.dataflows);
 		
-		this.subscriptions.add(new GGEventsContextSubscription("1122", "/entry", "test", GGEventsContextPublicationMode.ON_CHANGE, false, false, null, new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration(), null));
-		this.subscriptions.add(new GGEventsContextSubscription("1122", "/exit", "test", GGEventsContextPublicationMode.ON_CHANGE, false, false, null, new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration(), null));
+		this.subscriptions.add(new GGEventsContextSubscription("1122", "/entry", "test", GGEventsContextPublicationMode.ON_CHANGE, null, new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration(), null));
+		this.subscriptions.add(new GGEventsContextSubscription("1122", "/exit", "test", GGEventsContextPublicationMode.ON_CHANGE, null, new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration(), null));
 		 
 		this.context.setSubscriptions(this.subscriptions);
 		

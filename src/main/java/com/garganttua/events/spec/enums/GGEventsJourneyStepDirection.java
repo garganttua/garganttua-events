@@ -3,6 +3,6 @@
  *******************************************************************************/
 package com.garganttua.events.spec.enums;
 
-public enum GGEventsRJourneyStepDirection {
+public enum GGEventsJourneyStepDirection {
 	IN, OUT
 }

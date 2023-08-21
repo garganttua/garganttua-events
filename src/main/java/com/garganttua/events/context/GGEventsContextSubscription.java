@@ -27,14 +27,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsContextSubscription extends GGEventsSourcedContextItem {
 	
-	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, boolean buffered, boolean bufferPersisted, GGEventsContextTimeInterval timeInterval, GGEventsContextConsumerConfiguration cconfiguration, GGEventsContextProducerConfiguration pconfiguration, List<GGEventsContextItemSource> sources) {
+	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval, GGEventsContextConsumerConfiguration cconfiguration, GGEventsContextProducerConfiguration pconfiguration, List<GGEventsContextItemSource> sources) {
 		super(sources);
 		this.dataFlow = dataflow;
 		this.topic = topic;
 		this.connector = connector;
 		this.publicationMode = publicationMode;
-		this.buffered = buffered;
-		this.bufferPersisted = bufferPersisted;
 		this.timeInterval = timeInterval;
 		this.cconfiguration = cconfiguration;
 		this.pconfiguration = pconfiguration;
@@ -51,12 +49,6 @@ public class GGEventsContextSubscription extends GGEventsSourcedContextItem {
 	
 	@JsonProperty(value ="publicationMode",required = true)
 	private GGEventsContextPublicationMode publicationMode; 
-	
-	@JsonProperty(value ="buffered",required = true)
-	private boolean buffered = false;
-	
-	@JsonProperty(value ="bufferPersisted",required = true)
-	private boolean bufferPersisted = false;
 	
 	@JsonProperty(value ="timeInterval",required = false)
 	private GGEventsContextTimeInterval timeInterval;

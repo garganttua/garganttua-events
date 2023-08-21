@@ -394,19 +394,8 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 				
 			}
 
-			GGEventsRoute r = new GGEventsRoute(fromSubscription, toSubscription, exceptionSubscription, lock, processorsList, route.getUuid(), clusterId, this.assetId);
-			IGGEventsConsumer consumer = fromSubscription.getConsumer();
-			consumer.registerRoute(r);
-			IGGEventsConnector connector = fromSubscription.getConnector();
-			connector.registerConsumer(fromSubscription.getSubscription(), r, tenantId, clusterId, this.assetId);
+			GGEventsRoute r = new GGEventsRoute(fromSubscription, toSubscription, exceptionSubscription, lock, processorsList, route.getUuid(), tenantId, clusterId, this.assetId);
 			
-			if (toSubscription != null) {
-				toSubscription.getConnector().registerProducer(toSubscription.getSubscription(), tenantId, clusterId, this.assetId);
-			}
-			
-			if (exceptionSubscription != null) {
-				exceptionSubscription.getConnector().registerProducer(exceptionSubscription.getSubscription(), tenantId, clusterId, this.assetId);
-			}
 			this.routes.get(tenantId).get(clusterId).put(r.getRouteUuid(), r);
 			
 			log.info("[" + tenantId + "][" + clusterId + "] -> Route " + route.getUuid() + " registered");

@@ -32,7 +32,7 @@ public class GGEventsMessage {
 	protected String messageId;
 	
 	@JsonProperty
-	protected List<GGEventsRJourneyStep> steps;
+	protected List<GGEventsJourneyStep> steps;
 	
 	@JsonProperty
 	protected String tenantId;
@@ -41,7 +41,7 @@ public class GGEventsMessage {
 	protected byte[] value;
 	
 	@JsonProperty
-	protected String contentType = GGEventsMediaType.APPLICATION_JSON.toString();
+	protected String contentType;
 	
 //	@JsonProperty
 //	@JsonDeserialize(using = GGEventsFrameworkExceptionDeserializer.class)
@@ -50,4 +50,7 @@ public class GGEventsMessage {
 
 	@JsonProperty
 	protected String toUuid;
+	
+	@JsonProperty
+	protected String dataflowVersion;
 }

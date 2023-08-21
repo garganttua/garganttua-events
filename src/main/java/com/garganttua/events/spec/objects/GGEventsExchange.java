@@ -49,7 +49,7 @@ public class GGEventsExchange extends GGEventsMessage {
 		this.fromTopic = fromTopic;
 		this.fromDataflowUuid = fromDataflowUuid;
 		this.value = message;
-		this.steps = new ArrayList<GGEventsRJourneyStep>();
+		this.steps = new ArrayList<GGEventsJourneyStep>();
 		this.headers = new HashMap<String, String>();
 	}
 
@@ -83,6 +83,7 @@ public class GGEventsExchange extends GGEventsMessage {
 		message.exception = this.exception;
 		message.toUuid = this.toUuid;
 		message.contentType = this.contentType;
+		message.dataflowVersion = this.dataflowVersion;
 		return message;
 	}
 	
