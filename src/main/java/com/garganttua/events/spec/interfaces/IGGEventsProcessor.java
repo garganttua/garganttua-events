@@ -7,6 +7,6 @@ public interface IGGEventsProcessor extends IGGEventsMessageHandler, IGGEventsCo
 	
 	void setType(String type);
 
-	void setContextEngine(IGGEventsContextEngine framework);
+	void setContextEngine(IGGEventsEngine framework);
 
 }

@@ -28,7 +28,6 @@ public class GGEventsOnChangeProducer implements IGGEventsProducer {
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsCoreException, GGEventsCoreProcessingException {
 		log.info("["+this.subscriptionId+"][ExchangeId:"+exchange.getExchangeId()+"] Sending message");
-//		log.debug(new String(exchange.getValue()));
 		try {
 			this.connector.handle(exchange);
 		} catch (GGEventsCoreProcessingException e) {

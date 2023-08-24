@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2022 Jérémy COLOMBET
  *******************************************************************************/
-package com.gtech.garganttua.core.engine;
+package com.garganttua.events.engine;
 
 import java.util.ArrayList;
 import java.util.Date;

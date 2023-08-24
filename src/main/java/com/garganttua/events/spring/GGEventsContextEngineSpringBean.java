@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import com.garganttua.events.engine.GGEventsContextBuilder;
-import com.garganttua.events.engine.GGEventsContextEngine;
+import com.garganttua.events.engine.GGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
-import com.garganttua.events.spec.interfaces.IGGEventsContextEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
 import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistry;
 import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
 
@@ -41,7 +41,7 @@ public class GGEventsContextEngineSpringBean {
 	private String assetVersion;
 	
 	@Getter
-	private IGGEventsContextEngine contextEngine = new GGEventsContextEngine();
+	private IGGEventsEngine contextEngine = new GGEventsEngine();
 	
 	@Getter
 	private IGGEventsContextBuilder contextBuilder = new GGEventsContextBuilder();
@@ -76,7 +76,7 @@ public class GGEventsContextEngineSpringBean {
 	
 	@Bean
 	@Qualifier(value="GGEventsEngine")
-	public IGGEventsContextEngine getEngine() {
+	public IGGEventsEngine getEngine() {
 		return this.contextEngine;
 	}
 	
@@ -133,7 +133,7 @@ public class GGEventsContextEngineSpringBean {
 //				}
 //				break;
 //			}
-//			if( arg.equals(GGServerApplicationEngine.PEGASUS_ARGUMENT_CONFIGURATIONS) ) {
+//			if( arg.equals(GGServerApplicationEngine.GARGANTTUA_SERVER_ARGUMENT_CONFIGURATIONS) ) {
 //				contextArgument = true;
 //			}
 //		}

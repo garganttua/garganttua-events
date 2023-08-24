@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2022 Jérémy COLOMBET
  *******************************************************************************/
-package com.gtech.garganttua.core.engine;
+package com.garganttua.events.engine;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +22,7 @@ import com.garganttua.events.context.GGEventsContextPublicationMode;
 import com.garganttua.events.context.GGEventsContextRoute;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.context.GGEventsContextTopic;
-import com.garganttua.events.engine.GGEventsContextBuilder;
-import com.garganttua.events.engine.GGEventsContextEngine;
+import com.garganttua.events.engine.GGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
 import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
@@ -79,7 +78,7 @@ public class GGEventsCoreTest {
 		
 		this.context.setRoutes(this.routes);
 		
-		GGEventsContextEngine fwk = new GGEventsContextEngine();
+		GGEventsEngine fwk = new GGEventsEngine();
 		
 		fwk.registerContextSourceConfiguratorRegistry(new IGGEventsContextSourceConfigurationRegistry() {
 			

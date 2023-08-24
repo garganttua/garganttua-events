@@ -39,13 +39,12 @@ import com.garganttua.events.spec.enums.GGEventsCoreExecutionStage;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsCoreException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
-import com.garganttua.events.spec.interfaces.IGGEventsConsumer;
 import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
-import com.garganttua.events.spec.interfaces.IGGEventsContextEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
 import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsDistributedLock;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
@@ -60,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class GGEventsContextEngine implements IGGEventsContextEngine {
+public class GGEventsEngine implements IGGEventsEngine {
 
 	private String assetId;
 	private IGGEventsContextBuilder contextBuilder;
@@ -941,26 +940,11 @@ public class GGEventsContextEngine implements IGGEventsContextEngine {
 	public GGEventsAssetContext getAssetContext() {
 		return new GGEventsAssetContext(this.assetId, this.now, this.assetName, this.assetVersion, this.processorDescriptors, this.connectorDescriptors, this.lockDescriptors, this.contextBuilder.getContext());
 	}
-	
-	public static void main(String[] args) {
-		int threadPoolSize = 100;
-		int maxThreadPoolSize = 200;
-		long threadPoolKeepAliveTime = 100;
-		TimeUnit threadPoolKeepAliveTimeUnit = TimeUnit.SECONDS;
-		BlockingQueue<Runnable> workQueue = new LinkedBlockingDeque<Runnable>();
-		ExecutorService executorService = new ThreadPoolExecutor(threadPoolSize/2, maxThreadPoolSize/2, threadPoolKeepAliveTime, threadPoolKeepAliveTimeUnit, workQueue);
-		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize/2);;
-		IGGEventsContextBuilder contextBuilder = new GGEventsContextBuilder();
-		IGGEventsContextSourceConfigurationRegistry configRegistry = new GGEventsContextSourceConfigurationRegistry();
-		String[] contextFiles = new String[1];
-		contextFiles[0] = args[0];
-		String[] pack = {"com.gtech"};
-		configRegistry.registerContextSourceConfiguration(new GGEventsContextSourceConfiguration("GGEventsContextFileSource", contextFiles ));
 
-		GGEventsContextEngine engine = new GGEventsContextEngine();
-		engine.registerContextSourceConfiguratorRegistry(configRegistry);
-
-		engine.init(args[1], contextBuilder, pack, executorService, scheduledExecutorService, args[2], args[3]);
+	public static IGGEventsEngine engine(String string) {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 	
 }

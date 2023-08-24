@@ -3,6 +3,7 @@
  *******************************************************************************/
 package com.garganttua.events.context.sources.file.json;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -25,17 +26,21 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	
 	public static final String SOURCE_NAME = "GGEventsContextFileSource";
 	
-	private String[] files;
+	private String files;
 	private String assetId;
 
-	@Override
-	public void init(String assetId, String[] configuration) throws GGEventsCoreException {
+	public GGEventsContextJsonFileSource(String configuration) {
+		// TODO Auto-generated constructor stub
+	}
+
+	//	@Override
+	public void init(String assetId, String configuration) throws GGEventsCoreException {
 		this.assetId = assetId;
 		this.files = configuration;
 	}
 
-	@Override
-	public List<GGEventsContext> getContexts(Date now) throws GGEventsCoreException {
+//	@Override
+	public List<GGEventsContext> readContext(Date now) throws GGEventsCoreException {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		List<GGEventsContext> contexts = new ArrayList<GGEventsContext>();
@@ -63,5 +68,22 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 		}
 		
 		return contexts;
+	}
+
+	@Override
+	public GGEventsContext readContext() throws GGEventsCoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void writeContext() throws GGEventsCoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getSourceName() {
+		return SOURCE_NAME;
 	}
 }

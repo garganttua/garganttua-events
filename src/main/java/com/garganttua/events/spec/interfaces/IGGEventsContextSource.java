@@ -4,17 +4,14 @@
 package com.garganttua.events.spec.interfaces;
 
 
-import java.util.Date;
-import java.util.List;
-
 import com.garganttua.events.context.GGEventsContext;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 
 public interface IGGEventsContextSource {
+	
+	String getSourceName(); 
 
-	void init(String assetId, String[] configuration) throws GGEventsCoreException;
-
-//	List<GGEventsContext> getContexts() throws GGEventsFrameworkException;
-
-	List<GGEventsContext> getContexts(Date now) throws GGEventsCoreException;
+	GGEventsContext readContext(String configuration) throws GGEventsException;
+	
+	void writeContext(String configuration) throws GGEventsException;
 }

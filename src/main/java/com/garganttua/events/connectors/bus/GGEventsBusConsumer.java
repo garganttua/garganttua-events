@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.leansoft.bigqueue.BigQueueImpl;
@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @NoArgsConstructor
 @Slf4j
-public class GGEventsCoreBusConsumer {
+public class GGEventsBusConsumer {
 
 	private BigQueueImpl queue;
 	private String topicRef;
@@ -70,7 +70,7 @@ public class GGEventsCoreBusConsumer {
 									GGEventsExchange m = GGEventsExchange.emptyExchange(this.name, this.topicRef, d, message.getValue());
 									try {
 										h.handle(m);
-									} catch (GGEventsCoreException e) {
+									} catch (GGEventsException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
@@ -81,7 +81,7 @@ public class GGEventsCoreBusConsumer {
 											GGEventsExchange m = GGEventsExchange.emptyExchange(name, topicRef, d, message.getValue());
 											try {
 												h.handle(m);
-											} catch (GGEventsCoreException e) {
+											} catch (GGEventsException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
 											}
@@ -106,7 +106,7 @@ public class GGEventsCoreBusConsumer {
 		this.handlers.put(dataflowUuid, handler);
 	}
 
-	public GGEventsCoreBusConsumer(BigQueueImpl queue, String topicRef, String name, Integer pollInterval, TimeUnit pollIntervalUnit, ExecutorService poolExecutor) {
+	public GGEventsBusConsumer(BigQueueImpl queue, String topicRef, String name, Integer pollInterval, TimeUnit pollIntervalUnit, ExecutorService poolExecutor) {
 		this.queue = queue;
 		this.topicRef = topicRef;
 		this.name = name;

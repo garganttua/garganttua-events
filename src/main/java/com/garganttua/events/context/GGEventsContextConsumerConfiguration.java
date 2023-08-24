@@ -24,10 +24,10 @@ public class GGEventsContextConsumerConfiguration {
 	
 	@JsonProperty(value="destinationPolicy", required = true)
 	private GGEventsContextDestinationPolicy dpolicy;
-	
-	@JsonProperty(value="tenantPartioningPolicy", required = true)
-	private GGEventsContextTenantPartitioningPolicy tpolicy;
-	
+//	
+//	@JsonProperty(value="tenantPartioningPolicy", required = true)
+//	private GGEventsContextTenantPartitioningPolicy tpolicy;
+//	
 	@JsonProperty(value ="ignoreAssetMessages", required = true)
 	private boolean ignoreAssetMessages;
 	

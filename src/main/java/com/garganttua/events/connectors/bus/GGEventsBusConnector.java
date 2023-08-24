@@ -11,8 +11,8 @@ import java.util.concurrent.TimeUnit;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @GGEventsConnector(type="bus", version="1.0.0")
-public class GGEventsCoreBusConnector implements IGGEventsConnector {
+public class GGEventsBusConnector implements IGGEventsConnector {
 
 	private static final String BUS_QUEUES_DIRECTORY = "homeDirectory";
 	private static final String BUS_POLL_INTERVAL = "pollInterval";
@@ -44,12 +44,12 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 	private TimeUnit pollIntervalUnit;
 	private TimeUnit gcIntervalUnit;
 	private Integer gcInterval;
-	private Map<String, GGEventsCoreBusConsumer> consumers = new HashMap<String, GGEventsCoreBusConsumer>();
+	private Map<String, GGEventsBusConsumer> consumers = new HashMap<String, GGEventsBusConsumer>();
 	private String infos;
 	private String manual;
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		String toTopic = exchange.getToTopic();
 		
 		BigQueueImpl queue = this.queues.get(toTopic);
@@ -58,7 +58,7 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 				GGEventsBusMessage message = new GGEventsBusMessage(exchange.getToDataflowUuid(), exchange.getValue());
 				queue.enqueue(message.getBytes());
 			} catch (IOException e) {
-				throw new GGEventsCoreProcessingException(e);
+				throw new GGEventsProcessingException(e);
 			}
 		}
 	}
@@ -69,7 +69,7 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) throws GGEventsCoreException {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) throws GGEventsException {
 		this.configuration = configuration;
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(configuration);
 		__configuration__.forEach((name, values) -> { 
@@ -153,7 +153,7 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		
 	}
 
@@ -173,10 +173,10 @@ public class GGEventsCoreBusConnector implements IGGEventsConnector {
 				this.queues.put(topicRef, queue);
 			} 
 
-			GGEventsCoreBusConsumer consumer = this.consumers.get(topicRef);
+			GGEventsBusConsumer consumer = this.consumers.get(topicRef);
 			
 			if( consumer == null ) {
-				consumer = new GGEventsCoreBusConsumer(queue, topicRef, this.name, this.pollInterval, this.pollIntervalUnit, this.poolExecutor);
+				consumer = new GGEventsBusConsumer(queue, topicRef, this.name, this.pollInterval, this.pollIntervalUnit, this.poolExecutor);
 				this.consumers.put(topicRef, consumer);		
 			}
 			consumer.setGaranteeOrder(dataflowUuid, true);

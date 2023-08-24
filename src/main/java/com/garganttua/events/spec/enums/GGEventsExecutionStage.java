@@ -2,7 +2,7 @@ package com.garganttua.events.spec.enums;
 
 import lombok.Getter;
 
-public enum GGEventsCoreExecutionStage {
+public enum GGEventsExecutionStage {
 
 	INIT("INIT"),
 	STARTUP("STARTUP"), 
@@ -12,7 +12,7 @@ public enum GGEventsCoreExecutionStage {
 	@Getter
 	private String label;
 
-	GGEventsCoreExecutionStage(String label) {
+	GGEventsExecutionStage(String label) {
 		this.label = label;
 	}
 

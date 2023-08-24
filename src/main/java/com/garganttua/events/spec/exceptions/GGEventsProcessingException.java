@@ -3,21 +3,21 @@
  *******************************************************************************/
 package com.garganttua.events.spec.exceptions;
 
-public class GGEventsCoreProcessingException extends GGEventsCoreException {
+public class GGEventsProcessingException extends GGEventsException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3031351058725723001L;
 
-	public GGEventsCoreProcessingException(Exception e) {
+	public GGEventsProcessingException(Exception e) {
 		super(e, e.getMessage());
 	}
 
-	public GGEventsCoreProcessingException(String string) {
+	public GGEventsProcessingException(String string) {
 		super(string);
 	}
-	public GGEventsCoreProcessingException(Exception e, String string) {
+	public GGEventsProcessingException(Exception e, String string) {
 		super(e, string);
 	}
 }

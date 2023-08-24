@@ -3,7 +3,7 @@
  *******************************************************************************/
 package com.garganttua.events.spec.objects;
 
-import com.garganttua.events.spec.interfaces.IGGEventsContextEngine;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
 public abstract class GGEventsAbstractProcessor implements IGGEventsProcessor {
 
 	@Setter
-	protected IGGEventsContextEngine contextEngine;
+	protected IGGEventsEngine contextEngine;
 	
 	@Getter
 	@Setter

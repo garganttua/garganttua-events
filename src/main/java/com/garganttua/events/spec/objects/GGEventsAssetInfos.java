@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.garganttua.events.context.GGEventsContext;
+import com.garganttua.events.spec.interfaces.IGGEventsAssetInfos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GGEventsAssetContext {
+public class GGEventsAssetInfos implements IGGEventsAssetInfos {
 	
 	private String assetId;
 	

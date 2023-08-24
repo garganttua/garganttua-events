@@ -10,12 +10,12 @@ import com.garganttua.events.context.GGEventsContext;
 import com.garganttua.events.context.GGEventsContextProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
 
-public class GGEventsContextBuilder implements IGGEventsContextBuilder {
+public class GGEventsContextBuilder implements IGGEventsBuilder {
 	
 	private Map<String, Map<String, GGEventsContext>> contexts = new HashMap<String, Map<String,GGEventsContext>>();
-
+	
 	@Override
-	public void addContext(GGEventsContext context) {
+	private void addContext(GGEventsContext context) {
 		String tenantId = context.getTenantId();
 		String clusterId = context.getClusterId();
 		
@@ -73,6 +73,12 @@ public class GGEventsContextBuilder implements IGGEventsContextBuilder {
 	@Override
 	public void flush() {
 		this.contexts = new HashMap<String, Map<String,GGEventsContext>>();
+	}
+
+	
+	public static IGGEventsContextBuilder builder() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

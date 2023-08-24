@@ -12,26 +12,26 @@ import lombok.Setter;
 
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true, allowSetters = true)
-public class GGEventsCoreException extends Exception {
+public class GGEventsException extends Exception {
 	
 	@Getter
 	@Setter
 	@JsonProperty
 	protected String clazz;
 
-	public GGEventsCoreException(String string) {
+	public GGEventsException(String string) {
 		super(string);
 	}
 
-	public GGEventsCoreException(Exception e) {
+	public GGEventsException(Exception e) {
 		super(e);
 	}
 
-	public GGEventsCoreException(String string, Exception e) {
+	public GGEventsException(String string, Exception e) {
 		super(string, e);
 	}
 	
-	public GGEventsCoreException(Exception e, String string) {
+	public GGEventsException(Exception e, String string) {
 		super(string, e);
 	}
 
