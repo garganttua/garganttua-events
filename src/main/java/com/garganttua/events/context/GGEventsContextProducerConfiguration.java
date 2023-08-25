@@ -3,24 +3,20 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextProducerConfiguration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GGEventsContextProducerConfiguration {
+@Getter
+public class GGEventsContextProducerConfiguration implements IGGEventsContextProducerConfiguration {
+
+	private GGEventsContextDestinationPolicy dpolicy = GGEventsContextDestinationPolicy.TO_ANY;
 	
-	@JsonProperty(value="destinationPolicy", required = true)
-	private GGEventsContextDestinationPolicy dpolicy;
-	
-	@JsonProperty(value="destinationUuid", required = true)
-	private String destinationUuid;
+	private String destinationUuid = null;
 	
 
 }

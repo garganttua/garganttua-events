@@ -3,31 +3,33 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextProcessor;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GGEventsContextProcessor {
+public class GGEventsContextProcessor implements IGGEventsContextProcessor {
 
-	@JsonProperty(value ="type",required = true)
 	private String type;
 	
-	@JsonProperty(value ="version", required = true)
 	private String version;
 	
-	@JsonProperty(value ="configuration",required = true)
-	@JsonDeserialize(using = StupidValueDeserializer.class)
-//	@JsonSerialize(using = StupidValueSerializer.class)
 	private String configuration;
-
-	public String uuid;
+	
+	@Override
+	public boolean equals(Object obj) {
+		return this.type.equals(((GGEventsContextProcessor) obj).type) &&
+				this.version.equals(((GGEventsContextProcessor) obj).version) &&
+				this.configuration.equals(((GGEventsContextProcessor) obj).configuration);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.type.hashCode() * this.version.hashCode() * this.configuration.hashCode();
+	}
 	
 }

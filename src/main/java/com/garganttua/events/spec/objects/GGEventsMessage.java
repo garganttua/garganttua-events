@@ -8,8 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.garganttua.events.spec.enums.GGEventsMediaType;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,7 +45,7 @@ public class GGEventsMessage {
 //	@JsonProperty
 //	@JsonDeserialize(using = GGEventsFrameworkExceptionDeserializer.class)
 	@JsonIgnore
-	protected GGEventsCoreException exception;
+	protected GGEventsException exception;
 
 	@JsonProperty
 	protected String toUuid;

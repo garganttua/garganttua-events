@@ -19,6 +19,7 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
 
 public class GGEventsBuilder implements IGGEventsBuilder {
 
@@ -54,23 +55,24 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		
 		if( tenantContexts == null ) {
 			tenantContexts = new HashMap<String, IGGEventsContext>();
-		} else {
-			clusterContext = tenantContexts.get(clusterId);
-			
-			if( clusterContext == null) {
-				clusterContext = new GGEventsContext(tenantId, clusterId);
-				tenantContexts.put(clusterId, clusterContext);
-			}
 		}
 		
+		clusterContext = tenantContexts.get(clusterId);
+		
+		if( clusterContext == null) {
+			clusterContext = new GGEventsContext(tenantId, clusterId);
+			((GGEventsContext) clusterContext).builder(this);
+			tenantContexts.put(clusterId, clusterContext);
+		}
 		this.contexts.put(tenantId, tenantContexts);
 		return clusterContext;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public IGGEventsContext context(IGGEventsContext context) {
-		IGGEventsContext contextAlreadyExisting = this.context(context.getTenantId(), context.getClusterId());
-		contextAlreadyExisting.merge(context);
+		var contextAlreadyExisting = this.context(context.getTenantId(), context.getClusterId());
+		((IGGEventsContextMergeableItem<IGGEventsContext>) contextAlreadyExisting).merge(context);
 		return contextAlreadyExisting;
 	}
 
@@ -78,9 +80,13 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	public IGGEventsBuilder source(String type, String configuration) {
 		Map<String, IGGEventsContextSource> sources = new HashMap<String, IGGEventsContextSource>();
 		this.packages.forEach(packageName -> {
-			GGEventsContextSourcesRegistry.findAvailableSources(packageName).forEach(source -> {
-				sources.put(source.getSourceName(), source);
-			});
+			try {
+				GGEventsContextSourcesRegistry.findAvailableSources(packageName).forEach((name, source) -> {
+					sources.put(name, source);
+				});
+			} catch (GGEventsException e) {
+				throw new IllegalArgumentException(e);
+			}
 		});
 		
 		IGGEventsContextSource contextSource = sources.get(type);
@@ -110,9 +116,14 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 
 	@Override
 	public IGGEventsEngine build() {
-		this.executorService = new ThreadPoolExecutor(this.threadPoolSize/2, this.maxThreadPoolSize/2, this.threadPoolKeepAliveTime, this.threadPoolKeepAliveTimeUnit, this.workQueue);
-		this.scheduledExecutorService = new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
-		return null;
+		if( this.executorService == null )
+			this.executorService = new ThreadPoolExecutor(this.threadPoolSize/2, this.maxThreadPoolSize/2, this.threadPoolKeepAliveTime, this.threadPoolKeepAliveTimeUnit, this.workQueue);
+		if( this.scheduledExecutorService == null )
+			this.scheduledExecutorService = new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
+
+		IGGEventsEngine engine = new GGEventsEngine(this.assetId, this.contexts, this.eventsCoreEventHandler, this.executorService, this.scheduledExecutorService, this.packages);
+		
+		return engine;
 	}
 
 	@Override
