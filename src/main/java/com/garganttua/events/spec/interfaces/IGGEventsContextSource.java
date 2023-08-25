@@ -9,9 +9,11 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 
 public interface IGGEventsContextSource {
 	
-	String getSourceName(); 
-
 	GGEventsContext readContext(String configuration) throws GGEventsException;
 	
 	void writeContext(String configuration) throws GGEventsException;
+
+	GGEventsContext readContext() throws GGEventsException;
+	
+	void writeContext() throws GGEventsException;
 }

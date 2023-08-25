@@ -3,29 +3,42 @@
  *******************************************************************************/
 package com.garganttua.events.engine;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import com.garganttua.events.context.GGEventsContext;
 import com.garganttua.events.spec.annotations.GGEventsContextSource;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 
-@GGEventsContextSource( name="GGEventsFileContextSource" )
+@GGEventsContextSource(name = "ContextSourceTest")
 public class ContextSourceTest implements IGGEventsContextSource {
 
-	@Override
-	public void init(String assetId, String[] configuration) throws GGEventsCoreException {
-		// TODO Auto-generated method stub
-		
+	public ContextSourceTest(String string) {
+
+	}
+
+	public ContextSourceTest() {
+
 	}
 
 	@Override
-	public List<GGEventsContext> getContexts(Date now) throws GGEventsCoreException {
-		List<GGEventsContext> ret = new ArrayList<GGEventsContext>();
-		ret.add(GGEventsCoreTest.context);
-		return ret;
+	public GGEventsContext readContext(String configuration) throws GGEventsException {
+		return new GGEventsContext(configuration, configuration);
+	}
+
+	@Override
+	public void writeContext(String configuration) throws GGEventsException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public GGEventsContext readContext() throws GGEventsException {
+		return new GGEventsContext("", "");
+	}
+
+	@Override
+	public void writeContext() throws GGEventsException {
+		// TODO Auto-generated method stub
+
 	}
 
 }

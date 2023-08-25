@@ -3,23 +3,41 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
-public class GGEventsContextTopic extends GGEventsSourcedContextItem {
+public class GGEventsContextTopic extends GGEventsContextItem<GGEventsContextTopic> implements IGGEventsContextTopic {
+	
+	public GGEventsContextTopic(String ref) {
+		this(ref, new ArrayList<GGEventsContextItemSource>());
+	}
 	
 	public GGEventsContextTopic(String ref, List<GGEventsContextItemSource> sources) {
-		super(sources);
+		this.sources.addAll(sources);
 		this.ref = ref;
 	}
 
-	@JsonProperty(value ="ref",required = true)
+	@Getter
 	private String ref;
+	
+	@Override
+	public boolean equals(Object topic) {
+		return this.ref.equals(((GGEventsContextTopic) topic).ref);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.ref.hashCode();
+	}
+
+	@Override
+	protected boolean isEqualTo(GGEventsContextTopic item) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

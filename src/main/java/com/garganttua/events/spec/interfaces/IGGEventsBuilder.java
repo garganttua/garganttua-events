@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.garganttua.events.engine.GGEventsBuilder;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 
 public interface IGGEventsBuilder {

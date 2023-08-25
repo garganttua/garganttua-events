@@ -4,10 +4,12 @@
 package com.garganttua.events.context;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,13 +31,14 @@ import lombok.Setter;
  * 
  *
  */
-@Getter
-@Setter
-@NoArgsConstructor
-public class GGEventsContextDataFlow extends GGEventsSourcedContextItem {
+public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContextDataflow> implements IGGEventsContextDataflow {
 	
-	public GGEventsContextDataFlow(String uuid, String name, String type, boolean garanteeOrder, String version, boolean encapsulated, List<GGEventsContextItemSource> sources) {
-		super(sources);
+	public GGEventsContextDataflow(String uuid, String name, String type, boolean garanteeOrder, String version, boolean encapsulated) {
+		this(uuid, name, type, garanteeOrder, version, encapsulated, new ArrayList<GGEventsContextItemSource>());
+	}
+	
+	public GGEventsContextDataflow(String uuid, String name, String type, boolean garanteeOrder, String version, boolean encapsulated, List<GGEventsContextItemSource> sources) {
+		this.sources.addAll(sources);
 		this.uuid = uuid;
 		this.name = name;
 		this.type = type;
@@ -44,22 +47,22 @@ public class GGEventsContextDataFlow extends GGEventsSourcedContextItem {
 		this.encapsulated = encapsulated;
 	}
 
-	@JsonProperty(value ="uuid",required = true)
+	@Getter
 	protected String uuid;
 	
-	@JsonProperty(value ="name",required = true)
+	@Getter
 	protected String name;
 	
-	@JsonProperty(value ="type",required = true)
+	@Getter
 	protected String type;
 	
-	@JsonProperty(value ="garanteeOrder", required = true)
+	@Getter
 	protected boolean garanteeOrder;
 	
-	@JsonProperty(value ="version", required = true)
+	@Getter
 	protected String version;
 	
-	@JsonProperty(value ="encapsulated", required = true)
+	@Getter
 	protected boolean encapsulated;
 	
 	@JsonIgnore
@@ -72,6 +75,22 @@ public class GGEventsContextDataFlow extends GGEventsSourcedContextItem {
 	public String getMajorVersion() {
 		String[] splitted = this.version.split("\\.");
 		return splitted[0];
+	}
+
+	@Override
+	public boolean equals(Object dataflow) {
+		return ((GGEventsContextDataflow) dataflow).uuid.equals(this.uuid);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.uuid.hashCode();
+	}
+
+	@Override
+	protected boolean isEqualTo(GGEventsContextDataflow item) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 }

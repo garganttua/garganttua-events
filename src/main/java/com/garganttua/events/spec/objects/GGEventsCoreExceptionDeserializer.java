@@ -12,13 +12,13 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.jayway.jsonpath.JsonPath;
 
-public class GGEventsCoreExceptionDeserializer extends JsonDeserializer<GGEventsCoreException> {
+public class GGEventsCoreExceptionDeserializer extends JsonDeserializer<GGEventsException> {
 
 	@Override
-	public GGEventsCoreException deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public GGEventsException deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -29,11 +29,11 @@ public class GGEventsCoreExceptionDeserializer extends JsonDeserializer<GGEvents
 		InputStream targetStream = new ByteArrayInputStream(value.getBytes());
 		
 		Object className = JsonPath.parse(targetStream).read("$.clazz");
-		GGEventsCoreException exception = null;
+		GGEventsException exception = null;
 		try {
 			Class<?> clazz = Class.forName((String) className);
 			
-			exception = (GGEventsCoreException) mapper.readValue(value.getBytes(), clazz);
+			exception = (GGEventsException) mapper.readValue(value.getBytes(), clazz);
 
 		} catch (ClassNotFoundException e) {
 			throw new IOException(e);

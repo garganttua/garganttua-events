@@ -12,13 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class GGEventsContextTimeInterval {
 	
-	@JsonProperty(value ="interval",required = true)
 	private int interval; 
-	
-	@JsonProperty(value ="timeUnit",required = true)
+
 	private TimeUnit timeUnit;
 }
