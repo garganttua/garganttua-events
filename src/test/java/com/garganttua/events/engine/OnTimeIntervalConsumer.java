@@ -10,13 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import com.garganttua.events.context.GGEventsContextDataFlow;
+import com.garganttua.events.context.GGEventsContextDataflow;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.context.GGEventsContextTimeInterval;
 import com.garganttua.events.context.GGEventsContextTopic;
-import com.garganttua.events.engine.GGEventsDataflow;
-import com.garganttua.events.engine.GGEventsSubscription;
-import com.garganttua.events.engine.GGEventsTopic;
 import com.garganttua.events.engine.consumers.GGEventsTimeIntervalConsumer;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
@@ -24,6 +21,7 @@ import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
@@ -32,7 +30,7 @@ class OnTimeIntervalConsumer {
 	@Test
 	void test() throws GGEventsException, InterruptedException, GGEventsProcessingException {
 
-		GGEventsContextDataFlow cdataflow = new GGEventsContextDataFlow(null, null, null, false, null, false, null);
+		GGEventsContextDataflow cdataflow = new GGEventsContextDataflow(null, null, null, false, null, false, null);
 		GGEventsDataflow dataflow = new GGEventsDataflow(cdataflow);
 		GGEventsContextTopic ctopic = new GGEventsContextTopic(null, null);
 		GGEventsTopic topic = new GGEventsTopic(ctopic);
@@ -69,13 +67,6 @@ class OnTimeIntervalConsumer {
 			}
 
 			@Override
-			public String getType() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-
-			@Override
 			public String getConfiguration() {
 				// TODO Auto-generated method stub
 				return null;
@@ -100,14 +91,14 @@ class OnTimeIntervalConsumer {
 			}
 
 			@Override
-			public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler,
+			public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler,
 					String tenantId, String clusterId, String assetId) {
 				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
-			public void registerProducer(GGEventsContextSubscription subscription, String tenantId, String clusterId,
+			public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId,
 					String assetId) {
 				// TODO Auto-generated method stub
 				

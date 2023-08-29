@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsException;
@@ -18,6 +17,7 @@ import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.garganttua.events.spec.objects.GGEventsJourneyStep;
@@ -67,13 +67,6 @@ public class ConnectorTest implements IGGEventsConnector {
 	}
 
 	@Override
-	public String getType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
 		// TODO Auto-generated method stub
 		
@@ -109,14 +102,14 @@ public class ConnectorTest implements IGGEventsConnector {
 	}
 
 	@Override
-	public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
+	public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
 			String clusterId, String assetId) {
 		this.consumer = messageHandler;
 		
 	}
 
 	@Override
-	public void registerProducer(GGEventsContextSubscription subscription, String tenantId, String clusterId,
+	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId,
 			String assetId) {
 		// TODO Auto-generated method stub
 		

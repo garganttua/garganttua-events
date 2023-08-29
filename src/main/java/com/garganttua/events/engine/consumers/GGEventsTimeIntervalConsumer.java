@@ -13,6 +13,7 @@ import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsConsumer;
 import com.garganttua.events.spec.interfaces.IGGEventsRoute;
+import com.garganttua.events.spec.interfaces.IGGEventsTypable;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.Getter;
@@ -20,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
-public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable {
+public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable, IGGEventsTypable {
 	
 	private ScheduledExecutorService scheduledExecutorService;
 	private ExecutorService executorService;

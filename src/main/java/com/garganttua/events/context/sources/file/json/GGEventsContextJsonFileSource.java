@@ -3,7 +3,9 @@
  *******************************************************************************/
 package com.garganttua.events.context.sources.file.json;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,10 +22,10 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@GGEventsContextSource(type="GGEventsContextFileSource", version="1.0")
+@GGEventsContextSource(type="json-file", version="1.0")
 public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 
-	private String files;
+	private String file;
 	private String assetId;
 
 	public GGEventsContextJsonFileSource() {
@@ -36,44 +38,12 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	//	@Override
 	public void init(String assetId, String configuration) throws GGEventsException {
 		this.assetId = assetId;
-		this.files = configuration;
-	}
-
-//	@Override
-	public List<GGEventsContext> readContext(Date now) throws GGEventsException {
-		
-		ObjectMapper mapper = new ObjectMapper();
-		List<GGEventsContext> contexts = new ArrayList<GGEventsContext>();
-
-		for( String file: this.files ) {
-			
-			if( file != null ) {
-				log.info("Getting context from file "+file);
-				
-				GGEventsContext context = null;
-			    try {
-			    			    	
-			    	byte[] fileBytes = Files.readAllBytes(Paths.get(file));
-			    	String fileString = new String(fileBytes, StandardCharsets.UTF_8);
-			    	context = mapper.readValue(fileString, GGEventsContext.class);
-			    	
-			    	String root = new String("file://"+Paths.get(file).toAbsolutePath().toString()); 
-			    	String utf8 = new String(root.getBytes(), StandardCharsets.UTF_8);
-			    	context.setSource(this.assetId, now, utf8);
-			    	contexts.add(context);
-				} catch (IOException e) {
-					throw new GGEventsException("Cannot get context from file "+file, e);
-				}
-			}
-		}
-		
-		return contexts;
+		this.file = configuration;
 	}
 
 	@Override
 	public GGEventsContext readContext() throws GGEventsException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.readContext(this.file);
 	}
 
 	@Override
@@ -84,8 +54,28 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 
 	@Override
 	public GGEventsContext readContext(String configuration) throws GGEventsException {
-		// TODO Auto-generated method stub
-		return null;
+		ObjectMapper mapper = new ObjectMapper();
+		GGEventsContext context = null;
+		if( configuration != null ) {
+			log.info("Getting context from file "+configuration);
+			URI file = new File(configuration).toURI();
+			
+		    try {
+		    			    	
+		    	byte[] fileBytes = Files.readAllBytes(Paths.get(file));
+		    	String fileString = new String(fileBytes, StandardCharsets.UTF_8);
+		    	context = mapper.readValue(fileString, GGEventsContext.class);
+		    	
+		    	String root = new String("file://"+Paths.get(file).toAbsolutePath().toString()); 
+		    	String utf8 = new String(root.getBytes(), StandardCharsets.UTF_8);
+		    
+//		    	context.setSource(this.assetId, new Date(), utf8);
+//		    	contexts.add(context);
+			} catch (IOException e) {
+				throw new GGEventsException("Cannot get context from file "+file, e);
+			}
+		}
+		return context;
 	}
 
 	@Override

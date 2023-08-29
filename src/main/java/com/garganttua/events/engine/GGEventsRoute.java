@@ -6,22 +6,21 @@ package com.garganttua.events.engine;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.engine.processors.GGEventsFilterException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsConfigurable;
 import com.garganttua.events.spec.interfaces.IGGEventsExceptionSubscription;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.interfaces.IGGEventsRoute;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
+import com.garganttua.events.spec.interfaces.IGGEventsTypable;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.Getter;
@@ -41,7 +40,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 	private GGEventsLockObject lock;
 	private String tenantId;
 
-	public GGEventsRoute(IGGEventsSubscription fromSubscription, IGGEventsSubscription toSubscription, IGGEventsSubscription exceptionSubscription, GGEventsLockObject lock, Map<Integer, IGGEventsProcessor> processors, String routeUuid, String tenantId, String clusterId, String assetId) {
+	public GGEventsRoute(IGGEventsSubscription fromSubscription, IGGEventsSubscription toSubscription, IGGEventsSubscription exceptionSubscription, GGEventsLockObject lock, List<IGGEventsProcessor> processors, String routeUuid, String tenantId, String clusterId, String assetId) {
 		this.lock = lock;
 		this.exceptionSubscription = (IGGEventsExceptionSubscription) exceptionSubscription;
 		this.routeUuid = routeUuid;
@@ -51,29 +50,13 @@ public class GGEventsRoute implements IGGEventsRoute {
 		this.processorsList = new GGEventsSynchronizedLinkedProcessorList();
 		this.exceptionList = new GGEventsSynchronizedLinkedProcessorList();
 		
-		ArrayList<Integer> list = new ArrayList<Integer>(processors.keySet());
-		Collections.sort(list, new Comparator<Integer>() {
-
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				if(o1 > o2)
-					return 1;
-				if(o1 == o2)
-					return 0;
-				if(o1 < o2)
-					return -1;
-				return 0;
-			}
-		});
-		
 		fromSubscription.getConsumer().registerRoute(this);
 		fromSubscription.getConnector().registerConsumer(fromSubscription.getSubscription(), this, this.tenantId, this.clusterId, this.assetId);
 		
 		this.processorsList.add(fromSubscription.getProtocolInProcessor());
 		this.processorsList.add(fromSubscription.getInFilterProcessor());
 
-		list.forEach(integer -> {
-			IGGEventsProcessor proc = processors.get(integer);
+		processors.forEach(proc -> {
 			processorsList.add(proc);
 		});
 		
@@ -86,7 +69,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 		}
 		if( exceptionSubscription != null ) {
 			this.exceptionList.add(exceptionSubscription.getOutFilterProcessor());
-			this.processorsList.add(toSubscription.getProtocolOutProcessor());
+			this.exceptionList.add(toSubscription.getProtocolOutProcessor());
 			this.exceptionList.add(exceptionSubscription.getProducer());
 			exceptionSubscription.getConnector().registerProducer(exceptionSubscription.getSubscription(), this.tenantId, this.clusterId, this.assetId);
 		}	
@@ -178,15 +161,9 @@ public class GGEventsRoute implements IGGEventsRoute {
 			messageId = message.getSteps().size()==0?"unknown":message.getSteps().get(message.getSteps().size()-1).getUuid();
 			corrId = message.getCorrelationId();
 			
-			log.debug("[TenantId:"+tenantId+"][ClusterId:"+clusterId+"][RouteId:"+this.routeUuid+"][ExchangeId:"+message.getExchangeId()+"][CorrelationId:"+corrId+"][MessageId:"+messageId+"] "+processor.getType());
+			log.debug("[TenantId:"+tenantId+"][ClusterId:"+clusterId+"][RouteId:"+this.routeUuid+"][ExchangeId:"+message.getExchangeId()+"][CorrelationId:"+corrId+"][MessageId:"+messageId+"] "+((IGGEventsTypable) processor).getType());
 			processor.handle(message);
 		}
-	}
-
-
-	@Override
-	public String getType() {
-		return "IGGEventsRoute::GGEventsRoute";
 	}
 
 	@Override
@@ -198,6 +175,19 @@ public class GGEventsRoute implements IGGEventsRoute {
 
 	@Override
 	public void start(ScheduledExecutorService scheduledExecutorService) throws GGEventsException {
+		for( IGGEventsMessageHandler proc: this.processorsList.getList() ) { 
+			if( proc instanceof IGGEventsConfigurable ) {
+				log.info("[" + assetId + "][" + tenantId + "][" + clusterId + "] Configuring processor " + ((IGGEventsTypable) proc).getType());
+				try {
+					((IGGEventsConfigurable) proc).applyConfiguration();
+				} catch (Exception e) {
+					log.error("Unable to start Garganttua Framework", e);
+					throw new GGEventsException(e);
+				}
+				log.debug("[" + assetId + "][" + tenantId + "][" + clusterId + "] Configured " + ((IGGEventsTypable) proc).getType());
+			}
+		}
+		
 		if( this.lock != null ) {
 			this.lock.start();
 		}

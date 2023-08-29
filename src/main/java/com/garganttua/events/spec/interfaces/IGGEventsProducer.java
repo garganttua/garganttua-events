@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
 
-public interface IGGEventsProducer extends IGGEventsMessageHandler {
+public interface IGGEventsProducer extends IGGEventsMessageHandler, IGGEventsTypable {
 
 	public void stop();
 

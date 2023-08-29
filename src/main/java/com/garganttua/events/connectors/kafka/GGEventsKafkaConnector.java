@@ -36,6 +36,7 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -82,7 +83,7 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 	private String manual;
 
 	@Override
-	public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
+	public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
 			String clusterId, String assetId) {
 
 		Properties props = new Properties();
@@ -90,16 +91,15 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 		String groupId = null;
 
 		if (subscription.getCconfiguration().getProcessMode() == GGEventsContextDataflowInProcessMode.ONLY_ONE_CLUSTER_NODE) {
-			groupId = "C_" + tenantId + "_" + subscription.getDataflow() + "_" + subscription.getTopic() + "_"
+			groupId = "C_" + tenantId + "_" + subscription.getDataflow() + "_" + this.formatTopicRef(subscription.getTopic()) + "_"
 					+ clusterId;
 		} else {
-			groupId = "C_" + tenantId + "_" + subscription.getDataflow() + "_" + subscription.getTopic() + "_"
+			groupId = "C_" + tenantId + "_" + subscription.getDataflow() + "_" + this.formatTopicRef(subscription.getTopic()) + "_"
 					+ clusterId + "_" + assetId;
 		}
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
-		props.put(ConsumerConfig.CLIENT_ID_CONFIG,
-				"C_" + assetId + "_" + subscription.getDataflow() + "_" + subscription.getTopic());
+		props.put(ConsumerConfig.CLIENT_ID_CONFIG, "C_" + assetId + "_" + subscription.getDataflow() + "_" + this.formatTopicRef(subscription.getTopic()));
 
 		props.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, this.allowAutoCreateTopics);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -152,14 +152,13 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void registerProducer(GGEventsContextSubscription subscription, String tenantId, String clusterId,
+	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId,
 			String assetId) {
-//		if (this.kafkaProducer == null) {
 			Properties props = new Properties();
 
 			props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaBrokerUrl);
 			props.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, this.allowAutoCreateTopics);
-			props.put(ConsumerConfig.CLIENT_ID_CONFIG, "P_" + assetId + "_" + subscription.getDataflow() + "_" + subscription.getTopic());
+			props.put(ConsumerConfig.CLIENT_ID_CONFIG, "P_" + assetId + "_" + subscription.getDataflow() + "_" + this.formatTopicRef(subscription.getTopic()));
 
 			props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 			props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
@@ -168,7 +167,6 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 				props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, "com.gtech.garganttua.core.connectors.kafka.GGEventsKafkaConnectorRoundRobinPartitioner");
 			}
 			KafkaProducer<String, byte[]> kafkaProducer = new KafkaProducer<>(props);
-//		}
 		this.producers.put(this.formatTopicRef(subscription.getTopic()), new GGEventsKafkaClientProducer(
 				kafkaProducer, this.formatTopicRef(subscription.getTopic()), subscription.getDataflow()));
 	}
@@ -225,11 +223,6 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 				break;
 			}
 		});
-	}
-
-	@Override
-	public String getType() {
-		return "IGGEventsConnector::kafka";
 	}
 
 	@Override

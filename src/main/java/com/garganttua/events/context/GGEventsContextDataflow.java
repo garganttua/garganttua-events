@@ -64,18 +64,18 @@ public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContext
 	
 	@Getter
 	protected boolean encapsulated;
-	
-	@JsonIgnore
-	public String getMinorVersion() {
-		String[] splitted = this.version.split("\\.");
-		return splitted[1];
-	}
-	
-	@JsonIgnore
-	public String getMajorVersion() {
-		String[] splitted = this.version.split("\\.");
-		return splitted[0];
-	}
+//	
+//	@JsonIgnore
+//	public String getMinorVersion() {
+//		String[] splitted = this.version.split("\\.");
+//		return splitted[1];
+//	}
+//	
+//	@JsonIgnore
+//	public String getMajorVersion() {
+//		String[] splitted = this.version.split("\\.");
+//		return splitted[0];
+//	}
 
 	@Override
 	public boolean equals(Object dataflow) {

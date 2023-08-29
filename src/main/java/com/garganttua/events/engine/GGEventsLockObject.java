@@ -2,16 +2,16 @@ package com.garganttua.events.engine;
 
 import java.lang.reflect.Method;
 
-import com.garganttua.events.context.GGEventsContextLockObject;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsDistributedLock;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextLockObject;
 
 public class GGEventsLockObject {
 
 	private IGGEventsDistributedLock distributedLock;
-	private GGEventsContextLockObject ctxtLockObject;
+	private IGGEventsContextLockObject ctxtLockObject;
 
-	public GGEventsLockObject(IGGEventsDistributedLock distributedLock, GGEventsContextLockObject ctxtLockObject) {
+	public GGEventsLockObject(IGGEventsDistributedLock distributedLock, IGGEventsContextLockObject ctxtLockObject) {
 		this.distributedLock = distributedLock;
 		this.ctxtLockObject = ctxtLockObject;
 	}

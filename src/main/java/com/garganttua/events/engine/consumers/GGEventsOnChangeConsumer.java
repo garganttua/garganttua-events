@@ -10,12 +10,13 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConsumer;
 import com.garganttua.events.spec.interfaces.IGGEventsRoute;
+import com.garganttua.events.spec.interfaces.IGGEventsTypable;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GGEventsOnChangeConsumer implements IGGEventsConsumer {
+public class GGEventsOnChangeConsumer implements IGGEventsConsumer, IGGEventsTypable {
 
 	private List<IGGEventsRoute> routes;
 	private String subscriptionId;

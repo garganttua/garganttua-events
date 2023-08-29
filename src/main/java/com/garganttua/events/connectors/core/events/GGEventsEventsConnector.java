@@ -9,7 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.enums.GGEventsEventCriticity;
 import com.garganttua.events.spec.enums.GGEventsExecutionStage;
@@ -21,6 +20,7 @@ import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsEvent;
@@ -46,7 +46,7 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	private String tenantId;
 	private String assetId;
 	private String clusterId;
-	private Map<IGGEventsMessageHandler, GGEventsContextSubscription> handlers = new HashMap<IGGEventsMessageHandler, GGEventsContextSubscription>();
+	private Map<IGGEventsMessageHandler, IGGEventsContextSubscription> handlers = new HashMap<IGGEventsMessageHandler, IGGEventsContextSubscription>();
 	private ExecutorService poolExecutor;
 	private String configuration;
 	private String infos;
@@ -60,11 +60,6 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 
-	}
-
-	@Override
-	public String getType() {
-		return "IGGEventsConnector::events";
 	}
 
 	@Override
@@ -125,7 +120,7 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	}
 
 	@Override
-	public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
+	public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
 			String clusterId, String assetId) {
 		this.tenantId = tenantId;
 		this.assetId = assetId;
@@ -135,7 +130,7 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	}
 
 	@Override
-	public void registerProducer(GGEventsContextSubscription subscription, String tenantId, String clusterId,
+	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId,
 			String assetId) {
 		// TODO Auto-generated method stub
 		

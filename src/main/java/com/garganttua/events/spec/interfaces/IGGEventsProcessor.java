@@ -3,6 +3,6 @@
  *******************************************************************************/
 package com.garganttua.events.spec.interfaces;
 
-public interface IGGEventsProcessor extends IGGEventsMessageHandler, IGGEventsConfigurable, IGGEventsDescribable, IGGEventsNamable, IGGEventsMultiThreadable {
+public interface IGGEventsProcessor extends IGGEventsMessageHandler, IGGEventsConfigurable, IGGEventsDescribable, IGGEventsNamable, IGGEventsMultiThreadable, IGGEventsTypable {
 
 }

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
@@ -16,6 +15,7 @@ import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -61,11 +61,6 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 				throw new GGEventsProcessingException(e);
 			}
 		}
-	}
-
-	@Override
-	public String getType() {
-		return "IGGEventsConnector::bus";
 	}
 
 	@Override
@@ -162,7 +157,7 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
+	public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
 			String clusterId, String assetId) {
 		String topicRef = subscription.getTopic();
 		String dataflowUuid = subscription.getDataflow();
@@ -190,7 +185,7 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void registerProducer(GGEventsContextSubscription subscription, String tenantId, String clusterId,
+	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId,
 			String assetId) {
 		String topicRef = subscription.getTopic();
 		try {
