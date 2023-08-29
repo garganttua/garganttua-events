@@ -8,7 +8,7 @@ import com.garganttua.events.spec.annotations.GGEventsContextSource;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 
-@GGEventsContextSource(name = "ContextSourceTest")
+@GGEventsContextSource(type = "ContextSourceTest", version = "1.0")
 public class ContextSourceTest implements IGGEventsContextSource {
 
 	public ContextSourceTest(String string) {

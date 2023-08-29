@@ -8,13 +8,9 @@ import java.util.concurrent.ExecutorService;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 
-public interface IGGEventsConnector extends IGGEventsMessageHandler, IGGEventsConfigurable, IGGEventsDescribable {
+public interface IGGEventsConnector extends IGGEventsMessageHandler, IGGEventsConfigurable, IGGEventsDescribable, IGGEventsNamable {
 	
 	void setPoolExecutor(ExecutorService poolExecutor);
-	
-	void setName(String name); 
-
-	String getName();
 	
 	void start() throws GGEventsConnectorException;
 

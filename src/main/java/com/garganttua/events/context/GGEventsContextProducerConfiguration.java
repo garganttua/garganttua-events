@@ -14,9 +14,10 @@ import lombok.NoArgsConstructor;
 @Getter
 public class GGEventsContextProducerConfiguration implements IGGEventsContextProducerConfiguration {
 
+	@Getter
 	private GGEventsContextDestinationPolicy dpolicy = GGEventsContextDestinationPolicy.TO_ANY;
 	
+	@Getter
 	private String destinationUuid = null;
 	
-
 }

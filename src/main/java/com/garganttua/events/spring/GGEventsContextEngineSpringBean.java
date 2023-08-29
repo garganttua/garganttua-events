@@ -18,7 +18,7 @@ import com.garganttua.events.engine.GGEventsContextBuilder;
 import com.garganttua.events.engine.GGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
-import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistry;
 import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
@@ -72,7 +72,7 @@ public class GGEventsContextEngineSpringBean {
 	
 	@Inject
 	@Getter
-	private IGGEventsCoreEventHandler eventHandler;
+	private IGGEventsEventHandler eventHandler;
 	
 	@Bean
 	@Qualifier(value="GGEventsEngine")

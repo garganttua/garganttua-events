@@ -20,7 +20,7 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@GGEventsContextSource(name="GGEventsContextFileSource")
+@GGEventsContextSource(type="GGEventsContextFileSource", version="1.0")
 public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 
 	private String files;
@@ -34,13 +34,13 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	}
 
 	//	@Override
-	public void init(String assetId, String configuration) throws GGEventsCoreException {
+	public void init(String assetId, String configuration) throws GGEventsException {
 		this.assetId = assetId;
 		this.files = configuration;
 	}
 
 //	@Override
-	public List<GGEventsContext> readContext(Date now) throws GGEventsCoreException {
+	public List<GGEventsContext> readContext(Date now) throws GGEventsException {
 		
 		ObjectMapper mapper = new ObjectMapper();
 		List<GGEventsContext> contexts = new ArrayList<GGEventsContext>();
@@ -62,7 +62,7 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 			    	context.setSource(this.assetId, now, utf8);
 			    	contexts.add(context);
 				} catch (IOException e) {
-					throw new GGEventsCoreException("Cannot get context from file "+file, e);
+					throw new GGEventsException("Cannot get context from file "+file, e);
 				}
 			}
 		}
@@ -71,13 +71,13 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	}
 
 	@Override
-	public GGEventsContext readContext() throws GGEventsCoreException {
+	public GGEventsContext readContext() throws GGEventsException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void writeContext() throws GGEventsCoreException {
+	public void writeContext() throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}

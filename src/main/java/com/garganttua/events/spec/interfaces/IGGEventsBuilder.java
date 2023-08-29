@@ -20,7 +20,7 @@ public interface IGGEventsBuilder {
 	
 	IGGEventsContext context(IGGEventsContext context);
 
-	IGGEventsBuilder source(String type, String configuration);
+	IGGEventsBuilder source(String type, String version, String configuration);
 
 	IGGEventsBuilder source(IGGEventsContextSource source);
 
@@ -38,5 +38,5 @@ public interface IGGEventsBuilder {
 
 	IGGEventsEngine build();
 
-	IGGEventsBuilder eventHanlder(IGGEventsEventHandler ggEventsCoreEventHandler);
+	IGGEventsBuilder eventHanlder(IGGEventsEventHandler GGEventsEventHandler);
 }

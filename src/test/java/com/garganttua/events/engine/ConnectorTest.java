@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.enums.GGEventsMediaType;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -41,7 +41,7 @@ public class ConnectorTest implements IGGEventsConnector {
 		
 	}
 
-	public void receivedMessage(byte[] bytes) throws JsonProcessingException, GGEventsCoreException, GGEventsCoreProcessingException {
+	public void receivedMessage(byte[] bytes) throws JsonProcessingException, GGEventsException, GGEventsProcessingException {
 		GGEventsMessage message = new GGEventsMessage(new HashMap<String, String>(), "1", "1", ((List) new ArrayList<GGEventsJourneyStep>()), "", bytes, GGEventsMediaType.APPLICATION_JSON.toString(), null, null, "1.0");
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -61,7 +61,7 @@ public class ConnectorTest implements IGGEventsConnector {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -88,7 +88,7 @@ public class ConnectorTest implements IGGEventsConnector {
 
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}

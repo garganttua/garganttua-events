@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.garganttua.events.engine.processors.GGEventsCoreFilterException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.engine.processors.GGEventsFilterException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsExceptionSubscription;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -93,7 +93,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 	}
 
 	@Override
-	public void handle(GGEventsExchange message) throws GGEventsCoreException, GGEventsCoreProcessingException {
+	public void handle(GGEventsExchange message) throws GGEventsException, GGEventsProcessingException {
 		String tenantId = message.getTenantId()==null?"unknown":message.getTenantId();
 		String clusterId = message.getSteps().size()==0?"unknown":message.getSteps().get(message.getSteps().size()-1).getClusterId();
 		String messageId = message.getSteps().size()==0?"unknown":message.getSteps().get(message.getSteps().size()-1).getUuid();
@@ -110,7 +110,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 				try {
 					method = this.getClass().getDeclaredMethod("handle", GGEventsExchange.class, GGEventsSynchronizedLinkedProcessorList.class, UUID.class);
 				} catch (NoSuchMethodException | SecurityException e) {
-					throw new GGEventsCoreException(e);
+					throw new GGEventsException(e);
 				}
 			
 				Object[] args = {message, this.processorsList, uuid};
@@ -119,10 +119,10 @@ public class GGEventsRoute implements IGGEventsRoute {
 			} else {		
 				this.handle(message, this.processorsList, uuid);
 			}
-		} catch (GGEventsCoreFilterException e) {
+		} catch (GGEventsFilterException e) {
 			this.flush(this.processorsList, uuid);
 			log.info("Message dropped by filter : "+e.getMessage());
-		} catch (GGEventsCoreException e) {
+		} catch (GGEventsException e) {
 			this.flush(this.processorsList, uuid);
 			if( this.exceptionSubscription != null ) {
 				UUID uuidEx = this.exceptionList.createTransaction();
@@ -137,18 +137,18 @@ public class GGEventsRoute implements IGGEventsRoute {
 							try {
 								ctor = clazz.getDeclaredConstructor(Exception.class, String.class);
 							} catch (NoSuchMethodException | SecurityException e1) {
-								throw new GGEventsCoreException(e1);
+								throw new GGEventsException(e1);
 							}
 							try {
 								obj = ctor.newInstance(e, this.exceptionSubscription.getLabel()==null?e.getMessage():this.exceptionSubscription.getLabel());
 							} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 									| InvocationTargetException e1) {
-								throw new GGEventsCoreException(e1);
+								throw new GGEventsException(e1);
 							}
-							message.setException((GGEventsCoreException) obj);
+							message.setException((GGEventsException) obj);
 						
 					} catch (ClassNotFoundException e2) {
-						throw new GGEventsCoreException(e2);
+						throw new GGEventsException(e2);
 					}
 				} else {
 					message.setException(e);
@@ -165,7 +165,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 		while( (processor = processorsList.pop(uuid)) != null ) {/*Nothing to do*/};
 	}
 
-	private void handle(GGEventsExchange message, GGEventsSynchronizedLinkedProcessorList processorsList, UUID uuid) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	private void handle(GGEventsExchange message, GGEventsSynchronizedLinkedProcessorList processorsList, UUID uuid) throws GGEventsProcessingException, GGEventsException {
 		String tenantId;
 		String clusterId;
 		String messageId;
@@ -190,14 +190,14 @@ public class GGEventsRoute implements IGGEventsRoute {
 	}
 
 	@Override
-	public void stop() throws GGEventsCoreException {
+	public void stop() throws GGEventsException {
 		if( this.producer != null ) {
 			this.producer.stop();
 		}
 	}
 
 	@Override
-	public void start(ScheduledExecutorService scheduledExecutorService) throws GGEventsCoreException {
+	public void start(ScheduledExecutorService scheduledExecutorService) throws GGEventsException {
 		if( this.lock != null ) {
 			this.lock.start();
 		}

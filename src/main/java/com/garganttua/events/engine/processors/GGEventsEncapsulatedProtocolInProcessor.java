@@ -7,13 +7,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.garganttua.events.spec.objects.GGEventsJourneyStep;
@@ -21,7 +22,7 @@ import com.garganttua.events.spec.objects.GGEventsMessage;
 
 import lombok.Getter;
 
-public class GGEventsEncapsulatedProtocolInProcessor extends GGEventsAbstractProcessor {
+public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcessor {
 
 	@Getter
 	private String configuration;
@@ -31,6 +32,7 @@ public class GGEventsEncapsulatedProtocolInProcessor extends GGEventsAbstractPro
 	private String cluster;
 	private String infos;
 	private String manual;
+	private String type;
 
 	public GGEventsEncapsulatedProtocolInProcessor(String assetId, String clusterId, String subscriptionId,
 			String dataflowVersion) {
@@ -48,7 +50,7 @@ public class GGEventsEncapsulatedProtocolInProcessor extends GGEventsAbstractPro
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		byte[] body = exchange.getValue();
 
 		String bodyString = new String(body, StandardCharsets.UTF_8);
@@ -58,7 +60,7 @@ public class GGEventsEncapsulatedProtocolInProcessor extends GGEventsAbstractPro
 		try {
 			message = mapper.readValue(bodyString, GGEventsMessage.class);
 		} catch (IOException e) {
-			throw new GGEventsCoreProcessingException(e);
+			throw new GGEventsProcessingException(e);
 		}
 		exchange.setCorrelationId(message.getCorrelationId());
 		exchange.setDataflowVersion(message.getDataflowVersion());
@@ -83,15 +85,38 @@ public class GGEventsEncapsulatedProtocolInProcessor extends GGEventsAbstractPro
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "inProtocolProcessor", "1.0.0",
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "inProtocolProcessor", "1.0",
 				this.infos, this.manual);
+	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

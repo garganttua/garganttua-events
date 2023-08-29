@@ -3,8 +3,6 @@
  *******************************************************************************/
 package com.garganttua.events.engine;
 
-import com.garganttua.events.context.GGEventsContextConsumerConfiguration;
-import com.garganttua.events.context.GGEventsContextProducerConfiguration;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.engine.consumers.GGEventsOnChangeConsumer;
@@ -20,6 +18,9 @@ import com.garganttua.events.spec.interfaces.IGGEventsDataflow;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextConsumerConfiguration;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextProducerConfiguration;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 
 import lombok.Getter;
 
@@ -30,7 +31,7 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 	private IGGEventsDataflow dataflow;
 	private String id;
 	
-	private GGEventsContextSubscription subscription;
+	private IGGEventsContextSubscription subscription;
 	private IGGEventsConnector connector;
 	
 	@Getter
@@ -44,7 +45,7 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 	private IGGEventsProcessor protocolInProcessor;
 	private IGGEventsProcessor protocolOutProcessor;
 	
-	public GGEventsSubscription(IGGEventsDataflow dataflow, GGEventsContextSubscription subscription, IGGEventsConnector connector, GGEventsTopic topic, String assetId, String clusterId) {
+	public GGEventsSubscription(IGGEventsDataflow dataflow, IGGEventsContextSubscription subscription, IGGEventsConnector connector, GGEventsTopic topic, String assetId, String clusterId) {
 		this.subscription = subscription;
 		this.connector = connector;
 		this.topic = topic;
@@ -53,10 +54,10 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 		this.id = subscription.getId();	
 		this.dataflow = dataflow;
 		
-		GGEventsContextConsumerConfiguration consumerConfiguration = this.subscription.getCconfiguration();
+		IGGEventsContextConsumerConfiguration consumerConfiguration = this.subscription.getCconfiguration();
 		this.inFilter = new GGEventsInFilterProcessor(consumerConfiguration, assetId, clusterId, dataflow.getVersion());
 		
-		GGEventsContextProducerConfiguration producerConfiguration = this.subscription.getPconfiguration();
+		IGGEventsContextProducerConfiguration producerConfiguration = this.subscription.getPconfiguration();
 		this.outFilter = new GGEventsOutFilterProcessor(producerConfiguration);
 		
 		if( this.subscription.getPublicationMode() == GGEventsContextPublicationMode.ON_CHANGE ) {

@@ -11,48 +11,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import org.reflections.Reflections;
-
-import com.garganttua.events.connectors.core.events.GGEventsCoreEventsConnector;
+import com.garganttua.events.connectors.core.events.GGEventsEventsConnector;
 import com.garganttua.events.context.GGEventsContext;
-import com.garganttua.events.context.GGEventsContextConnector;
 import com.garganttua.events.context.GGEventsContextLock;
-import com.garganttua.events.context.GGEventsContextLockObject;
 import com.garganttua.events.context.GGEventsContextProcessor;
 import com.garganttua.events.context.GGEventsContextRoute;
 import com.garganttua.events.context.GGEventsContextSubscription;
-import com.garganttua.events.spec.annotations.GGEventsConnector;
-import com.garganttua.events.spec.annotations.GGEventsContextSource;
-import com.garganttua.events.spec.annotations.GGEventsDistributedLock;
-import com.garganttua.events.spec.annotations.GGEventsProcessor;
-import com.garganttua.events.spec.enums.GGEventsCoreEventCriticity;
-import com.garganttua.events.spec.enums.GGEventsCoreExecutionStage;
+import com.garganttua.events.spec.enums.GGEventsEventCriticity;
+import com.garganttua.events.spec.enums.GGEventsExecutionStage;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
-import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
-import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsDistributedLock;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
+import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextConnector;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextLockObject;
 import com.garganttua.events.spec.objects.GGEventsAssetContext;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
-import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
-import com.garganttua.events.spec.objects.GGEventsContextSourceConfigurationRegistry;
-import com.garganttua.events.spec.objects.GGEventsCoreEvent;
+import com.garganttua.events.spec.objects.GGEventsEvent;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +70,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 	@Getter
 	private IGGEventsObjectRegistryHub objectRegistries = new GGEventsObjectRegistry();
 
-	private GGEventsCoreException initException;
+	private GGEventsException initException;
 	private IGGEventsContextSourceConfigurationRegistry contextSourceConfigurationRegistry;
 
 	@Getter
@@ -95,10 +81,10 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 	private String assetName;
 	private String assetVersion;
 	
-	private List<IGGEventsCoreEventHandler> eventsHandlers = new ArrayList<IGGEventsCoreEventHandler>();
+	private List<IGGEventsEventHandler> eventsHandlers = new ArrayList<IGGEventsEventHandler>();
 	
 	@Override
-	public void registerEventHandler(IGGEventsCoreEventHandler handler) {
+	public void registerEventHandler(IGGEventsEventHandler handler) {
 		this.eventsHandlers.add(handler);
 	}
 
@@ -143,7 +129,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		this.disctributedLocksClasses = new HashMap<String, HashMap<String, Class<?>>>();
 		
 		if (this.contextBuilder == null) {
-			this.raiseEvent(new GGEventsCoreEvent("No provided contextBuilder", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, null));
+			this.raiseEvent(new GGEventsEvent("No provided contextBuilder", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, null));
 		}
 		
 		try {
@@ -151,10 +137,10 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			this.findConnectors();
 			this.findProcessors();
 			this.findDistributedLocks();
-		} catch (GGEventsCoreException e) {
+		} catch (GGEventsException e) {
 			log.error("Fatal error occured at startup", e);
 			this.stop();
-			this.raiseEvent(new GGEventsCoreEvent(e.getMessage(), GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, e));
+			this.raiseEvent(new GGEventsEvent(e.getMessage(), GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, e));
 		}
 
 		this.contextBuilder.getContext().forEach((tenantId, tenantContexts) -> {
@@ -187,7 +173,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 					this.initSubscriptions(context, tenantId, clusterId);
 					this.initProcessors(context, tenantId, clusterId);
 					this.initRoutes(context, tenantId, clusterId);
-				} catch (GGEventsCoreException e) {
+				} catch (GGEventsException e) {
 					this.initException = e;
 				}
 
@@ -196,150 +182,14 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		if (this.initException != null) {
 			log.error("Error during Garganttua Framework startup",this.initException);
 			this.stop();
-			this.raiseEvent(new GGEventsCoreEvent(this.initException.getMessage(), GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, this.initException));
+			this.raiseEvent(new GGEventsEvent(this.initException.getMessage(), GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, this.initException));
 		}
 	}
 
-	private void findDistributedLocks() throws GGEventsCoreException {
-		log.info("==== FINDING DRISTRIBUTED LOCKS ====");
-		if (this.scanPackages == null) {
-			throw new GGEventsCoreException("No provided scanning package");
-		}
-
-		for (String pack : this.scanPackages) {
-			log.info(" -> Scanning package " + pack);
-			Reflections reflections = new Reflections(pack);
-			
-			Set<Class<?>> locks__ = reflections.getTypesAnnotatedWith(GGEventsDistributedLock.class);
-
-			for (Class<?> clazz : locks__) {
-				GGEventsDistributedLock locksAnnotation = clazz.getAnnotation(GGEventsDistributedLock.class);
-
-				HashMap<String, Class<?>> versions = this.disctributedLocksClasses.get(locksAnnotation.type());
-				
-				if( versions == null ) {
-					versions = new HashMap<String, Class<?>>();
-					this.disctributedLocksClasses.put(locksAnnotation.type(), versions);
-					
-				}
-				versions.put(locksAnnotation.version(), clazz);
-				
-				IGGEventsDistributedLock lockObj = null;
-				Constructor<?> ctor;
-				try {
-					ctor = clazz.getDeclaredConstructor();
-				} catch (NoSuchMethodException | SecurityException e1) {
-					throw new GGEventsCoreException(e1);
-				}
-				try {
-					lockObj = (IGGEventsDistributedLock) ctor.newInstance();
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-					throw new GGEventsCoreException(e);
-				}
-				
-				this.lockDescriptors.add(lockObj.getDescriptor());
-				
-				log.info("   -> Distributed Locks [" + locksAnnotation.type() + "]["+locksAnnotation.version()+"] registered");
-			}
-		}
-
-		log.info(" -> Found " + this.lockDescriptors.size() + " locks");
-	}
-
-	private void findProcessors() throws GGEventsCoreException {
-		log.info("==== FINDING PROCESSORS ====");
-		if (this.scanPackages == null) {
-			throw new GGEventsCoreException("No provided scanning package");
-		}
-
-		for (String pack : this.scanPackages) {
-			log.info(" -> Scanning package " + pack);
-			Reflections reflections = new Reflections(pack);
-			Set<Class<?>> processors__ = reflections.getTypesAnnotatedWith(GGEventsProcessor.class);
-
-			for (Class<?> clazz : processors__) {
-				GGEventsProcessor processorsAnnotation = clazz.getAnnotation(GGEventsProcessor.class);
-				
-				HashMap<String, Class<?>> versions = this.processorsClasses.get(processorsAnnotation.type());
-				
-				if( versions == null ) {
-					versions = new HashMap<String, Class<?>>();
-					this.processorsClasses.put(processorsAnnotation.type(), versions);
-					
-				}
-				versions.put(processorsAnnotation.version(), clazz);
-				
-				IGGEventsProcessor processorObj = null;
-				Constructor<?> ctor;
-				try {
-					ctor = clazz.getDeclaredConstructor();
-				} catch (NoSuchMethodException | SecurityException e1) {
-					throw new GGEventsCoreException(e1);
-				}
-				try {
-					processorObj = (IGGEventsProcessor) ctor.newInstance();
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-					throw new GGEventsCoreException(e);
-				}
-				
-				this.processorDescriptors.add(processorObj.getDescriptor());
-				log.info("   -> Processor [" + processorsAnnotation.type() + "]["+processorsAnnotation.version()+"] registered");
-			}
-		}
-
-		log.info(" -> Found " + this.processorsClasses.size() + " processors");
-	}
-
-	private void findConnectors() throws GGEventsCoreException {
-		log.info("==== FINDING CONNECTORS ====");
-		if (this.scanPackages == null) {
-			throw new GGEventsCoreException("No provided scanning package");
-		}
-
-		for (String pack : this.scanPackages) {
-			log.info(" -> Scanning package " + pack);
-			Reflections reflections = new Reflections(pack);
-			Set<Class<?>> connectors__ = reflections.getTypesAnnotatedWith(GGEventsConnector.class);
-
-			for (Class<?> clazz : connectors__) {
-				GGEventsConnector connectorsAnnotation = clazz.getAnnotation(GGEventsConnector.class);
-				
-				HashMap<String, Class<?>> versions = this.connectorClasses.get(connectorsAnnotation.type());
-				
-				if( versions == null ) {
-					versions = new HashMap<String, Class<?>>();
-					this.connectorClasses.put(connectorsAnnotation.type(), versions);
-					
-				}
-				versions.put(connectorsAnnotation.version(), clazz);
-				
-				IGGEventsConnector connectorObj = null;
-				Constructor<?> ctor;
-				try {
-					ctor = clazz.getDeclaredConstructor();
-				} catch (NoSuchMethodException | SecurityException e1) {
-					throw new GGEventsCoreException(e1);
-				}
-				try {
-					connectorObj = (IGGEventsConnector) ctor.newInstance();
-				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-					throw new GGEventsCoreException(e);
-				}
-				
-				this.connectorDescriptors.add(connectorObj.getDescriptor());
-				
-				log.info("   -> Connector [" + connectorsAnnotation.type() + "]["+connectorsAnnotation.version()+"] registered");
-			}
-		}
-
-		log.info(" -> Found " + this.connectorClasses.size() + " connectors");
-	}
+	
 
 	private void initRoutes(GGEventsContext context, String tenantId, String clusterId)
-			throws GGEventsCoreException, GGEventsConnectorException {
+			throws GGEventsException, GGEventsConnectorException {
 		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING ROUTES ====");
 
 		for (GGEventsContextRoute route : context.getRoutes()) {
@@ -347,14 +197,14 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			String from = route.getFrom();
 			GGEventsSubscription fromSubscription = this.subscriptions.get(tenantId).get(clusterId).get(from);
 			if (fromSubscription == null) {
-				throw new GGEventsCoreException("Cannot construct route " + route.getUuid() + " : the subscription from "
+				throw new GGEventsException("Cannot construct route " + route.getUuid() + " : the subscription from "
 						+ from + " is not registered");
 			}
 
 			String to = route.getTo();
 			GGEventsSubscription toSubscription = this.subscriptions.get(tenantId).get(clusterId).get(to);
 			if (to != null && !to.isEmpty() && toSubscription == null) {
-				throw new GGEventsCoreException("Cannot construct route " + route.getUuid() + " : the subscription to "
+				throw new GGEventsException("Cannot construct route " + route.getUuid() + " : the subscription to "
 						+ to + " is not registered");
 			}
 			
@@ -363,7 +213,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 				String exception = route.getExceptions().getTo();
 				exceptionSubscription = this.subscriptions.get(tenantId).get(clusterId).get(exception);
 				if (exception != null && !exception.isEmpty() && exceptionSubscription == null) {
-					throw new GGEventsCoreException("Cannot construct route " + route.getUuid() + " : the exception subscription "
+					throw new GGEventsException("Cannot construct route " + route.getUuid() + " : the exception subscription "
 							+ exception + " is not registered");
 				} 
 				
@@ -380,14 +230,14 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			GGEventsLockObject lock = null;
 			
 			if( route.getSynchronization() != null ) {
-				GGEventsContextLockObject ctxtLockObject = route.getSynchronization();
+				IGGEventsContextLockObject ctxtLockObject = route.getSynchronization();
 				
 				IGGEventsDistributedLock distributedLock = this.locks.get(tenantId).get(clusterId).get(ctxtLockObject.getLock());
 				
 				if( distributedLock != null ) {
 					lock = new GGEventsLockObject(distributedLock, ctxtLockObject);
 				} else {
-					throw new GGEventsCoreException("Cannot construct route " + route.getUuid() + " : the distributed lock "
+					throw new GGEventsException("Cannot construct route " + route.getUuid() + " : the distributed lock "
 							+ ctxtLockObject.getLock() + " is not registered");
 				}
 				
@@ -402,7 +252,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		}
 	}
 
-	private void initDataflows(GGEventsContext context, String tenantId, String clusterId) throws GGEventsCoreException {
+	private void initDataflows(GGEventsContext context, String tenantId, String clusterId) throws GGEventsException {
 		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING DATAFLOWS ====");
 
 		context.getDataflows().forEach(dataflow -> {
@@ -412,28 +262,28 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				this.checkDataflowVersion(dataflow.getVersion());
 				this.dataflows.get(tenantId).get(clusterId).put(dataflow.getUuid(), new GGEventsDataflow(dataflow));
-			} catch (GGEventsCoreException e) {
+			} catch (GGEventsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
 	}
 
-	private void checkDataflowVersion(String version) throws GGEventsCoreException {
+	private void checkDataflowVersion(String version) throws GGEventsException {
 		String[] splitted = version.split("\\.");
 		
 		if( splitted.length != 2 ) {
-			throw new GGEventsCoreException("The version "+version+" is incorrect, must be x.y format, with x and y integers");
+			throw new GGEventsException("The version "+version+" is incorrect, must be x.y format, with x and y integers");
 		}
 		try { 
 			Integer.valueOf(splitted[0]);
 			Integer.valueOf(splitted[1]);
 		} catch( Exception e ) {
-			throw new GGEventsCoreException("The version "+version+" is incorrect, must be x.y format, with x and y integers");
+			throw new GGEventsException("The version "+version+" is incorrect, must be x.y format, with x and y integers");
 		}
 	}
 
-	private void initSubscriptions(GGEventsContext context, String tenantId, String clusterId) throws GGEventsCoreException {
+	private void initSubscriptions(GGEventsContext context, String tenantId, String clusterId) throws GGEventsException {
 		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING SUSBCRIPTIONS ====");
 
 		for (GGEventsContextSubscription subscription : context.getSubscriptions()) {
@@ -441,7 +291,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			IGGEventsConnector connector = this.connectors.get(tenantId).get(clusterId).get(connectorName);
 
 			if (connector == null) {
-				throw new GGEventsCoreException("Cannot construct subscription " + subscription.getId()
+				throw new GGEventsException("Cannot construct subscription " + subscription.getId()
 						+ " : the connector " + connectorName + " is not registered");
 			}
 
@@ -449,7 +299,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			GGEventsDataflow dataflow = this.dataflows.get(tenantId).get(clusterId).get(dataflowId);
 
 			if (dataflow == null) {
-				throw new GGEventsCoreException("Cannot construct subscription " + subscription.getId()
+				throw new GGEventsException("Cannot construct subscription " + subscription.getId()
 						+ " : the dataflow " + dataflowId + " is not registered");
 			}
 
@@ -457,7 +307,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			GGEventsTopic topic = this.topics.get(tenantId).get(clusterId).get(topicRef);
 
 			if (topic == null) {
-				throw new GGEventsCoreException("Cannot construct subscription " + subscription.getId() + " : the topic "
+				throw new GGEventsException("Cannot construct subscription " + subscription.getId() + " : the topic "
 						+ topicRef + " is not registered");
 			}
 
@@ -465,7 +315,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 
 			if( this.subscriptions.get(tenantId).get(clusterId).get(subscription.getId()) != null ) {
 				log.error("Cannot register subscription " + subscription.getId() + " : already registered");
-				throw new GGEventsCoreException("Cannot register subscription " + subscription.getId() + " : already registered");
+				throw new GGEventsException("Cannot register subscription " + subscription.getId() + " : already registered");
 			}
 			
 			this.subscriptions.get(tenantId).get(clusterId).put(subscription.getId(), s);
@@ -475,7 +325,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		}
 	}
 
-	private void initTopics(GGEventsContext context, String tenantId, String clusterId) throws GGEventsCoreException {
+	private void initTopics(GGEventsContext context, String tenantId, String clusterId) throws GGEventsException {
 		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING TOPICS ====");
 
 		context.getTopics().forEach(topic -> {
@@ -484,7 +334,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		});
 	}
 
-	private void initProcessors(GGEventsContext context, String tenantId, String clusterId) throws GGEventsCoreException {
+	private void initProcessors(GGEventsContext context, String tenantId, String clusterId) throws GGEventsException {
 		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING PROCESSORS ====");
 
 		Map<String, GGEventsContextProcessor> ctxtProcessors = this.contextBuilder.getProcessors(tenantId, clusterId);
@@ -501,16 +351,16 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				processor = this.processorsClasses.get(ctxtProcessor.getValue().getType()).get(ctxtProcessor.getValue().getVersion());
 			} catch(Exception e) {
-				throw new GGEventsCoreException(
+				throw new GGEventsException(
 						"Cannot find processor of type " + ctxtProcessor.getValue().getType() + " and version "+ctxtProcessor.getValue().getVersion()+".");
 			}
 			if (processor == null) {
-				throw new GGEventsCoreException(
+				throw new GGEventsException(
 						"Cannot find processor of type " + ctxtProcessor.getValue().getType() + " and version "+ctxtProcessor.getValue().getVersion()+".");
 			}
 
 			if (!IGGEventsProcessor.class.isAssignableFrom(processor)) {
-				throw new GGEventsCoreException(
+				throw new GGEventsException(
 						"The class [" + processor.getName() + "] must implements the IGGEventsProcessor interface.");
 			}
 
@@ -519,13 +369,13 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				ctor = processor.getDeclaredConstructor();
 			} catch (NoSuchMethodException | SecurityException e1) {
-				throw new GGEventsCoreException(e1);
+				throw new GGEventsException(e1);
 			}
 			try {
 				processorObj = (IGGEventsProcessor) ctor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				throw new GGEventsCoreException(e);
+				throw new GGEventsException(e);
 			}
 			processorObj.setType("IGGEventsProcessor::" + ctxtProcessor.getValue().getType());
 			processorObj.setContextEngine(this);
@@ -538,7 +388,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		}
 	}
 	
-	private void initDistributedLocks(GGEventsContext context, String tenantId, String clusterId) throws GGEventsCoreException {
+	private void initDistributedLocks(GGEventsContext context, String tenantId, String clusterId) throws GGEventsException {
 		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING DISTRIBUTED LOCKS ====");
 
 		List<GGEventsContextLock> ctxtLocks = context.getDistributedLocks();
@@ -571,7 +421,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 				
 				if( !config.equals(aeConfig) ) {
 					
-					throw new GGEventsCoreException("Another DistributedLock with name " + ctxtLock.getName() + " and type "
+					throw new GGEventsException("Another DistributedLock with name " + ctxtLock.getName() + " and type "
 							+ ctxtLock.getType() + " is already registered with a different configuration : ["
 							+ config + "] vs [" + aeConfig + "]");
 				} else {
@@ -585,14 +435,14 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				lock = this.disctributedLocksClasses.get(ctxtLock.getType()).get(ctxtLock.getVersion());
 			} catch (Exception e) {
-				throw new GGEventsCoreException("Cannot find DistribuedLock of type " + ctxtLock.getType() + " and version "+ctxtLock.getVersion()+".");
+				throw new GGEventsException("Cannot find DistribuedLock of type " + ctxtLock.getType() + " and version "+ctxtLock.getVersion()+".");
 			}
 			if (lock == null) {
-				throw new GGEventsCoreException("Cannot find DistribuedLock of type " + ctxtLock.getType() + " and version "+ctxtLock.getVersion()+".");
+				throw new GGEventsException("Cannot find DistribuedLock of type " + ctxtLock.getType() + " and version "+ctxtLock.getVersion()+".");
 			}
 
 			if (!IGGEventsDistributedLock.class.isAssignableFrom(lock)) {
-				throw new GGEventsCoreException(
+				throw new GGEventsException(
 						"The class [" + lock.getName() + "] must implements the IGGEventsDistributedLock interface.");
 			}
 
@@ -601,13 +451,13 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				ctor = lock.getDeclaredConstructor();
 			} catch (NoSuchMethodException | SecurityException e1) {
-				throw new GGEventsCoreException(e1);
+				throw new GGEventsException(e1);
 			}
 			try {
 				distributedLockObj = (IGGEventsDistributedLock) ctor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				throw new GGEventsCoreException(e);
+				throw new GGEventsException(e);
 			}
 			
 			distributedLockObj.setConfiguration(ctxtLock.getConfiguration()==null?"":ctxtLock.getConfiguration(), tenantId, clusterId, this.assetId, this.objectRegistries);
@@ -620,17 +470,17 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		ctxtLocks.removeAll(toBeDeleted);
 	}
 
-	private void initConnectors(GGEventsContext context, String tenantId, String clusterId) throws GGEventsCoreException {
-		log.info("[" + tenantId + "][" + clusterId + "] ==== CREATING CONNECTORS ====");
+	private void initConnectors(IGGEventsContext context) throws GGEventsException {
+		log.info("[" + context.getTenantId() + "][" + context.getClusterId() + "] ==== CREATING CONNECTORS ====");
 
-		List<GGEventsContextConnector> ctxtConnectors = context.getConnectors();
+		List<IGGEventsContextConnector> ctxtConnectors = context.getConnectors();
 		
-		List<GGEventsContextConnector> toBeDeleted = new ArrayList<GGEventsContextConnector>();
+		List<IGGEventsContextConnector> toBeDeleted = new ArrayList<IGGEventsContextConnector>();
 
-		log.info("[" + tenantId + "][" + clusterId + "]  -> Starting connector configuration");
+		log.info("[" + context.getTenantId() + "][" + context.getClusterId() + "]  -> Starting connector configuration");
 
-		for (GGEventsContextConnector ctxtConnector : ctxtConnectors) {
-			log.info("[" + tenantId + "][" + clusterId + "]   -> Configuring " + ctxtConnector.getType() + " : "
+		for (IGGEventsContextConnector ctxtConnector : ctxtConnectors) {
+			log.info("[" + context.getTenantId() + "][" + context.getClusterId() + "]   -> Configuring " + ctxtConnector.getType() + " : "
 					+ ctxtConnector.getName());
 
 			IGGEventsConnector alreadyExist = this.connectors.get(tenantId).get(clusterId).get(ctxtConnector.getName());
@@ -649,12 +499,11 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 				}
 				
 				if( !config.equals(aeConfig) ) {
-					
-					throw new GGEventsCoreException("Another Connector with name " + ctxtConnector.getName() + " and type "
+					throw new GGEventsException("Another Connector with name " + ctxtConnector.getName() + " and type "
 							+ alreadyExist.getType() + " is already registered with a different configuration : ["
 							+ config + "] vs [" + aeConfig + "]");
 				} else {
-					log.info("[" + tenantId + "][" + clusterId + "]   -> Connector already registered : "
+					log.info("[" + context.getTenantId() + "][" + context.getClusterId() + "]   -> Connector already registered : "
 							+ ctxtConnector.getName() + " of type " + ctxtConnector.getType());
 					toBeDeleted.add(ctxtConnector);
 					continue;
@@ -664,14 +513,14 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				connector = this.connectorClasses.get(ctxtConnector.getType()).get(ctxtConnector.getVersion());
 			} catch (Exception e) {
-				throw new GGEventsCoreException("Cannot find connector of type " + ctxtConnector.getType() + " and version "+ctxtConnector.getVersion()+".");
+				throw new GGEventsException("Cannot find connector of type " + ctxtConnector.getType() + " and version "+ctxtConnector.getVersion()+".");
 			}
 			if (connector == null) {
-				throw new GGEventsCoreException("Cannot find connector of type " + ctxtConnector.getType() + " and version "+ctxtConnector.getVersion()+".");
+				throw new GGEventsException("Cannot find connector of type " + ctxtConnector.getType() + " and version "+ctxtConnector.getVersion()+".");
 			}
 
 			if (!IGGEventsConnector.class.isAssignableFrom(connector)) {
-				throw new GGEventsCoreException(
+				throw new GGEventsException(
 						"The class [" + connector.getName() + "] must implements the IGGEventsConnector interface.");
 			}
 
@@ -680,25 +529,25 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 			try {
 				ctor = connector.getDeclaredConstructor();
 			} catch (NoSuchMethodException | SecurityException e1) {
-				throw new GGEventsCoreException(e1);
+				throw new GGEventsException(e1);
 			}
 			try {
 				connectorObj = (IGGEventsConnector) ctor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				throw new GGEventsCoreException(e);
+				throw new GGEventsException(e);
 			}
 			connectorObj.setPoolExecutor(this.executorService);
 			connectorObj.setConfiguration(ctxtConnector.getConfiguration()==null?"":ctxtConnector.getConfiguration(), tenantId, clusterId, this.assetId, this.objectRegistries);
 			connectorObj.setName(ctxtConnector.getName());
 			
-			if( connectorObj instanceof GGEventsCoreEventsConnector) {
-				this.registerEventHandler((GGEventsCoreEventsConnector)connectorObj);
+			if( connectorObj instanceof GGEventsEventsConnector) {
+				this.registerEventHandler((GGEventsEventsConnector)connectorObj);
 			}
 			
 			this.connectors.get(tenantId).get(clusterId).put(ctxtConnector.getName(), connectorObj);
 
-			log.info("[" + tenantId + "][" + clusterId + "]   -> Connector registered : " + ctxtConnector.getName()
+			log.info("[" + context.getTenantId() + "][" + context.getClusterId() + "]   -> Connector registered : " + ctxtConnector.getName()
 					+ " of type " + ctxtConnector.getType()+" and version "+ctxtConnector.getVersion());
 		}
 		
@@ -706,70 +555,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 		
 	}
 
-	private void createContext() throws GGEventsCoreException {
-		log.info("==== GETTING CONTEXTS ====");
-		List<Class<?>> contextSources = new ArrayList<Class<?>>();
-		if (this.scanPackages == null) {
-			throw new GGEventsCoreException("No provided scanning package");
-		}
-
-		for (String pack : this.scanPackages) {
-			log.info(" -> Scanning package " + pack);
-			Reflections reflections = new Reflections(pack);
-			Set<Class<?>> sources = reflections.getTypesAnnotatedWith(GGEventsContextSource.class);
-
-			contextSources.addAll(sources);
-		}
-
-		log.info(" -> Found " + contextSources.size() + " context sources");
-		for (Class<?> clazz : contextSources) {
-
-			if (!IGGEventsContextSource.class.isAssignableFrom(clazz)) {
-				throw new GGEventsCoreException(
-						"The class [" + clazz.getName() + "] must implements the IGGEventsContextSource interface.");
-			}
-
-			GGEventsContextSource contextSourceAnnotation = clazz.getAnnotation(GGEventsContextSource.class);
-
-			Constructor<?> toto;
-			try {
-				toto = clazz.getDeclaredConstructor();
-			} catch (NoSuchMethodException | SecurityException e1) {
-				throw new GGEventsCoreException(e1);
-			}
-			IGGEventsContextSource contextSource = null;
-			try {
-				contextSource = (IGGEventsContextSource) toto.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
-				throw new GGEventsCoreException(e);
-			}
-
-			log.info("   -> Context source registered : " + contextSourceAnnotation.name());
-
-			String[] configurations = this.contextSourceConfigurationRegistry.getContextSourceConfiguration(contextSourceAnnotation.name());
-
-			if (configurations == null) {
-				throw new GGEventsCoreException(
-						"No configuration found for context source " + contextSourceAnnotation.name());
-			}
-
-			contextSource.init(this.assetId, configurations);
-
-			log.info("   -> Getting context from " + contextSourceAnnotation.name());
-			List<GGEventsContext> contexts = contextSource.getContexts(this.now);
-
-			for (GGEventsContext context : contexts) {
-				if (context.getTenantId() == null || context.getTenantId().isEmpty()) {
-					throw new GGEventsCoreException("Invalid context : no provided tenantId");
-				}
-				if (context.getClusterId() == null || context.getClusterId().isEmpty()) {
-					throw new GGEventsCoreException("Invalid context : no provided tenantId");
-				}
-				this.contextBuilder.addContext(context);
-			}
-		}
-	}
+	
 
 	@Override
 	public void start() {
@@ -783,7 +569,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
 						this.stop();
-						this.raiseEvent(new GGEventsCoreEvent("Unable to start Garganttua Framework", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, new GGEventsCoreException(e)));
+						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
 					}
 					log.debug("[" + tenantId + "][" + clusterId + "] Configured " + type);
 				});
@@ -798,7 +584,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
 						this.stop();
-						this.raiseEvent(new GGEventsCoreEvent("Unable to start Garganttua Framework", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, new GGEventsCoreException(e)));
+						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
 					}
 					log.debug("[" + tenantId + "][" + clusterId + "] Configured " + type);
 				});
@@ -816,7 +602,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
 						this.stop();
-						this.raiseEvent(new GGEventsCoreEvent("Unable to start Garganttua Framework", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, new GGEventsCoreException(e)));
+						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
 					}
 					log.debug("[" + tenantId + "][" + clusterId + "] Started connector " + type);
 				});
@@ -834,21 +620,21 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
 						this.stop();
-						this.raiseEvent(new GGEventsCoreEvent("Unable to start Garganttua Framework", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.STARTUP, new GGEventsCoreException(e)));
+						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
 					}
 					log.debug("[" + tenantId + "][" + clusterId + "] Started route " + routeId);
 				});
 			});
 		});
-		this.raiseEvent(new GGEventsCoreEvent("Garganttua Core Context Engine started", GGEventsCoreEventCriticity.INFO, GGEventsCoreExecutionStage.STARTUP, null));
+		this.raiseEvent(new GGEventsEvent("Garganttua Core Context Engine started", GGEventsEventCriticity.INFO, GGEventsExecutionStage.STARTUP, null));
 		
 	}
 
 	/**
 	 * 
-	 * @param GGEventsCoreEvent
+	 * @param GGEventsEvent
 	 */
-	private void raiseEvent(GGEventsCoreEvent GGEventsCoreEvent) {
+	private void raiseEvent(GGEventsEvent GGEventsEvent) {
 		this.executorService.execute(new Thread() {
 			@Override
 			public void run() {
@@ -856,7 +642,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 					executorService.execute(new Thread() {
 						@Override
 						public void run() {
-							eh.handleEvent(GGEventsCoreEvent);
+							eh.handleEvent(GGEventsEvent);
 						}
 					});
 				});
@@ -876,7 +662,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 						connector.stop();
 					} catch (Exception e) {
 						log.error("Unable to stop Garganttua Framework", e);
-						this.raiseEvent(new GGEventsCoreEvent("Unable to stop Garganttua Framework", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.SHUTDOWN, new GGEventsCoreException(e)));
+						this.raiseEvent(new GGEventsEvent("Unable to stop Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.SHUTDOWN, new GGEventsException(e)));
 					}
 					log.debug("[" + tenantId + "][" + clusterId + "] Stopped " + type);
 				});
@@ -893,7 +679,7 @@ public class GGEventsEngine__legacy implements IGGEventsEngine {
 						route.stop();
 					} catch (Exception e) {
 						log.error("Unable to stop Garganttua Framework", e);
-						this.raiseEvent(new GGEventsCoreEvent("Unable to stop Garganttua Framework", GGEventsCoreEventCriticity.FATAL, GGEventsCoreExecutionStage.SHUTDOWN, new GGEventsCoreException(e)));
+						this.raiseEvent(new GGEventsEvent("Unable to stop Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.SHUTDOWN, new GGEventsException(e)));
 					}
 					log.debug("[" + tenantId + "][" + clusterId + "] Stopped route " + routeId);
 				});

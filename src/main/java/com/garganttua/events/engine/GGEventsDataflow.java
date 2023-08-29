@@ -3,17 +3,17 @@
  *******************************************************************************/
 package com.garganttua.events.engine;
 
-import com.garganttua.events.context.GGEventsContextDataFlow;
 import com.garganttua.events.spec.interfaces.IGGEventsDataflow;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
 
 import lombok.Getter;
 
 @Getter
 public class GGEventsDataflow implements IGGEventsDataflow {
 
-	private GGEventsContextDataFlow dataflow;
+	private IGGEventsContextDataflow dataflow;
 
-	public GGEventsDataflow(GGEventsContextDataFlow dataflow) {
+	public GGEventsDataflow(IGGEventsContextDataflow dataflow) {
 		this.dataflow = dataflow;
 	}
 

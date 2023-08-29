@@ -3,28 +3,28 @@ package com.garganttua.events.spring;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 
-import com.garganttua.events.spec.enums.GGEventsCoreEventCriticity;
-import com.garganttua.events.spec.enums.GGEventsCoreExecutionStage;
-import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
-import com.garganttua.events.spec.objects.GGEventsCoreEvent;
+import com.garganttua.events.spec.enums.GGEventsEventCriticity;
+import com.garganttua.events.spec.enums.GGEventsExecutionStage;
+import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
+import com.garganttua.events.spec.objects.GGEventsEvent;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GGEventsCoreEventHandler implements IGGEventsCoreEventHandler {
+public class GGEventsEventHandler implements IGGEventsEventHandler {
 
 	private ApplicationContext context;
 
-	public GGEventsCoreEventHandler(ApplicationContext context) {
+	public GGEventsEventHandler(ApplicationContext context) {
 		this.context = context;
 	}
 
 	@Override
-	public void handleEvent(GGEventsCoreEvent event) {
+	public void handleEvent(GGEventsEvent event) {
 //		System.out.println(event.getMessage());
 
-		if (event.getStage() == GGEventsCoreExecutionStage.STARTUP
-				&& event.getCriticity() == GGEventsCoreEventCriticity.FATAL) {
+		if (event.getStage() == GGEventsExecutionStage.STARTUP
+				&& event.getCriticity() == GGEventsEventCriticity.FATAL) {
 //			try {
 //				Thread.sleep(5000);
 //			} catch (InterruptedException e) {

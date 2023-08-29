@@ -32,7 +32,7 @@ import com.garganttua.events.context.GGEventsContextDataflowInProcessMode;
 import com.garganttua.events.context.GGEventsContextHighAvailabilityMode;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -45,8 +45,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@GGEventsConnector(type = "kafka", version = "1.0.0")
-public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
+@GGEventsConnector(type = "kafka", version = "1.0")
+public class GGEventsKafkaConnector implements IGGEventsConnector {
 
 	private static final String KAFKA_BROKER_URL_PARAM_NAME = "url";
 	private static final String KAFKA_MAX_POLL_RECORDS_CONFIG_PARAM_NAME = "maxPollRecords";
@@ -68,13 +68,14 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 	@Setter
 	private ExecutorService poolExecutor;
 
-	private Collection<GGEventsCoreKafkaClientConsumer> consumers = new ArrayList<GGEventsCoreKafkaClientConsumer>();
+	private Collection<GGEventsKafkaClientConsumer> consumers = new ArrayList<GGEventsKafkaClientConsumer>();
 
-	private Map<String, GGEventsCoreKafkaClientProducer> producers = new HashMap<String, GGEventsCoreKafkaClientProducer>();
+	private Map<String, GGEventsKafkaClientProducer> producers = new HashMap<String, GGEventsKafkaClientProducer>();
 
 	@Getter
 	private String configuration;
 
+	@Setter
 	private String name;
 	private KafkaProducer<String, byte[]> kafkaProducer;
 	private String infos;
@@ -89,16 +90,16 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 		String groupId = null;
 
 		if (subscription.getCconfiguration().getProcessMode() == GGEventsContextDataflowInProcessMode.ONLY_ONE_CLUSTER_NODE) {
-			groupId = "C_" + tenantId + "_" + subscription.getDataFlow() + "_" + subscription.getTopic() + "_"
+			groupId = "C_" + tenantId + "_" + subscription.getDataflow() + "_" + subscription.getTopic() + "_"
 					+ clusterId;
 		} else {
-			groupId = "C_" + tenantId + "_" + subscription.getDataFlow() + "_" + subscription.getTopic() + "_"
+			groupId = "C_" + tenantId + "_" + subscription.getDataflow() + "_" + subscription.getTopic() + "_"
 					+ clusterId + "_" + assetId;
 		}
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
 		props.put(ConsumerConfig.CLIENT_ID_CONFIG,
-				"C_" + assetId + "_" + subscription.getDataFlow() + "_" + subscription.getTopic());
+				"C_" + assetId + "_" + subscription.getDataflow() + "_" + subscription.getTopic());
 
 		props.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, this.allowAutoCreateTopics);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -140,8 +141,8 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 		Consumer<String, byte[]> __consumer__ = new KafkaConsumer<>(props);
 		__consumer__.subscribe(Collections.singletonList(this.formatTopicRef(subscription.getTopic())));
 
-		GGEventsCoreKafkaClientConsumer clientConsumer = new GGEventsCoreKafkaClientConsumer(__consumer__, messageHandler,
-				subscription.getTopic(), this.name, subscription.getDataFlow(), true);
+		GGEventsKafkaClientConsumer clientConsumer = new GGEventsKafkaClientConsumer(__consumer__, messageHandler,
+				subscription.getTopic(), this.name, subscription.getDataflow(), true);
 
 		this.consumers.add(clientConsumer);
 	}
@@ -158,19 +159,18 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 
 			props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaBrokerUrl);
 			props.put(ConsumerConfig.ALLOW_AUTO_CREATE_TOPICS_CONFIG, this.allowAutoCreateTopics);
-			props.put(ConsumerConfig.CLIENT_ID_CONFIG, "P_" + assetId + "_" + subscription.getDataFlow() + "_" + subscription.getTopic());
+			props.put(ConsumerConfig.CLIENT_ID_CONFIG, "P_" + assetId + "_" + subscription.getDataflow() + "_" + subscription.getTopic());
 
 			props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 			props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
 
-			if (subscription.getCconfiguration()
-					.getHighAvailabilityMode() == GGEventsContextHighAvailabilityMode.LOAD_BALANCED) {
+			if (subscription.getCconfiguration().getHighAvailabilityMode() == GGEventsContextHighAvailabilityMode.LOAD_BALANCED) {
 				props.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, "com.gtech.garganttua.core.connectors.kafka.GGEventsKafkaConnectorRoundRobinPartitioner");
 			}
 			KafkaProducer<String, byte[]> kafkaProducer = new KafkaProducer<>(props);
 //		}
-		this.producers.put(this.formatTopicRef(subscription.getTopic()), new GGEventsCoreKafkaClientProducer(
-				kafkaProducer, this.formatTopicRef(subscription.getTopic()), subscription.getDataFlow()));
+		this.producers.put(this.formatTopicRef(subscription.getTopic()), new GGEventsKafkaClientProducer(
+				kafkaProducer, this.formatTopicRef(subscription.getTopic()), subscription.getDataflow()));
 	}
 
 	@Override
@@ -199,8 +199,7 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
-			IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
 		this.configuration = configuration;
 
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(configuration);
@@ -234,7 +233,7 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 	}
 
 	@Override
@@ -249,7 +248,7 @@ public class GGEventsCoreKafkaConnector implements IGGEventsConnector {
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "kafka", "1.0.0", this.infos, this.manual);
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "kafka", "1.0", this.infos, this.manual);
 	}
 
 }

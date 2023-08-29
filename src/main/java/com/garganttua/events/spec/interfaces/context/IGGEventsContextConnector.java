@@ -1,5 +1,7 @@
 package com.garganttua.events.spec.interfaces.context;
 
-public interface IGGEventsContextConnector {
+public interface IGGEventsContextConnector extends IGGEventsContextConfigurable, IGGEventsContextVersionable, IGGEventsContextTypable, IGGEventsContextNamable{
+
+
 
 }

@@ -1,7 +1,8 @@
 package com.garganttua.events.engine;
 
-import com.garganttua.events.context.GGEventsContextExceptions;
 import com.garganttua.events.spec.interfaces.IGGEventsExceptionSubscription;
+import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextExceptions;
 
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ public class GGEventsExceptionSubscription extends GGEventsSubscription implemen
 	private String cast;
 	private String label;
 
-	public GGEventsExceptionSubscription(GGEventsSubscription subscription, GGEventsContextExceptions exceptions) {
+	public GGEventsExceptionSubscription(IGGEventsSubscription subscription, IGGEventsContextExceptions exceptions) {
 		super(subscription.getDataflow(), subscription.getSubscription(), subscription.getConnector(), subscription.getTopic(), subscription.getAssetId(), subscription.getClusterId());
 		this.cast = exceptions.getCast();
 		this.label = exceptions.getLabel();

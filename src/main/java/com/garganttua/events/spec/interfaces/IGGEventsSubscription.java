@@ -4,6 +4,7 @@
 package com.garganttua.events.spec.interfaces;
 
 import com.garganttua.events.context.GGEventsContextSubscription;
+import com.garganttua.events.engine.GGEventsTopic;
 
 public interface IGGEventsSubscription {
 
@@ -26,5 +27,11 @@ public interface IGGEventsSubscription {
 	IGGEventsProcessor getProtocolInProcessor();
 	
 	IGGEventsProcessor getProtocolOutProcessor();
+
+	GGEventsTopic getTopic();
+
+	String getClusterId();
+
+	String getAssetId();
 	
 }

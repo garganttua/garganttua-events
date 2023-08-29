@@ -29,7 +29,7 @@ import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
 
 import ch.qos.logback.core.util.ExecutorServiceUtil;
 
-public class GGEventsCoreTest {
+public class GGEventsTest {
 	
 	public static GGEventsContext context = new GGEventsContext();
 	Map<String, GGEventsContextProcessor> processors = new HashMap<String, GGEventsContextProcessor>();

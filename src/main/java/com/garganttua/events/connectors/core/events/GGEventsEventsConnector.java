@@ -11,19 +11,19 @@ import java.util.concurrent.ExecutorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
-import com.garganttua.events.spec.enums.GGEventsCoreEventCriticity;
-import com.garganttua.events.spec.enums.GGEventsCoreExecutionStage;
+import com.garganttua.events.spec.enums.GGEventsEventCriticity;
+import com.garganttua.events.spec.enums.GGEventsExecutionStage;
 import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
-import com.garganttua.events.spec.interfaces.IGGEventsCoreEventHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
-import com.garganttua.events.spec.objects.GGEventsCoreEvent;
+import com.garganttua.events.spec.objects.GGEventsEvent;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.garganttua.events.spec.objects.GGEventsJourneyStep;
 import com.garganttua.events.spec.objects.GGEventsMessage;
@@ -33,8 +33,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@GGEventsConnector(type="events", version="1.0.0")
-public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEventsCoreEventHandler {
+@GGEventsConnector(type="events", version="1.0")
+public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEventHandler {
 	
 	private static final String EVENT_EXECUTION_STAGE = "stage";
 	private static final String EVENT_CRITICITY = "criticity";
@@ -58,7 +58,7 @@ public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEvent
 	private String message;
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 
 	}
 
@@ -74,12 +74,12 @@ public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEvent
 
 	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
-			IGGEventsObjectRegistryHub objectRegistries) throws GGEventsCoreException {
+			IGGEventsObjectRegistryHub objectRegistries) throws GGEventsException {
 		this.configuration = configuration;
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(this.configuration);
 		__configuration__.forEach((name, values) -> { 
 			switch(name) {
@@ -142,10 +142,10 @@ public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEvent
 	}
 
 	@Override
-	public void handleEvent(GGEventsCoreEvent event) {
+	public void handleEvent(GGEventsEvent event) {
 		
-		GGEventsCoreEventCriticity criticity = event.getCriticity();
-		GGEventsCoreExecutionStage stage = event.getStage();
+		GGEventsEventCriticity criticity = event.getCriticity();
+		GGEventsExecutionStage stage = event.getStage();
 		boolean stageOk = false; 
 		boolean criticityOk = false; 
 		
@@ -185,14 +185,14 @@ public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEvent
 				__bytes__ = mapper.writeValueAsString(message).getBytes();
 				
 				this.handlers.forEach((handler, sub) -> {
-					GGEventsExchange exchange = GGEventsExchange.emptyExchange(this.name, sub.getTopic(), sub.getDataFlow(), __bytes__);
+					GGEventsExchange exchange = GGEventsExchange.emptyExchange(this.name, sub.getTopic(), sub.getDataflow(), __bytes__);
 	
 					Thread t = new Thread() {
 						
 						public void run(){
 							try {
 								handler.handle(exchange);
-							} catch (GGEventsCoreException e) {
+							} catch (GGEventsException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
@@ -208,4 +208,5 @@ public class GGEventsCoreEventsConnector implements IGGEventsConnector, IGGEvent
 			}
 		}
 	}
+
 }

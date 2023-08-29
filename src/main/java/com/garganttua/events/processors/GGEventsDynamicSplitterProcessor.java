@@ -11,14 +11,13 @@ import java.util.concurrent.ExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.interfaces.IGGEventsSplitStrategy;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -27,8 +26,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@GGEventsProcessor(type="dynamicSplitter", version="1.0.0")
-public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor {
+@GGEventsProcessor(type="dynamicSplitter", version="1.0")
+public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 
 	@Getter
 	private String configuration;
@@ -42,9 +41,11 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 	private boolean multithreaded = false;
 	private String infos;
 	private String manual;
+	private ExecutorService service;
+	private String type = "IGGEventsProcessor::GGEventsDynamicSplitterProcessor";
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) throws GGEventsCoreException {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) throws GGEventsException {
 		this.configuration = configuration;
 		this.tenantId = tenantId;
 		this.clusterId = clusterId;
@@ -68,14 +69,14 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 		try {
 			to = mapper.readValue(this.to.getBytes(), Map.class);
 		} catch (IOException e) {
-			throw new GGEventsCoreException(e);
+			throw new GGEventsException(e);
 		}
 		
 		for( String key: to.keySet()) {
 			String subId = to.get(key);
-			IGGEventsSubscription sub = this.contextEngine.getSubscription(subId, tenantId, clusterId);
+			IGGEventsSubscription sub = null/*this.contextEngine.getSubscription(subId, tenantId, clusterId)*/;
 			if( sub == null ) {
-				throw new GGEventsCoreException("Cannot configure dynamic splitter as subscription "+subId+" is not registered.");
+				throw new GGEventsException("Cannot configure dynamic splitter as subscription "+subId+" is not registered.");
 			}
 			
 			sub.getConnector().registerProducer(sub.getSubscription(), tenantId, clusterId, assetId);
@@ -90,26 +91,26 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 				try {
 					ctor = strategy.getDeclaredConstructor();
 				} catch (NoSuchMethodException | SecurityException e1) {
-					throw new GGEventsCoreException(e1);
+					throw new GGEventsException(e1);
 				}
 				try {
 					this.strategyObject = (IGGEventsSplitStrategy) ctor.newInstance();
 				} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException e) {
-					throw new GGEventsCoreException(e);
+					throw new GGEventsException(e);
 				}
 			} else {
-				throw new GGEventsCoreException(
+				throw new GGEventsException(
 						"The class [" + this.strategyClassName + "] must implements the IGGEventsSplitStrategy interface.");
 			}
 			
 		} catch (ClassNotFoundException e) {
-			throw new GGEventsCoreException(e);
+			throw new GGEventsException(e);
 		}
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		
 		List<Entry<String, Entry<String, byte[]>>> splitted = this.strategyObject.split(exchange.getTenantId(), exchange.getValue(), this.subscriptions.keySet());
 		for( Entry<String, Entry<String, byte[]>> entry: splitted ) {
@@ -119,14 +120,13 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 					log.debug("key "+entry.getKey()+" value "+new String(entry.getValue().getValue()));
 					this.handleSplittedMessage(exchange, entry.getValue().getValue(), entry.getKey(), sub, entry.getValue().getKey());
 				} else {
-					ExecutorService exec = this.contextEngine.getExecutorService();
-					exec.execute(new Thread() {
+					this.service.execute(new Thread() {
 						@Override
 						public void run() {
 							try {
 								log.debug("key "+entry.getKey()+" value "+new String(entry.getValue().getValue()));
 								handleSplittedMessage(exchange, entry.getValue().getValue(), entry.getKey(), sub, entry.getValue().getKey());
-							} catch (GGEventsCoreException e) {
+							} catch (GGEventsException e) {
 								log.warn("Unable to send splitted message to subscription "+sub.getId(), e);
 							}
 						}
@@ -140,7 +140,7 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 	}
 
 	private void handleSplittedMessage(GGEventsExchange exchange, byte[] message, String key, IGGEventsSubscription sub, String contentType)
-			throws GGEventsCoreProcessingException, GGEventsCoreException {
+			throws GGEventsProcessingException, GGEventsException {
 		GGEventsExchange clone = exchange.clone();
 		clone.setValue(message);
 		clone.setContentType(contentType);
@@ -155,13 +155,35 @@ public class GGEventsDynamicSplitterProcessor extends GGEventsAbstractProcessor 
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "dynamicSplitter", "1.0.0", this.infos, this.manual);
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "dynamicSplitter", "1.0", this.infos, this.manual);
+	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		this.service = service;
 	}
 }

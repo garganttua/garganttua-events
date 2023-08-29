@@ -1,5 +1,7 @@
 package com.garganttua.events.spec.interfaces.context;
 
+import java.util.List;
+
 import com.garganttua.events.context.GGEventsContextPublicationMode;
 import com.garganttua.events.context.GGEventsContextTimeInterval;
 import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
@@ -16,7 +18,7 @@ public interface IGGEventsContext {
 
 	IGGEventsContext connector(String name, String type, String version, String configuration);
 
-	IGGEventsContextRoute route(String string, String string2, String string3);
+	IGGEventsContextRoute route(String uuid, String from, String to);
 
 	IGGEventsContext lock(String name, String type, String version, String configuration);
 
@@ -28,7 +30,7 @@ public interface IGGEventsContext {
 
 	IGGEventsBuilder builder();
 
-	IGGEventsContext write(String sourceType, String sourceConfiguration);
+	IGGEventsContext write(String sourceType, String version, String sourceConfiguration);
 
 	IGGEventsContext write(IGGEventsContextSource source);
 
@@ -45,5 +47,17 @@ public interface IGGEventsContext {
 	IGGEventsContext dataflow(IGGEventsContextDataflow dataflow);
 
 	IGGEventsContext topic(IGGEventsContextTopic topic);
+	
+	List<IGGEventsContextTopic> getTopics();
+	
+	List<IGGEventsContextDataflow> getDataflows();
+	
+	List<IGGEventsContextSubscription> getSubscriptions();
+	
+	List<IGGEventsContextConnector> getConnectors();
+
+	List<IGGEventsContextRoute> getRoutes();
+
+	List<IGGEventsContextLock> getLocks();
 
 }

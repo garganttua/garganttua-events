@@ -3,7 +3,7 @@
  *******************************************************************************/
 package com.garganttua.events.engine;
 
-import com.garganttua.events.context.GGEventsContextTopic;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,9 +13,9 @@ import lombok.Setter;
 public class GGEventsTopic {
 	
 	private String ref;
-	private GGEventsContextTopic contextTopic;
+	private IGGEventsContextTopic contextTopic;
 
-	public GGEventsTopic(GGEventsContextTopic topic) {
+	public GGEventsTopic(IGGEventsContextTopic topic) {
 		this.ref = topic.getRef();
 		this.contextTopic = topic;
 	}

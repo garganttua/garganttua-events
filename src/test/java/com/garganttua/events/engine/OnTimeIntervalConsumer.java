@@ -19,8 +19,8 @@ import com.garganttua.events.engine.GGEventsSubscription;
 import com.garganttua.events.engine.GGEventsTopic;
 import com.garganttua.events.engine.consumers.GGEventsTimeIntervalConsumer;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -30,7 +30,7 @@ import com.garganttua.events.spec.objects.GGEventsExchange;
 class OnTimeIntervalConsumer {
 
 	@Test
-	void test() throws GGEventsCoreException, InterruptedException, GGEventsCoreProcessingException {
+	void test() throws GGEventsException, InterruptedException, GGEventsProcessingException {
 
 		GGEventsContextDataFlow cdataflow = new GGEventsContextDataFlow(null, null, null, false, null, false, null);
 		GGEventsDataflow dataflow = new GGEventsDataflow(cdataflow);
@@ -64,7 +64,7 @@ class OnTimeIntervalConsumer {
 			}
 
 			@Override
-			public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+			public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 				System.out.println(new String(exchange.getValue()));
 			}
 
@@ -82,7 +82,7 @@ class OnTimeIntervalConsumer {
 			}
 
 			@Override
-			public void applyConfiguration() throws GGEventsCoreException {
+			public void applyConfiguration() throws GGEventsException {
 				// TODO Auto-generated method stub
 				
 			}

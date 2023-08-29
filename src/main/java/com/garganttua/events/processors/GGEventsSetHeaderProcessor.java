@@ -2,20 +2,21 @@ package com.garganttua.events.processors;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.Getter;
 
-@GGEventsProcessor(type="setHeader", version="1.0.0")
-public class GGEventsSetHeaderProcessor extends GGEventsAbstractProcessor {
+@GGEventsProcessor(type="setHeader", version="1.0")
+public class GGEventsSetHeaderProcessor implements IGGEventsProcessor {
 
 	@Getter
 	private String configuration;
@@ -23,6 +24,7 @@ public class GGEventsSetHeaderProcessor extends GGEventsAbstractProcessor {
 	private String headerValue;
 	private String infos;
 	private String manual;
+	private String type = "IGGEventsProcessor::GGEventsSetHeaderProcessor";
 
 	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
@@ -37,7 +39,7 @@ public class GGEventsSetHeaderProcessor extends GGEventsAbstractProcessor {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		if( exchange.isVariable(this.headerValue)) {
 			exchange.getHeaders().put(this.headerName, exchange.getVariableValue(exchange, this.headerValue));
 		} else {
@@ -46,7 +48,7 @@ public class GGEventsSetHeaderProcessor extends GGEventsAbstractProcessor {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -54,5 +56,28 @@ public class GGEventsSetHeaderProcessor extends GGEventsAbstractProcessor {
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
 		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "setHeader", "1.0.0", this.infos, this.manual);
+	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 }

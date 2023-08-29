@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.jayway.jsonpath.JsonPath;
 
-public class GGEventsCoreExceptionDeserializer extends JsonDeserializer<GGEventsException> {
+public class GGEventsExceptionDeserializer extends JsonDeserializer<GGEventsException> {
 
 	@Override
 	public GGEventsException deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {

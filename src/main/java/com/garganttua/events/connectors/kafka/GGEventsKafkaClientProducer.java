@@ -9,13 +9,13 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GGEventsCoreKafkaClientProducer {
+public class GGEventsKafkaClientProducer {
 
 	private KafkaProducer<String, byte[]> kafkaProducer;
 	private String topicRef;
 	private String dataflowUuid;
 
-	public GGEventsCoreKafkaClientProducer(KafkaProducer<String, byte[]> kafkaProducer, String topicRef, String dataflowUuid) {
+	public GGEventsKafkaClientProducer(KafkaProducer<String, byte[]> kafkaProducer, String topicRef, String dataflowUuid) {
 		this.kafkaProducer = kafkaProducer;
 		this.topicRef = topicRef;
 		this.dataflowUuid = dataflowUuid;

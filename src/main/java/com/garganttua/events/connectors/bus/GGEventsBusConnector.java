@@ -24,7 +24,7 @@ import com.leansoft.bigqueue.BigQueueImpl;
 import lombok.Getter;
 import lombok.Setter;
 
-@GGEventsConnector(type="bus", version="1.0.0")
+@GGEventsConnector(type="bus", version="1.0")
 public class GGEventsBusConnector implements IGGEventsConnector {
 
 	private static final String BUS_QUEUES_DIRECTORY = "homeDirectory";
@@ -165,7 +165,7 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 	public void registerConsumer(GGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
 			String clusterId, String assetId) {
 		String topicRef = subscription.getTopic();
-		String dataflowUuid = subscription.getDataFlow();
+		String dataflowUuid = subscription.getDataflow();
 		try {
 			BigQueueImpl queue = this.queues.get(topicRef);
 			if ( queue == null ) {

@@ -13,13 +13,21 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.garganttua.events.context.GGEventsContext;
+import com.garganttua.events.spec.annotations.GGEventsConnector;
+import com.garganttua.events.spec.annotations.GGEventsContextSource;
+import com.garganttua.events.spec.annotations.GGEventsDistributedLock;
+import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
+import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
+import com.garganttua.events.spec.interfaces.IGGEventsDistributedLock;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
+import com.garganttua.events.spec.objects.GGEventsUtils;
 
 public class GGEventsBuilder implements IGGEventsBuilder {
 
@@ -32,10 +40,14 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	
 	//Flushable fields
 	private ScheduledExecutorService scheduledExecutorService;
-	private IGGEventsEventHandler eventsCoreEventHandler;
+	private List<IGGEventsEventHandler> eventsHandler = new ArrayList<IGGEventsEventHandler>();
 	private ExecutorService executorService;
 	private Map<String, Map<String, IGGEventsContext>> contexts;
 	private List<String> packages;
+	private Map<String, Map<String, Class<?>>> connectors = new HashMap<String, Map<String, Class<?>>>();
+	private Map<String, Map<String, Class<?>>> locks = new HashMap<String, Map<String, Class<?>>>();
+	private Map<String, Map<String, Class<?>>> processors = new HashMap<String, Map<String, Class<?>>>();
+	private Map<String, Map<String, Class<?>>> sources = new HashMap<String, Map<String, Class<?>>>();
 
 	private GGEventsBuilder(String assetId) {
 		this.assetId = assetId;
@@ -77,25 +89,27 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	}
 
 	@Override
-	public IGGEventsBuilder source(String type, String configuration) {
-		Map<String, IGGEventsContextSource> sources = new HashMap<String, IGGEventsContextSource>();
-		this.packages.forEach(packageName -> {
-			try {
-				GGEventsContextSourcesRegistry.findAvailableSources(packageName).forEach((name, source) -> {
-					sources.put(name, source);
-				});
-			} catch (GGEventsException e) {
-				throw new IllegalArgumentException(e);
-			}
-		});
-		
-		IGGEventsContextSource contextSource = sources.get(type);
-		if( contextSource == null ) {
-			throw new IllegalArgumentException("Source "+type+" is not found");
+	public IGGEventsBuilder source(String type, String version, String configuration) {
+		Class<?> source = (Class<?>) this.sources.get(type).get(version);
+		if( source == null ) {
+			throw new IllegalArgumentException("Context source of type "+type+" and version "+version+" is not found");
 		}
 		
 		try {
-			this.context(contextSource.readContext(configuration));
+			GGEventsUtils.checkVersion(version);
+		} catch (GGEventsException e) {
+			throw new IllegalArgumentException(e);
+		}
+		
+		IGGEventsContextSource source__;
+		try {
+			source__ = (IGGEventsContextSource) GGEventsUtils.getInstanceOf(source);
+		} catch (GGEventsException e) {
+			throw new IllegalArgumentException(e);
+		}
+		
+		try {
+			this.context(source__.readContext(configuration));
 		} catch (GGEventsException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -121,7 +135,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		if( this.scheduledExecutorService == null )
 			this.scheduledExecutorService = new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
 
-		IGGEventsEngine engine = new GGEventsEngine(this.assetId, this.contexts, this.eventsCoreEventHandler, this.executorService, this.scheduledExecutorService, this.packages);
+		IGGEventsEngine engine = new GGEventsEngine(this.assetId, this.contexts, this.eventsHandler, this.executorService, this.scheduledExecutorService, this.connectors, this.locks, this.processors);
 		
 		return engine;
 	}
@@ -163,24 +177,32 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	}
 
 	@Override
-	public IGGEventsBuilder eventHanlder(IGGEventsEventHandler eventsCoreEventHandler) {
-		this.eventsCoreEventHandler = eventsCoreEventHandler;
+	public IGGEventsBuilder eventHanlder(IGGEventsEventHandler eventsHandler) {
+		this.eventsHandler.add(eventsHandler);
 		return this;
 	}
 
 	@Override
 	public IGGEventsBuilder flush() {
-		this.contexts = new HashMap<String, Map<String,IGGEventsContext>>();
+		this.contexts.clear();
 		this.executorService = null;
 		this.scheduledExecutorService = null;
-		this.eventsCoreEventHandler = null;
-		this.packages = new ArrayList<String>();
+		this.eventsHandler.clear();
+		this.packages.clear();
 		return this;
 	}
 
 	@Override
 	public IGGEventsBuilder lookup(String packageName) {
 		this.packages.add(packageName);
+		try {
+			GGEventsContextAnnotateClassesRegistry.findClassesWithAnnotationAndInterface(packageName, GGEventsConnector.class, IGGEventsConnector.class, this.connectors);
+			GGEventsContextAnnotateClassesRegistry.findClassesWithAnnotationAndInterface(packageName, GGEventsDistributedLock.class, IGGEventsDistributedLock.class, this.locks);
+			GGEventsContextAnnotateClassesRegistry.findClassesWithAnnotationAndInterface(packageName, GGEventsProcessor.class, IGGEventsProcessor.class, this.processors);
+			GGEventsContextAnnotateClassesRegistry.findClassesWithAnnotationAndInterface(packageName, GGEventsContextSource.class, IGGEventsContextSource.class, this.sources);
+		} catch (GGEventsException e) {
+			throw new IllegalArgumentException(e);
+		}
 		return this;
 	}
 

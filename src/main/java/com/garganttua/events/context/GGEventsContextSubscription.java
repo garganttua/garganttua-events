@@ -11,6 +11,7 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextConsumerCon
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextProducerConfiguration;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 
+import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -26,18 +27,25 @@ import lombok.Setter;
 //@NoArgsConstructor
 public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsContextSubscription> implements IGGEventsContextSubscription {
 	
-	private String dataFlow; 
+	@Getter
+	private String dataflow; 
 	
+	@Getter
 	private String topic;
 	
+	@Getter
 	private String connector;
 	
+	@Getter
 	private GGEventsContextPublicationMode publicationMode; 
 	
+	@Getter
 	private GGEventsContextTimeInterval timeInterval;
 	
+	@Getter
 	private IGGEventsContextConsumerConfiguration cconfiguration;
 	
+	@Getter
 	private IGGEventsContextProducerConfiguration pconfiguration;
 
 	@Setter
@@ -52,7 +60,7 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	}
 	
 	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval, IGGEventsContextConsumerConfiguration cconfiguration, IGGEventsContextProducerConfiguration pconfiguration, List<GGEventsContextItemSource> sources) {
-		this.dataFlow = dataflow;
+		this.dataflow = dataflow;
 		this.topic = topic;
 		this.connector = connector;
 		this.publicationMode = publicationMode;
@@ -80,7 +88,7 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	}
 	
 	public String getId() {
-		String subscriptionId = connector+"://"+this.dataFlow+this.topic;
+		String subscriptionId = connector+"://"+this.dataflow+this.topic;
 		return subscriptionId;
 	}
 
@@ -118,5 +126,10 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	public IGGEventsContextSubscription consumerConfiguration(IGGEventsContextConsumerConfiguration configuration) {
 		cconfiguration = configuration;
 		return this;
+	}
+
+	@Override
+	public String getDataflow() {
+		return this.dataflow;
 	}
 }

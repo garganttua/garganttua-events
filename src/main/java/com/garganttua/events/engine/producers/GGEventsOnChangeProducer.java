@@ -5,8 +5,8 @@ package com.garganttua.events.engine.producers;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -26,11 +26,11 @@ public class GGEventsOnChangeProducer implements IGGEventsProducer {
 
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreException, GGEventsCoreProcessingException {
+	public void handle(GGEventsExchange exchange) throws GGEventsException, GGEventsProcessingException {
 		log.info("["+this.subscriptionId+"][ExchangeId:"+exchange.getExchangeId()+"] Sending message");
 		try {
 			this.connector.handle(exchange);
-		} catch (GGEventsCoreProcessingException e) {
+		} catch (GGEventsProcessingException e) {
 			throw e;
 		}
 	}
@@ -50,7 +50,7 @@ public class GGEventsOnChangeProducer implements IGGEventsProducer {
 
 
 	@Override
-	public void start(ScheduledExecutorService scheduledExecutorService) throws GGEventsCoreException {
+	public void start(ScheduledExecutorService scheduledExecutorService) throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}

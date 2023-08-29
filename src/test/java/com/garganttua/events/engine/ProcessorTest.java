@@ -3,10 +3,12 @@
  *******************************************************************************/
 package com.garganttua.events.engine;
 
+import java.util.concurrent.ExecutorService;
+
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
@@ -15,8 +17,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@GGEventsProcessor(type="GGEventsProcessorTest", version="1.0.0")
-public class ProcessorTest extends GGEventsAbstractProcessor {
+@GGEventsProcessor(type="GGEventsProcessorTest", version="1.0")
+public class ProcessorTest implements IGGEventsProcessor {
 
 	private String type;
 	
@@ -39,7 +41,7 @@ public class ProcessorTest extends GGEventsAbstractProcessor {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -48,6 +50,24 @@ public class ProcessorTest extends GGEventsAbstractProcessor {
 	public GGEventsContextObjDescriptor getDescriptor() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -9,14 +9,14 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
 
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class GGEventsCoreKafkaClientConsumer implements Runnable {
+public class GGEventsKafkaClientConsumer implements Runnable {
 
 	private Consumer<String, byte[]> consumer;
 	private IGGEventsMessageHandler messageHandler;
@@ -46,7 +46,7 @@ public class GGEventsCoreKafkaClientConsumer implements Runnable {
 						if( this.garanteeOrder ) {
 							try {
 								messageHandler.handle(GGEventsExchange.emptyExchange(this.name, this.topicRef, this.dataFlowUuid, message));
-							} catch (GGEventsCoreException e) {
+							} catch (GGEventsException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
@@ -55,7 +55,7 @@ public class GGEventsCoreKafkaClientConsumer implements Runnable {
 							
 							try {
 								messageHandler.handle(GGEventsExchange.emptyExchange(this.name, this.topicRef, this.dataFlowUuid, message));
-							} catch (GGEventsCoreException e) {
+							} catch (GGEventsException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
@@ -73,7 +73,7 @@ public class GGEventsCoreKafkaClientConsumer implements Runnable {
 
 	}
 
-	public GGEventsCoreKafkaClientConsumer(Consumer<String, byte[]> consumer, IGGEventsMessageHandler messageHandler, String topicRef, String name, String dataFlowUuid, boolean garanteeOrder) {
+	public GGEventsKafkaClientConsumer(Consumer<String, byte[]> consumer, IGGEventsMessageHandler messageHandler, String topicRef, String name, String dataFlowUuid, boolean garanteeOrder) {
 		this.consumer = consumer;
 		this.messageHandler = messageHandler;
 		this.topicRef = topicRef;

@@ -20,6 +20,7 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextRoute;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
+import com.garganttua.events.spec.objects.GGEventsUtils;
 
 import lombok.Getter;
 
@@ -73,7 +74,6 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 		return item;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public IGGEventsContext topic(String ref) {
 		return this.topic(new GGEventsContextTopic(ref));
@@ -166,7 +166,7 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 	}
 
 	@Override
-	public IGGEventsContext write(String sourceType, String sourceConfiguration) {
+	public IGGEventsContext write(String sourceType, String version, String sourceConfiguration) {
 		// TODO Auto-generated method stub
 		return this;
 	}
