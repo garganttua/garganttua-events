@@ -4,16 +4,9 @@
 package com.garganttua.events.context;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 /**
@@ -32,13 +25,8 @@ import lombok.Setter;
  *
  */
 public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContextDataflow> implements IGGEventsContextDataflow {
-	
+
 	public GGEventsContextDataflow(String uuid, String name, String type, boolean garanteeOrder, String version, boolean encapsulated) {
-		this(uuid, name, type, garanteeOrder, version, encapsulated, new ArrayList<GGEventsContextItemSource>());
-	}
-	
-	public GGEventsContextDataflow(String uuid, String name, String type, boolean garanteeOrder, String version, boolean encapsulated, List<GGEventsContextItemSource> sources) {
-		this.sources.addAll(sources);
 		this.uuid = uuid;
 		this.name = name;
 		this.type = type;

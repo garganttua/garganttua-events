@@ -1,11 +1,12 @@
 package com.garganttua.events.spec.interfaces.context;
 
+import java.util.concurrent.TimeUnit;
+
 import com.garganttua.events.context.GGEventsContextDataflowInProcessMode;
 import com.garganttua.events.context.GGEventsContextDestinationPolicy;
 import com.garganttua.events.context.GGEventsContextHighAvailabilityMode;
 import com.garganttua.events.context.GGEventsContextOriginPolicy;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
-import com.garganttua.events.context.GGEventsContextTimeInterval;
 
 public interface IGGEventsContextSubscription extends IGGEventsContextItemLinkedToContext {
 
@@ -19,6 +20,10 @@ public interface IGGEventsContextSubscription extends IGGEventsContextItemLinked
 	IGGEventsContextSubscription producerConfiguration(IGGEventsContextProducerConfiguration configuration);
 
 	IGGEventsContextSubscription consumerConfiguration(IGGEventsContextConsumerConfiguration configuration);
+	
+	IGGEventsContextSubscription timeInterval(IGGEventsContextTimeInterval timeInterval);
+	
+	IGGEventsContextSubscription timeInterval(long time, TimeUnit unit);
 
 	String getConnector();
 
@@ -34,6 +39,6 @@ public interface IGGEventsContextSubscription extends IGGEventsContextItemLinked
 
 	IGGEventsContextProducerConfiguration getPconfiguration();
 
-	GGEventsContextTimeInterval getTimeInterval();
+	IGGEventsContextTimeInterval getTimeInterval();
 
 }

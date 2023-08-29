@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 public class GGEventsContextProducerConfiguration implements IGGEventsContextProducerConfiguration {
 
 	@Getter

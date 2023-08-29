@@ -3,13 +3,13 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConsumerConfiguration;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextProducerConfiguration;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,10 +21,6 @@ import lombok.Setter;
  * 
  *
  */
-//@Getter
-//@Setter
-//@JsonInclude(Include.NON_NULL)
-//@NoArgsConstructor
 public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsContextSubscription> implements IGGEventsContextSubscription {
 	
 	@Getter
@@ -40,7 +36,7 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	private GGEventsContextPublicationMode publicationMode; 
 	
 	@Getter
-	private GGEventsContextTimeInterval timeInterval;
+	private IGGEventsContextTimeInterval timeInterval;
 	
 	@Getter
 	private IGGEventsContextConsumerConfiguration cconfiguration;
@@ -51,15 +47,11 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	@Setter
 	private IGGEventsContext context;
 	
-	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval) {
-		this(dataflow, topic, connector, publicationMode, timeInterval, new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration(), new ArrayList<GGEventsContextItemSource>());
+	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode) {
+		this(dataflow, topic, connector, publicationMode, new GGEventsContextTimeInterval(1L, TimeUnit.MINUTES), new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration());
 	}
 	
-	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval, IGGEventsContextConsumerConfiguration cconfiguration, IGGEventsContextProducerConfiguration pconfiguration) {
-		this(dataflow, topic, connector, publicationMode, timeInterval, cconfiguration, pconfiguration, new ArrayList<GGEventsContextItemSource>());
-	}
-	
-	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval, IGGEventsContextConsumerConfiguration cconfiguration, IGGEventsContextProducerConfiguration pconfiguration, List<GGEventsContextItemSource> sources) {
+	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, IGGEventsContextTimeInterval timeInterval, IGGEventsContextConsumerConfiguration cconfiguration, IGGEventsContextProducerConfiguration pconfiguration) {
 		this.dataflow = dataflow;
 		this.topic = topic;
 		this.connector = connector;
@@ -67,7 +59,6 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 		this.timeInterval = timeInterval;
 		this.cconfiguration = cconfiguration;
 		this.pconfiguration = pconfiguration;
-		this.sources.addAll(sources);
 	}
 
 	@Override
@@ -129,7 +120,14 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	}
 
 	@Override
-	public String getDataflow() {
-		return this.dataflow;
+	public IGGEventsContextSubscription timeInterval(IGGEventsContextTimeInterval timeInterval) {
+		this.timeInterval = timeInterval;
+		return this;
+	}
+
+	@Override
+	public IGGEventsContextSubscription timeInterval(long time, TimeUnit unit) {
+		this.timeInterval(new GGEventsContextTimeInterval(time, unit));
+		return this;
 	}
 }

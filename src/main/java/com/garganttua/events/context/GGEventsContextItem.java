@@ -9,11 +9,6 @@ import java.util.List;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 
 public abstract class GGEventsContextItem<T extends IGGEventsSourcedContextItem> implements IGGEventsSourcedContextItem, IGGEventsContextMergeableItem<T> {
 	

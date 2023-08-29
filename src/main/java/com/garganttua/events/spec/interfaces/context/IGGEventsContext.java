@@ -3,7 +3,6 @@ package com.garganttua.events.spec.interfaces.context;
 import java.util.List;
 
 import com.garganttua.events.context.GGEventsContextPublicationMode;
-import com.garganttua.events.context.GGEventsContextTimeInterval;
 import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
@@ -22,7 +21,7 @@ public interface IGGEventsContext {
 
 	IGGEventsContext lock(String name, String type, String version, String configuration);
 
-	IGGEventsContextSubscription subscription(String uuid, String topicRef, String connectorName, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval);
+	IGGEventsContextSubscription subscription(String uuid, String topicRef, String connectorName, GGEventsContextPublicationMode publicationMode);
 
 	String getTenantId();
 

@@ -3,9 +3,6 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConnector;
 
 import lombok.Getter;
@@ -17,16 +14,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsContextConnector extends GGEventsContextItem<GGEventsContextConnector> implements IGGEventsContextConnector {
 	
-	public GGEventsContextConnector(String name, String type, String configuration, String version, List<GGEventsContextItemSource> sources) {
-		this.sources.addAll(sources);
+	public GGEventsContextConnector(String name, String type, String configuration, String version) {
 		this.name = name;
 		this.type = type;
 		this.configuration = configuration;
 		this.version = version;
-	}
-
-	public GGEventsContextConnector(String name, String type, String configuration, String version) {
-		this(name, type, configuration, version, new ArrayList<GGEventsContextItemSource>());
 	}
 
 	private String name; 

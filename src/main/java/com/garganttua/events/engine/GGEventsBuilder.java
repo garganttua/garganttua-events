@@ -120,7 +120,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	@Override
 	public IGGEventsBuilder source(IGGEventsContextSource source) {
 		try {
-			GGEventsContext context = source.readContext();
+			IGGEventsContext context = source.readContext();
 			this.context(context);
 		} catch (GGEventsException e) {
 			throw new IllegalArgumentException(e);

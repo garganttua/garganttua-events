@@ -22,11 +22,10 @@ import lombok.Setter;
 public class GGEventsContextRoute extends GGEventsContextItem<GGEventsContextRoute> implements IGGEventsContextRoute {
 
 	public GGEventsContextRoute(String uuid, String from, String to) {
-		this(uuid, from, new ArrayList<IGGEventsContextProcessor>(), to, new ArrayList<GGEventsContextItemSource>(), null, null);
+		this(uuid, from, new ArrayList<IGGEventsContextProcessor>(), to, null, null);
 	}
 	
-	public GGEventsContextRoute(String uuid, String from, List<IGGEventsContextProcessor> processors, String to, List<GGEventsContextItemSource> sources, IGGEventsContextExceptions exceptions, IGGEventsContextLockObject synchronization) {
-		this.sources.addAll(sources);
+	public GGEventsContextRoute(String uuid, String from, List<IGGEventsContextProcessor> processors, String to, IGGEventsContextExceptions exceptions, IGGEventsContextLockObject synchronization) {
 		this.uuid = uuid;
 		this.from = from;
 		this.processors = processors;

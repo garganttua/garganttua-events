@@ -47,7 +47,7 @@ public class BuilderTest {
 					// TODO Auto-generated method stub
 					
 				}})
-//			.source("json-file", "1.0", "src/test/resources/context.json")
+			.source("json-file", "1.0", "src/test/resources/context.json")
 //			.source(new ContextSourceTest("configuration"))
 			.context("tenantId", "clusterId")
 			.topic("/test")
@@ -55,11 +55,11 @@ public class BuilderTest {
 			.dataflow("uuid", "test", "test", true, "1.0", true)
 			.dataflow("uuid2", "test", "test", true, "1.0", true)
 			.connector("kafka", "kafka", "1.0", "url=localhost:29092&maxPollRecords=1&enableAutoCommit=false&autoOffsetReset=latest&partitionsAutoScalling=true&allowAutoCreateTopics=name")
-			.subscription("uuid", "/test", "kafka", GGEventsContextPublicationMode.ON_CHANGE, null)
+			.subscription("uuid", "/test", "kafka", GGEventsContextPublicationMode.ON_CHANGE)
 			.producerConfiguration(GGEventsContextDestinationPolicy.TO_ANY, "assetId")
 			.consumerConfiguration(GGEventsContextDataflowInProcessMode.ONLY_ONE_CLUSTER_NODE, GGEventsContextOriginPolicy.FROM_ANY, GGEventsContextDestinationPolicy.TO_ANY, true, GGEventsContextHighAvailabilityMode.LOAD_BALANCED)
 			.context()
-			.subscription("uuid2", "/test2", "kafka", GGEventsContextPublicationMode.ON_CHANGE, null).context()
+			.subscription("uuid2", "/test2", "kafka", GGEventsContextPublicationMode.ON_CHANGE).context()
 			.route("uuid", "kafka://uuid/test", "kafka://uuid2/test2")
 			.processor("log", "1.0", "level=WARN")
 //			.exceptions("to", "cast", "label")

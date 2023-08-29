@@ -18,9 +18,9 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextLock;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextRoute;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
-import com.garganttua.events.spec.objects.GGEventsUtils;
 
 import lombok.Getter;
 
@@ -85,8 +85,8 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 	}
 
 	@Override
-	public IGGEventsContextSubscription subscription(String uuid, String topicRef, String connectorName, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval) {
-		GGEventsContextSubscription subscription = new GGEventsContextSubscription(uuid, topicRef, connectorName, publicationMode, timeInterval);
+	public IGGEventsContextSubscription subscription(String uuid, String topicRef, String connectorName, GGEventsContextPublicationMode publicationMode) {
+		GGEventsContextSubscription subscription = new GGEventsContextSubscription(uuid, topicRef, connectorName, publicationMode);
 		subscription.context(this);
 		return this.subscription(subscription);
 	}

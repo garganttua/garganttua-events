@@ -11,5 +11,7 @@ public interface IGGEventsContextDataflow {
 	String getVersion();
 
 	boolean isEncapsulated();
+	
+	boolean isGaranteeOrder();
 
 }

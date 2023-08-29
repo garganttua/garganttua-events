@@ -4,16 +4,17 @@
 package com.garganttua.events.spec.interfaces;
 
 
-import com.garganttua.events.context.GGEventsContext;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 
 public interface IGGEventsContextSource {
 	
-	GGEventsContext readContext(String configuration) throws GGEventsException;
+	IGGEventsContext readContext(String configuration) throws GGEventsException;
 	
 	void writeContext(String configuration) throws GGEventsException;
 
-	GGEventsContext readContext() throws GGEventsException;
+	IGGEventsContext readContext() throws GGEventsException;
 	
 	void writeContext() throws GGEventsException;
+	
 }

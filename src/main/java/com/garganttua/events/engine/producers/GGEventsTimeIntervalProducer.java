@@ -5,10 +5,10 @@ package com.garganttua.events.engine.producers;
 
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.garganttua.events.context.GGEventsContextTimeInterval;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +20,10 @@ public class GGEventsTimeIntervalProducer implements IGGEventsProducer, Runnable
 	private GGEventsExchange message;
 	private IGGEventsConnector connector;
 	private String subscriptionId;
-	private GGEventsContextTimeInterval timeInterval;
+	private IGGEventsContextTimeInterval timeInterval;
 
 	public GGEventsTimeIntervalProducer(String subscriptionId, IGGEventsConnector connector,
-			GGEventsContextTimeInterval timeInterval) {
+			IGGEventsContextTimeInterval timeInterval) {
 		this.subscriptionId = subscriptionId;
 		this.connector = connector;
 		this.timeInterval = timeInterval;

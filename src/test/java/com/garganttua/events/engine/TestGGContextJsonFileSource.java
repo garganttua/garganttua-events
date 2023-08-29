@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.garganttua.events.context.GGEventsContext;
-import com.garganttua.events.context.sources.file.json.GGEventsContextJsonFileSource;
+import com.garganttua.events.context.json.sources.file.GGEventsContextJsonFileSource;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 
 class TestGGEventsContextJsonFileSource {

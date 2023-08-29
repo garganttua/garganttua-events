@@ -3,9 +3,6 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 
 import lombok.Getter;
@@ -13,11 +10,6 @@ import lombok.Getter;
 public class GGEventsContextTopic extends GGEventsContextItem<GGEventsContextTopic> implements IGGEventsContextTopic {
 	
 	public GGEventsContextTopic(String ref) {
-		this(ref, new ArrayList<GGEventsContextItemSource>());
-	}
-	
-	public GGEventsContextTopic(String ref, List<GGEventsContextItemSource> sources) {
-		this.sources.addAll(sources);
 		this.ref = ref;
 	}
 
@@ -36,8 +28,7 @@ public class GGEventsContextTopic extends GGEventsContextItem<GGEventsContextTop
 
 	@Override
 	protected boolean isEqualTo(GGEventsContextTopic item) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.ref.equals(item.ref);
 	}
 	
 }
