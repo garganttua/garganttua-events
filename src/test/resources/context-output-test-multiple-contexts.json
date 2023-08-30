@@ -11,8 +11,7 @@
       "assetId" : "assetId",
       "clusterId" : "1",
       "source" : "json-file://src/test/resources/context-duplicated.json"
-    } ],
-    "otherVersions" : [ ]
+    } ]
   }, {
     "ref" : "/integers",
     "sources" : [ {
@@ -23,8 +22,7 @@
       "assetId" : "assetId",
       "clusterId" : "1",
       "source" : "json-file://src/test/resources/context-duplicated.json"
-    } ],
-    "otherVersions" : [ ]
+    } ]
   } ],
   "dataflows" : [ {
     "uuid" : "b9a68675-20a6-494f-b921-356e3a84dfac",

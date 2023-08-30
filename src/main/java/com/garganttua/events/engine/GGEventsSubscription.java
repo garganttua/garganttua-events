@@ -4,7 +4,6 @@
 package com.garganttua.events.engine;
 
 import com.garganttua.events.context.GGEventsContextPublicationMode;
-import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.engine.consumers.GGEventsOnChangeConsumer;
 import com.garganttua.events.engine.processors.GGEventsEncapsulatedProtocolInProcessor;
 import com.garganttua.events.engine.processors.GGEventsEncapsulatedProtocolOutProcessor;

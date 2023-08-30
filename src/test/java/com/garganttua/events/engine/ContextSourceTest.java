@@ -42,4 +42,16 @@ public class ContextSourceTest implements IGGEventsContextSource {
 
 	}
 
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getConfiguration() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

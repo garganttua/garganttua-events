@@ -7,16 +7,14 @@
       "assetId" : "assetId",
       "clusterId" : "clusterId",
       "source" : "built-in"
-    } ],
-    "otherVersions" : [ ]
+    } ]
   }, {
     "ref" : "/test2",
     "sources" : [ {
       "assetId" : "assetId",
       "clusterId" : "clusterId",
       "source" : "built-in"
-    } ],
-    "otherVersions" : [ ]
+    } ]
   } ],
   "dataflows" : [ {
     "uuid" : "uuid",
