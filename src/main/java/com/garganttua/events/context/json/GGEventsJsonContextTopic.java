@@ -24,8 +24,6 @@ public class GGEventsJsonContextTopic implements IGGEventsContextItemBinder<IGGE
 	
 	@JsonInclude
 	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
-	@JsonInclude
-	protected List<GGEventsJsonContextTopic> otherVersions = new ArrayList<GGEventsJsonContextTopic>();
 	
 	@Override
 	public IGGEventsContextTopic bind() {
