@@ -1,7 +1,6 @@
 package com.garganttua.events.engine;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import com.garganttua.events.spec.objects.GGEventsUtils;
 public class GGEventsBuilder implements IGGEventsBuilder {
 
 	private String assetId;
+	
 	private BlockingQueue<Runnable> workQueue = new LinkedBlockingDeque<Runnable>();
 	private TimeUnit threadPoolKeepAliveTimeUnit = TimeUnit.SECONDS;
 	private long threadPoolKeepAliveTime = 10;
@@ -75,7 +75,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		clusterContext = tenantContexts.get(clusterId);
 		
 		if( clusterContext == null) {
-			clusterContext = new GGEventsContext(tenantId, clusterId);
+			clusterContext = new GGEventsContext(this.assetId, tenantId, clusterId);
 			((GGEventsContext) clusterContext).builder(this);
 			tenantContexts.put(clusterId, clusterContext);
 		}
@@ -96,7 +96,8 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		try {
 			IGGEventsContextSource source = GGEventsUtils.getSourceObj(type, version, this.sources);
 			IGGEventsContext readContext = source.readContext(configuration);
-			readContext.source(new GGEventsContextItemSource(this.assetId, readContext.getClusterId(), type+"://"+configuration, new Date()));
+			((GGEventsContext) readContext).setAssetId(this.assetId);
+			readContext.source(new GGEventsContextItemSource(this.assetId, readContext.getClusterId(), type+"://"+configuration));
 			
 			this.context(readContext);
 		} catch (GGEventsException e) {
@@ -110,7 +111,8 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	public IGGEventsBuilder source(IGGEventsContextSource source) {
 		try {
 			IGGEventsContext context = source.readContext();
-			context.source(new GGEventsContextItemSource(this.assetId, context.getClusterId(), source.getType()+"://"+source.getConfiguration(), new Date()));
+			context.source(new GGEventsContextItemSource(this.assetId, context.getClusterId(), source.getType()+"://"+source.getConfiguration()));
+			((GGEventsContext) context).setAssetId(this.assetId);
 			this.context(context);
 		} catch (GGEventsException e) {
 			throw new IllegalArgumentException(e);

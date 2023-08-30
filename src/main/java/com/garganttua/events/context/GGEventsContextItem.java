@@ -24,7 +24,8 @@ public abstract class GGEventsContextItem<T extends IGGEventsSourcedContextItem>
 
 	@Override
 	public void source(IGGEventsContextItemSource source) {
-		this.sources.add(source);
+		if( !this.sources.contains(source) )
+			this.sources.add(source);
 	}
 
 	@Override

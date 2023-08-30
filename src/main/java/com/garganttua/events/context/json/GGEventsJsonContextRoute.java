@@ -37,6 +37,11 @@ public class GGEventsJsonContextRoute implements IGGEventsContextItemBinder<IGGE
 	@JsonInclude
 	private GGEventsJsonContextLockObject synchronization;
 	
+	@JsonInclude
+	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
+	@JsonInclude
+	protected List<GGEventsJsonContextRoute> otherVersions = new ArrayList<GGEventsJsonContextRoute>();
+
 	@Override
 	public IGGEventsContextRoute bind() throws GGEventsException {
 		GGEventsContextRoute ggEventsContextRoute = new GGEventsContextRoute(uuid, from, to);
@@ -46,7 +51,7 @@ public class GGEventsJsonContextRoute implements IGGEventsContextItemBinder<IGGE
 			ggEventsContextRoute.exceptions(this.exceptions.bind());
 		if( this.synchronization != null )
 			ggEventsContextRoute.synchronization(this.synchronization.bind());
-		
+		GGEventsJsonContextSourceItem.bindSources(ggEventsContextRoute, this.sources);
 		return ggEventsContextRoute;
 	}
 
@@ -67,6 +72,7 @@ public class GGEventsJsonContextRoute implements IGGEventsContextItemBinder<IGGE
 			this.synchronization = new GGEventsJsonContextLockObject();
 			this.synchronization.build(bound.getSynchronization());
 		}
+		GGEventsJsonContextSourceItem.buildSources(bound, this.sources);
 	}
 
 }

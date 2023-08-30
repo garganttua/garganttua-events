@@ -19,8 +19,6 @@ public class GGEventsContextItemSource implements Comparable<GGEventsContextItem
 	
 	private String source;
 	
-	private Date date;
-	
 	@Override
 	public boolean equals(Object source) {
 		return ((GGEventsContextItemSource) source).assetId.equals(this.assetId) &&

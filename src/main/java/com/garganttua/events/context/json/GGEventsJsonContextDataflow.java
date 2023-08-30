@@ -1,5 +1,8 @@
 package com.garganttua.events.context.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContextDataflow;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
@@ -33,10 +36,17 @@ public class GGEventsJsonContextDataflow implements IGGEventsContextItemBinder<I
 	
 	@JsonInclude
 	protected boolean encapsulated;
+	
+	@JsonInclude
+	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
+	@JsonInclude
+	protected List<GGEventsJsonContextDataflow> otherVersions = new ArrayList<GGEventsJsonContextDataflow>();
 
 	@Override
 	public IGGEventsContextDataflow bind() {
-		return new GGEventsContextDataflow(this.uuid, this.name, this.type, this.garanteeOrder, this.version, this.encapsulated);
+		GGEventsContextDataflow ggEventsContextDataflow = new GGEventsContextDataflow(this.uuid, this.name, this.type, this.garanteeOrder, this.version, this.encapsulated);
+		GGEventsJsonContextSourceItem.bindSources(ggEventsContextDataflow, this.sources);
+		return ggEventsContextDataflow;
 	}
 
 	@Override
@@ -47,6 +57,7 @@ public class GGEventsJsonContextDataflow implements IGGEventsContextItemBinder<I
 		this.garanteeOrder = bound.isGaranteeOrder();
 		this.version = bound.getVersion();
 		this.encapsulated = bound.isEncapsulated();
+		GGEventsJsonContextSourceItem.buildSources(bound, this.sources);
 	}
 
 }

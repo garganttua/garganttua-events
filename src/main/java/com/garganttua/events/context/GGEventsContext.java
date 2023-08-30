@@ -4,7 +4,6 @@
 package com.garganttua.events.context;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -26,9 +25,13 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem
 import com.garganttua.events.spec.objects.GGEventsUtils;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergeableItem<IGGEventsContext> {
+	
+	@Setter
+	private String assetId;
 	
 	private String tenantId;
 	
@@ -52,11 +55,16 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 
 	private List<IGGEventsContextItemSource> sources = new ArrayList<IGGEventsContextItemSource>();
 
-	public GGEventsContext(String tenantId, String clusterId) {
+	public GGEventsContext(String assetId, String tenantId, String clusterId) {
+		this.assetId = assetId;
 		this.clusterId = clusterId;
 		this.tenantId = tenantId;
 	}
 	
+	public GGEventsContext(String tenantId, String clusterId) {
+		this(null, tenantId, clusterId);
+	}
+
 	@Override
 	public IGGEventsEngine build() {
 		return null;
@@ -76,7 +84,7 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 	
 	private <T> T setSourceIfNeeded(T item) {
 		if( ((IGGEventsSourcedContextItem) item).getsources().isEmpty() ) {
-			((IGGEventsSourcedContextItem) item).getsources().add(new GGEventsContextItemSource(this.tenantId, this.clusterId, "built-in", new Date()));
+			((IGGEventsSourcedContextItem) item).getsources().add(new GGEventsContextItemSource(assetId, this.clusterId, "built-in"));
 		}
 		return item;
 	}
@@ -232,7 +240,8 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 
 	@Override
 	public IGGEventsContext source(IGGEventsContextItemSource source) {
-		this.sources.add(source);
+		if( !this.sources.contains(source) )
+			this.sources.add(source);
 		
 		this.topics.forEach(topic -> {
 			topic.source(source);

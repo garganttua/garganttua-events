@@ -1,5 +1,8 @@
 package com.garganttua.events.context.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
@@ -38,7 +41,12 @@ public class GGEventsJsonContextSubscription implements IGGEventsContextItemBind
 	
 	@JsonInclude
 	private GGEventsJsonContextProducerConfiguration producerConfiguration;
-
+	
+	@JsonInclude
+	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
+	@JsonInclude
+	protected List<GGEventsJsonContextSubscription> otherVersions = new ArrayList<GGEventsJsonContextSubscription>();
+	
 	@Override
 	public IGGEventsContextSubscription bind() throws GGEventsException {
 		IGGEventsContextSubscription subscription = new GGEventsContextSubscription(this.dataflow, this.topic, this.connector, this.publicationMode);
@@ -48,6 +56,7 @@ public class GGEventsJsonContextSubscription implements IGGEventsContextItemBind
 			subscription.consumerConfiguration(this.consumerConfiguration.bind());
 		if( this.producerConfiguration != null) 
 			subscription.producerConfiguration(this.producerConfiguration.bind());
+		GGEventsJsonContextSourceItem.bindSources(subscription, this.sources);
 		return subscription;
 	}
 
@@ -63,6 +72,7 @@ public class GGEventsJsonContextSubscription implements IGGEventsContextItemBind
 		this.consumerConfiguration.build(bound.getCconfiguration());
 		this.producerConfiguration = new GGEventsJsonContextProducerConfiguration();
 		this.producerConfiguration.build(bound.getPconfiguration());
+		GGEventsJsonContextSourceItem.buildSources(bound, this.sources);
 	}
 
 }

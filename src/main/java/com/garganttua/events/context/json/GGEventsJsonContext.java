@@ -3,6 +3,7 @@ package com.garganttua.events.context.json;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContext;
 import com.garganttua.events.spec.exceptions.GGEventsException;
@@ -40,7 +41,7 @@ public class GGEventsJsonContext implements IGGEventsContextItemBinder<IGGEvents
 	
 	@Override
 	public IGGEventsContext bind() throws GGEventsException {
-		IGGEventsContext context = new GGEventsContext(tenantId, clusterId);
+		IGGEventsContext context = new GGEventsContext(this.tenantId, this.clusterId);
 		
 		GGEventsContextItemBinderUtils.bindList(this.topics, context.getTopics());
 		GGEventsContextItemBinderUtils.bindList(this.dataflows, context.getDataflows());
