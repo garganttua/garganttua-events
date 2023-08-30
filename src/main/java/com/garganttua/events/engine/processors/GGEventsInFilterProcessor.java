@@ -4,6 +4,7 @@
 package com.garganttua.events.engine.processors;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.context.GGEventsContextConsumerConfiguration;
 import com.garganttua.events.context.GGEventsContextDestinationPolicy;
@@ -103,6 +104,12 @@ public class GGEventsInFilterProcessor implements IGGEventsProcessor {
 
 	@Override
 	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
 		// TODO Auto-generated method stub
 		
 	}

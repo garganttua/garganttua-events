@@ -15,4 +15,6 @@ public interface IGGEventsContextConsumerConfiguration {
 
 	GGEventsContextDestinationPolicy getDpolicy();
 
+	boolean isIgnoreAssetMessages();
+
 }

@@ -32,9 +32,7 @@ public interface IGGEventsContext {
 	IGGEventsContext write(String sourceType, String version, String sourceConfiguration);
 
 	IGGEventsContext write(IGGEventsContextSource source);
-
-	IGGEventsContext write();
-
+	
 	IGGEventsContext lock(IGGEventsContextLock lock);
 
 	IGGEventsContextRoute route(IGGEventsContextRoute route);
@@ -58,5 +56,9 @@ public interface IGGEventsContext {
 	List<IGGEventsContextRoute> getRoutes();
 
 	List<IGGEventsContextLock> getLocks();
+
+	IGGEventsContext source(IGGEventsContextItemSource source);
+
+	List<IGGEventsContextItemSource> getsources();
 
 }

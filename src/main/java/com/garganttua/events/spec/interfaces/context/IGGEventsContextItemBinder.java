@@ -6,6 +6,6 @@ public interface IGGEventsContextItemBinder<T> {
 	
 	T bind() throws GGEventsException;
 	
-	void build(T bound) throws GGEventsException;
+	void build(T contextItem) throws GGEventsException;
 
 }

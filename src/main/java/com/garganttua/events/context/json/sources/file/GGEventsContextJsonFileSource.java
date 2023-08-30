@@ -3,13 +3,16 @@
  *******************************************************************************/
 package com.garganttua.events.context.json.sources.file;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.context.json.GGEventsJsonContext;
 import com.garganttua.events.spec.annotations.GGEventsContextSource;
@@ -17,10 +20,14 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @GGEventsContextSource(type="json-file", version="1.0")
+@AllArgsConstructor
+@NoArgsConstructor
 public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 
 	private String file;
@@ -31,9 +38,8 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	}
 
 	@Override
-	public void writeContext() throws GGEventsException {
-		// TODO Auto-generated method stub
-		
+	public void writeContext(IGGEventsContext context) throws GGEventsException {
+		this.writeContext(context, this.file);
 	}
 
 	@Override
@@ -59,8 +65,31 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	}
 
 	@Override
-	public void writeContext(String configuration) throws GGEventsException {
-		// TODO Auto-generated method stub
+	public void writeContext(IGGEventsContext context, String configuration) throws GGEventsException {
+		ObjectMapper mapper = new ObjectMapper();
+		log.info("Writting context to file "+configuration);
 		
+		try {
+			
+			GGEventsJsonContext jsonContext = new GGEventsJsonContext();
+			jsonContext.build(context);
+			String contextAsString = mapper.writeValueAsString(jsonContext);
+			BufferedWriter writer = new BufferedWriter(new FileWriter(configuration));
+		    writer.write(contextAsString);		    
+		    writer.close();
+		} catch (IOException e) {
+			throw new GGEventsException(e);
+		}
+		
+	}
+
+	@Override
+	public String getType() {
+		return "json-file";
+	}
+
+	@Override
+	public String getConfiguration() {
+		return this.file;
 	}
 }

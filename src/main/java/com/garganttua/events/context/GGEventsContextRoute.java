@@ -78,19 +78,26 @@ public class GGEventsContextRoute extends GGEventsContextItem<GGEventsContextRou
 
 	@Override
 	protected boolean isEqualTo(GGEventsContextRoute item) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean testTo = (this.to==null || item.to==null)?true:this.to.equals(item.to);
+		boolean testExceptions = (this.exceptions==null || item.exceptions==null)?true:this.exceptions.equals(item.exceptions);
+		boolean testSynchronization = (this.synchronization==null || item.synchronization==null)?true:this.synchronization.equals(item.synchronization);
+		return this.equals(item) 
+				&& this.from.equals(item.from)
+				&& testTo
+				&& testExceptions
+				&& testSynchronization
+				&& this.processors.equals(item.processors);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		GGEventsContextRoute item = (GGEventsContextRoute) obj;
+		return this.uuid.equals(item.uuid);
 	}
 	
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return this.uuid.hashCode();
 	}
 
 	@Override

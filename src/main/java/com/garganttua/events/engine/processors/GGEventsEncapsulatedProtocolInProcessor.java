@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
@@ -115,6 +116,12 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 
 	@Override
 	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
 		// TODO Auto-generated method stub
 		
 	}

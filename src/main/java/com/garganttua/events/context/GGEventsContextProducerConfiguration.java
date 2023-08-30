@@ -19,4 +19,15 @@ public class GGEventsContextProducerConfiguration implements IGGEventsContextPro
 	@Getter
 	private String destinationUuid = null;
 	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextProducerConfiguration item = (GGEventsContextProducerConfiguration) obj;
+		return this.dpolicy == item.dpolicy && this.destinationUuid==null?true:this.destinationUuid.equals(item.getDestinationUuid());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.dpolicy.hashCode() * (this.destinationUuid==null?1:this.destinationUuid.hashCode());
+	}
+	
 }

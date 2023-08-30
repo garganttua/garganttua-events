@@ -7,7 +7,7 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 
 import lombok.Getter;
 
-public class GGEventsContextTopic extends GGEventsContextItem<GGEventsContextTopic> implements IGGEventsContextTopic {
+public class GGEventsContextTopic extends GGEventsContextItem<IGGEventsContextTopic> implements IGGEventsContextTopic {
 	
 	public GGEventsContextTopic(String ref) {
 		this.ref = ref;
@@ -27,8 +27,8 @@ public class GGEventsContextTopic extends GGEventsContextItem<GGEventsContextTop
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextTopic item) {
-		return this.ref.equals(item.ref);
+	protected boolean isEqualTo(IGGEventsContextTopic item) {
+		return this.ref.equals(((GGEventsContextTopic) item).ref);
 	}
 	
 }

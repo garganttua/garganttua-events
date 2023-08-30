@@ -1,6 +1,7 @@
 package com.garganttua.events.engine;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.garganttua.events.context.GGEventsContext;
+import com.garganttua.events.context.GGEventsContextItemSource;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.annotations.GGEventsContextSource;
 import com.garganttua.events.spec.annotations.GGEventsDistributedLock;
@@ -56,7 +58,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	}
 
 	public static IGGEventsBuilder builder(String assetId) {
-		return new GGEventsBuilder(assetId);
+		return new GGEventsBuilder(assetId).lookup("com.garganttua");
 	}
 
 	@Override
@@ -67,6 +69,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		
 		if( tenantContexts == null ) {
 			tenantContexts = new HashMap<String, IGGEventsContext>();
+			this.contexts.put(tenantId, tenantContexts);
 		}
 		
 		clusterContext = tenantContexts.get(clusterId);
@@ -76,40 +79,26 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 			((GGEventsContext) clusterContext).builder(this);
 			tenantContexts.put(clusterId, clusterContext);
 		}
-		this.contexts.put(tenantId, tenantContexts);
+		((GGEventsContext) clusterContext).setSourcesObjects(this.sources);
 		return clusterContext;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public IGGEventsContext context(IGGEventsContext context) {
-		var contextAlreadyExisting = this.context(context.getTenantId(), context.getClusterId());
+		IGGEventsContext contextAlreadyExisting = this.context(context.getTenantId(), context.getClusterId());
 		((IGGEventsContextMergeableItem<IGGEventsContext>) contextAlreadyExisting).merge(context);
 		return contextAlreadyExisting;
 	}
 
 	@Override
 	public IGGEventsBuilder source(String type, String version, String configuration) {
-		Class<?> source = (Class<?>) this.sources.get(type).get(version);
-		if( source == null ) {
-			throw new IllegalArgumentException("Context source of type "+type+" and version "+version+" is not found");
-		}
-		
 		try {
-			GGEventsUtils.checkVersion(version);
-		} catch (GGEventsException e) {
-			throw new IllegalArgumentException(e);
-		}
-		
-		IGGEventsContextSource source__;
-		try {
-			source__ = (IGGEventsContextSource) GGEventsUtils.getInstanceOf(source);
-		} catch (GGEventsException e) {
-			throw new IllegalArgumentException(e);
-		}
-		
-		try {
-			this.context(source__.readContext(configuration));
+			IGGEventsContextSource source = GGEventsUtils.getSourceObj(type, version, this.sources);
+			IGGEventsContext readContext = source.readContext(configuration);
+			readContext.source(new GGEventsContextItemSource(this.assetId, readContext.getClusterId(), type+"://"+configuration, new Date()));
+			
+			this.context(readContext);
 		} catch (GGEventsException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -121,6 +110,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	public IGGEventsBuilder source(IGGEventsContextSource source) {
 		try {
 			IGGEventsContext context = source.readContext();
+			context.source(new GGEventsContextItemSource(this.assetId, context.getClusterId(), source.getType()+"://"+source.getConfiguration(), new Date()));
 			this.context(context);
 		} catch (GGEventsException e) {
 			throw new IllegalArgumentException(e);

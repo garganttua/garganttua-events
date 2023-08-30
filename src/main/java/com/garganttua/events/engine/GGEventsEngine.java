@@ -291,8 +291,8 @@ public class GGEventsEngine implements IGGEventsEngine {
 		try {
 			objectClass = (Class<U>) classes.get(type).get(version);
 		} catch (Exception e) {
-			log.error("[" + assetId + "][" + tenantId + "][" + clusterId + "] Cannot find class of type " + objectClass.getName() + " with type "+type+" and version "+version+".");
-			throw new IllegalArgumentException("Cannot find class of type " + objectClass.getName() + " with type "+type+" and version "+version+".");
+			log.error("[" + assetId + "][" + tenantId + "][" + clusterId + "] Cannot find class with type "+type+" and version "+version+".");
+			throw new IllegalArgumentException("Cannot find class with type "+type+" and version "+version+".");
 		}
 		if (objectClass == null) {
 			log.error("[" + assetId + "][" + tenantId + "][" + clusterId + "] Cannot find class of type " + objectClass.getName() + " with type "+type+" and version "+version+".");

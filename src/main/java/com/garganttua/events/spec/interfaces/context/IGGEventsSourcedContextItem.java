@@ -6,8 +6,8 @@ import com.garganttua.events.context.GGEventsContextItemSource;
 
 public interface IGGEventsSourcedContextItem {
 	
-	List<GGEventsContextItemSource> getsources();
+	List<IGGEventsContextItemSource> getsources();
 	
-	void source(GGEventsContextItemSource source);
+	void source(IGGEventsContextItemSource source);
 
 }

@@ -23,12 +23,23 @@ public class GGEventsContextLock extends GGEventsContextItem<GGEventsContextLock
 	private String version;
 	
 	@Getter
-	private String configuration = "";
+	private String configuration;
+	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextLock item = (GGEventsContextLock) obj;
+		return this.name.equals(item.getName());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.name.hashCode();
+	}
 
 	@Override
 	protected boolean isEqualTo(GGEventsContextLock item) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.equals(item) && this.configuration.equals(item.getConfiguration()) && this.type.equals(item.getType())
+				&& this.version.equals(item.getVersion());
 	}
 
 }

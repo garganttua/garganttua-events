@@ -6,6 +6,7 @@ package com.garganttua.events.engine.processors;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -107,6 +108,12 @@ public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProces
 
 	@Override
 	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
 		// TODO Auto-generated method stub
 		
 	}

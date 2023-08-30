@@ -6,26 +6,29 @@ package com.garganttua.events.context;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.garganttua.events.engine.GGEventsBuilder;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConnector;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemSource;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextLock;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextRoute;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
 import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
+import com.garganttua.events.spec.objects.GGEventsUtils;
 
 import lombok.Getter;
 
 @Getter
-public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implements IGGEventsContext {
+public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergeableItem<IGGEventsContext> {
 	
 	private String tenantId;
 	
@@ -44,6 +47,10 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 	private List<IGGEventsContextLock> locks = new ArrayList<IGGEventsContextLock>();
 
 	private IGGEventsBuilder builder;
+
+	private Map<String, Map<String, Class<?>>> sourcesClasses;
+
+	private List<IGGEventsContextItemSource> sources = new ArrayList<IGGEventsContextItemSource>();
 
 	public GGEventsContext(String tenantId, String clusterId) {
 		this.clusterId = clusterId;
@@ -93,7 +100,7 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 
 	@Override
 	public IGGEventsContext connector(String name, String type, String version, String configuration) {
-		return this.connector(new GGEventsContextConnector(name, type, configuration, version));
+		return this.connector(new GGEventsContextConnector(name, type, version, configuration));
 	}
 
 	@Override
@@ -149,15 +156,44 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 	}
 	
 	@Override
-	public GGEventsContext merge(GGEventsContext item) {
-		// TODO Auto-generated method stub
+	public IGGEventsContext merge(IGGEventsContext item) {
+		((GGEventsContext) item).topics.forEach(topic -> {
+			topic(topic);
+		});
+		((GGEventsContext) item).dataflows.forEach(dataflow ->{
+			dataflow(dataflow);
+		});
+		((GGEventsContext) item).connectors.forEach(connector -> {
+			connector(connector);
+		});
+		((GGEventsContext) item).subscriptions.forEach(subscription -> {
+			subscription(subscription);
+		});
+		((GGEventsContext) item).locks.forEach(lock -> {
+			lock(lock);
+		});
+		((GGEventsContext) item).routes.forEach(route -> {
+			route(route);
+		});
+
 		return this;
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContext item) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean equals(Object obj) {
+		boolean equal = true;
+		
+		GGEventsContext item = (GGEventsContext) obj;
+		
+		equal &= item.getClusterId().equals(this.clusterId) && item.getTenantId().equals(this.tenantId);
+		equal &= this.topics.equals(item.getTopics());
+		equal &= this.subscriptions.equals(item.getSubscriptions());
+		equal &= this.dataflows.equals(item.getDataflows());
+		equal &= this.connectors.equals(item.getConnectors());
+		equal &= this.routes.equals(item.getRoutes());
+		equal &= this.locks.equals(item.getLocks());
+
+		return equal;
 	}
 
 	@Override
@@ -167,19 +203,22 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 
 	@Override
 	public IGGEventsContext write(String sourceType, String version, String sourceConfiguration) {
-		// TODO Auto-generated method stub
+		try {
+			IGGEventsContextSource source = GGEventsUtils.getSourceObj(sourceType, version, this.sourcesClasses);
+			source.writeContext(this, sourceConfiguration);
+		} catch (GGEventsException e) {
+			throw new IllegalArgumentException(e);
+		}
 		return this;
 	}
 
 	@Override
 	public IGGEventsContext write(IGGEventsContextSource source) {
-		// TODO Auto-generated method stub
-		return this;
-	}
-
-	@Override
-	public IGGEventsContext write() {
-		// TODO Auto-generated method stub
+		try {
+			source.writeContext(this);
+		} catch (GGEventsException e) {
+			throw new IllegalArgumentException(e);
+		}
 		return this;
 	}
 
@@ -187,4 +226,37 @@ public class GGEventsContext extends GGEventsContextItem<GGEventsContext> implem
 		this.builder = builder;
 	}
 
+	public void setSourcesObjects(Map<String, Map<String, Class<?>>> sources) {
+		this.sourcesClasses = sources;
+	}
+
+	@Override
+	public IGGEventsContext source(IGGEventsContextItemSource source) {
+		this.sources.add(source);
+		
+		this.topics.forEach(topic -> {
+			topic.source(source);
+		});
+		this.dataflows.forEach(dataflow ->{
+			dataflow.source(source);
+		});
+		this.connectors.forEach(connector -> {
+			connector.source(source);
+		});
+		this.subscriptions.forEach(subscription -> {
+			subscription.source(source);
+		});
+		this.locks.forEach(lock -> {
+			lock.source(source);
+		});
+		this.routes.forEach(route -> {
+			route.source(source);
+		});
+		return this;
+	}
+
+	@Override
+	public List<IGGEventsContextItemSource> getsources() {
+		return this.sources;
+	}
 }

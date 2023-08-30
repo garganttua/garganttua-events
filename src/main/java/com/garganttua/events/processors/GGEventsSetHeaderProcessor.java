@@ -3,6 +3,7 @@ package com.garganttua.events.processors;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
@@ -77,6 +78,12 @@ public class GGEventsSetHeaderProcessor implements IGGEventsProcessor {
 
 	@Override
 	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -8,7 +8,7 @@ import com.garganttua.events.context.GGEventsContextHighAvailabilityMode;
 import com.garganttua.events.context.GGEventsContextOriginPolicy;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
 
-public interface IGGEventsContextSubscription extends IGGEventsContextItemLinkedToContext {
+public interface IGGEventsContextSubscription extends IGGEventsSourcedContextItem, IGGEventsContextItemLinkedToContext {
 
 	IGGEventsContextSubscription producerConfiguration(GGEventsContextDestinationPolicy destinationPolicy,
 			String destinationUuid);

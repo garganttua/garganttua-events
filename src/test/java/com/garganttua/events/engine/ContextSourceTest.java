@@ -7,6 +7,7 @@ import com.garganttua.events.context.GGEventsContext;
 import com.garganttua.events.spec.annotations.GGEventsContextSource;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 
 @GGEventsContextSource(type = "ContextSourceTest", version = "1.0")
 public class ContextSourceTest implements IGGEventsContextSource {
@@ -25,7 +26,7 @@ public class ContextSourceTest implements IGGEventsContextSource {
 	}
 
 	@Override
-	public void writeContext(String configuration) throws GGEventsException {
+	public void writeContext(IGGEventsContext context, String configuration) throws GGEventsException {
 		// TODO Auto-generated method stub
 
 	}
@@ -36,7 +37,7 @@ public class ContextSourceTest implements IGGEventsContextSource {
 	}
 
 	@Override
-	public void writeContext() throws GGEventsException {
+	public void writeContext(IGGEventsContext context) throws GGEventsException {
 		// TODO Auto-generated method stub
 
 	}

@@ -2,6 +2,8 @@ package com.garganttua.events.context;
 
 import java.util.Date;
 
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemSource;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GGEventsContextItemSource implements Comparable<GGEventsContextItemSource> {
+public class GGEventsContextItemSource implements Comparable<GGEventsContextItemSource>, IGGEventsContextItemSource {
 	
 	private String assetId;
 	

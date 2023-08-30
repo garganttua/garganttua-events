@@ -52,18 +52,6 @@ public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContext
 	
 	@Getter
 	protected boolean encapsulated;
-//	
-//	@JsonIgnore
-//	public String getMinorVersion() {
-//		String[] splitted = this.version.split("\\.");
-//		return splitted[1];
-//	}
-//	
-//	@JsonIgnore
-//	public String getMajorVersion() {
-//		String[] splitted = this.version.split("\\.");
-//		return splitted[0];
-//	}
 
 	@Override
 	public boolean equals(Object dataflow) {
@@ -77,8 +65,12 @@ public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContext
 
 	@Override
 	protected boolean isEqualTo(GGEventsContextDataflow item) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.equals(item) 
+				&& this.name.equals(item.getName()) 
+				&& this.type.equals(item.getType())
+				&& this.garanteeOrder == item.isGaranteeOrder()
+				&& this.version.equals(item.getVersion())
+				&& this.encapsulated == item.isEncapsulated();
 	}
-	
+
 }

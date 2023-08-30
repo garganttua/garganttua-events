@@ -6,23 +6,24 @@ package com.garganttua.events.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemSource;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
 
 
 public abstract class GGEventsContextItem<T extends IGGEventsSourcedContextItem> implements IGGEventsSourcedContextItem, IGGEventsContextMergeableItem<T> {
 	
-	protected List<GGEventsContextItemSource> sources = new ArrayList<GGEventsContextItemSource>();
+	protected List<IGGEventsContextItemSource> sources = new ArrayList<IGGEventsContextItemSource>();
 	
-	protected List<T> fromOtherSources = new ArrayList<T>();
+	protected List<T> otherVersions = new ArrayList<T>();
 
 	@Override
-	public List<GGEventsContextItemSource> getsources() {
+	public List<IGGEventsContextItemSource> getsources() {
 		return this.sources;
 	}
 
 	@Override
-	public void source(GGEventsContextItemSource source) {
+	public void source(IGGEventsContextItemSource source) {
 		this.sources.add(source);
 	}
 
@@ -35,7 +36,7 @@ public abstract class GGEventsContextItem<T extends IGGEventsSourcedContextItem>
 				}
 			});
 		} else {
-			this.fromOtherSources.add(item);
+			this.otherVersions.add(item);
 		}
 		return null;
 	}

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
@@ -185,5 +186,11 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 	@Override
 	public void setExecutorService(ExecutorService service) {
 		this.service = service;
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 }

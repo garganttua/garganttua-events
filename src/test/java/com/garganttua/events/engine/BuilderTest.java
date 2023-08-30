@@ -33,7 +33,6 @@ public class BuilderTest {
 		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize/2);
 		
 		IGGEventsEngine engine = GGEventsBuilder.builder("assetId")
-			.lookup("com.garganttua")
 			.lookup("org.toto")
 			.executorService(executorService)
 			.scheduledExecutorService(scheduledExecutorService)
@@ -66,15 +65,24 @@ public class BuilderTest {
 //			.synchronization("lock", "lockObject")
 			.context()
 //			.lock("name", "type", "version", "configuration")
-			.write("ContextSourceTest", "1.0", "configuration")
-			.write(new ContextSourceTest("configuration"))
-			.write()
+			.write("json-file", "1.0", "src/test/resources/context-output.json")
+//			.write(new ContextSourceTest("configuration"))
 			.builder()
 			.build()
-			.start();
+			.start()
+			;
 		
 //		String assetId = engine.getAssetInfos().getAssetId();
 		
 		engine.stop();
+	}
+	
+	@Test
+	public void testMultipleContexts() {
+		GGEventsBuilder.builder("assetId")
+		.source("json-file", "1.0", "src/test/resources/context.json")
+		.source("json-file", "1.0", "src/test/resources/context-duplicated.json")
+		.context("1", "1")
+		.write("json-file", "1.0", "src/test/resources/context-output-test-multiple-contexts.json");
 	}
 }

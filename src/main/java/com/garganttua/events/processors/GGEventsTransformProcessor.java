@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
@@ -39,7 +40,6 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 	private String manual;
 	private String type = "IGGEventsProcessor::GGEventsTransformProcessor";
 
-	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		
@@ -149,6 +149,12 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 
 	@Override
 	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
 		// TODO Auto-generated method stub
 		
 	}

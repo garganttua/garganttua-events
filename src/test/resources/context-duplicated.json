@@ -63,7 +63,7 @@
 	[
 	{
 		"uuid": "7fd3397d-0f1a-4779-8cd3-5f2ab9b4ae6b",
-		"from": "kafka://b9a68675-20a6-494f-b921-356e3a84dfac/test",
+		"from": "kafka://b9a68675-20a6-494f-b921-356e3a84dfac/test2",
 		"processors": 
 		[
 			{

@@ -11,10 +11,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 public class GGEventsContextConnector extends GGEventsContextItem<GGEventsContextConnector> implements IGGEventsContextConnector {
 	
-	public GGEventsContextConnector(String name, String type, String configuration, String version) {
+	public GGEventsContextConnector(String name, String type, String version, String configuration) {
 		this.name = name;
 		this.type = type;
 		this.configuration = configuration;
@@ -27,24 +26,25 @@ public class GGEventsContextConnector extends GGEventsContextItem<GGEventsContex
 	
 	private String version;
 	
-	private String configuration = "";
+	private String configuration;
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextConnector item) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	@Override
 	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-		return super.equals(obj);
+		GGEventsContextConnector item = (GGEventsContextConnector) obj;
+		return this.name.equals(item.getName());
 	}
 	
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
-		return super.hashCode();
+		return this.name.hashCode();
+	}
+
+	@Override
+	protected boolean isEqualTo(GGEventsContextConnector item) {
+		return this.equals(item) 
+				&& this.type.equals(item.getType())
+				&& this.version.equals(item.getVersion())
+				&&this.configuration.equals(item.getConfiguration());
 	}
 
 }
