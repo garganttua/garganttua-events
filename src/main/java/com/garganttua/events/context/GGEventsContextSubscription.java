@@ -21,7 +21,7 @@ import lombok.Setter;
  * 
  *
  */
-public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsContextSubscription> implements IGGEventsContextSubscription {
+public class GGEventsContextSubscription extends GGEventsContextSourcedItem<IGGEventsContextSubscription> implements IGGEventsContextSubscription {
 	
 	@Getter
 	private String dataflow; 
@@ -99,15 +99,6 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextSubscription item) {
-		return this.equals(item) && 
-				this.publicationMode == item.publicationMode &&
-				this.timeInterval == item.timeInterval &&
-				this.cconfiguration.equals(item.cconfiguration) &&
-				this.pconfiguration.equals(item.pconfiguration);
-	}
-
-	@Override
 	public IGGEventsContextSubscription producerConfiguration(IGGEventsContextProducerConfiguration configuration) {
 		this.pconfiguration = configuration;
 		return this;
@@ -129,5 +120,14 @@ public class GGEventsContextSubscription extends GGEventsContextItem<GGEventsCon
 	public IGGEventsContextSubscription timeInterval(long time, TimeUnit unit) {
 		this.timeInterval(new GGEventsContextTimeInterval(time, unit));
 		return this;
+	}
+
+	@Override
+	protected boolean isEqualTo(IGGEventsContextSubscription item) {
+		return this.equals(item) && 
+				this.publicationMode == item.getPublicationMode() &&
+				this.timeInterval == item.getTimeInterval() &&
+				this.cconfiguration.equals(item.getCconfiguration()) &&
+				this.pconfiguration.equals(item.getPconfiguration());
 	}
 }

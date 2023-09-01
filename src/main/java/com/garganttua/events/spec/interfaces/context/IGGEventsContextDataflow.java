@@ -1,6 +1,6 @@
 package com.garganttua.events.spec.interfaces.context;
 
-public interface IGGEventsContextDataflow extends IGGEventsSourcedContextItem {
+public interface IGGEventsContextDataflow extends IGGEventsContextSourcedItem, IGGEventsContextMergeableItem<IGGEventsContextDataflow>{
 
 	String getUuid();
 

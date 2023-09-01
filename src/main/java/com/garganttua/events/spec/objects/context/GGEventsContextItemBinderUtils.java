@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSourcedItem;
 import com.garganttua.events.spec.objects.GGEventsUtils;
 
 public class GGEventsContextItemBinderUtils {

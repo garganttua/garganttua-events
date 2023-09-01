@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class GGEventsContextRoute extends GGEventsContextItem<GGEventsContextRoute> implements IGGEventsContextRoute {
+public class GGEventsContextRoute extends GGEventsContextSourcedItem<IGGEventsContextRoute> implements IGGEventsContextRoute {
 
 	public GGEventsContextRoute(String uuid, String from, String to) {
 		this(uuid, from, new ArrayList<IGGEventsContextProcessor>(), to, null, null);
@@ -77,19 +77,6 @@ public class GGEventsContextRoute extends GGEventsContextItem<GGEventsContextRou
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextRoute item) {
-		boolean testTo = (this.to==null || item.to==null)?true:this.to.equals(item.to);
-		boolean testExceptions = (this.exceptions==null || item.exceptions==null)?true:this.exceptions.equals(item.exceptions);
-		boolean testSynchronization = (this.synchronization==null || item.synchronization==null)?true:this.synchronization.equals(item.synchronization);
-		return this.equals(item) 
-				&& this.from.equals(item.from)
-				&& testTo
-				&& testExceptions
-				&& testSynchronization
-				&& this.processors.equals(item.processors);
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		GGEventsContextRoute item = (GGEventsContextRoute) obj;
 		return this.uuid.equals(item.uuid);
@@ -116,6 +103,19 @@ public class GGEventsContextRoute extends GGEventsContextItem<GGEventsContextRou
 	public IGGEventsContextRoute synchronization(IGGEventsContextLockObject synchronization) {
 		this.synchronization = synchronization;
 		return this;
+	}
+
+	@Override
+	protected boolean isEqualTo(IGGEventsContextRoute item) {
+		boolean testTo = (this.to==null || item.getTo()==null)?true:this.to.equals(item.getTo());
+		boolean testExceptions = (this.exceptions==null || item.getExceptions()==null)?true:this.exceptions.equals(item.getExceptions());
+		boolean testSynchronization = (this.synchronization==null || item.getSynchronization()==null)?true:this.synchronization.equals(item.getSynchronization());
+		return this.equals(item) 
+				&& this.from.equals(item.getFrom())
+				&& testTo
+				&& testExceptions
+				&& testSynchronization
+				&& this.processors.equals(item.getProcessors());
 	}
 
 }

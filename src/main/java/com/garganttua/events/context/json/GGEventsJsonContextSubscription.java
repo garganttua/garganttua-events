@@ -6,9 +6,11 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
+import com.garganttua.events.context.GGEventsContextSourcedItem;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSourcedItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 
 import lombok.Getter;
@@ -49,7 +51,7 @@ public class GGEventsJsonContextSubscription implements IGGEventsContextItemBind
 	
 	@Override
 	public IGGEventsContextSubscription bind() throws GGEventsException {
-		IGGEventsContextSubscription subscription = new GGEventsContextSubscription(this.dataflow, this.topic, this.connector, this.publicationMode);
+		GGEventsContextSubscription subscription = new GGEventsContextSubscription(this.dataflow, this.topic, this.connector, this.publicationMode);
 		if( this.timeInterval != null) 
 			subscription.timeInterval(this.timeInterval.bind());
 		if( this.consumerConfiguration != null) 
@@ -57,9 +59,11 @@ public class GGEventsJsonContextSubscription implements IGGEventsContextItemBind
 		if( this.producerConfiguration != null) 
 			subscription.producerConfiguration(this.producerConfiguration.bind());
 		GGEventsJsonContextSourceItem.bindSources(subscription, this.sources);
+		GGEventsJsonContextSourceItem.bindOtherVersions(subscription, this.otherVersions);
 		return subscription;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void build(IGGEventsContextSubscription bound) throws GGEventsException {
 		this.dataflow = bound.getDataflow();
@@ -72,7 +76,8 @@ public class GGEventsJsonContextSubscription implements IGGEventsContextItemBind
 		this.consumerConfiguration.build(bound.getCconfiguration());
 		this.producerConfiguration = new GGEventsJsonContextProducerConfiguration();
 		this.producerConfiguration.build(bound.getPconfiguration());
-		GGEventsJsonContextSourceItem.buildSources(bound, this.sources);
+		GGEventsJsonContextSourceItem.buildSources((GGEventsContextSourcedItem<?>) bound, this.sources);
+		GGEventsJsonContextSourceItem.buildOtherVersions((GGEventsContextSourcedItem<IGGEventsContextSubscription>) bound, this.otherVersions, GGEventsJsonContextSubscription.class);
 	}
 
 }

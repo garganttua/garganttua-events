@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.garganttua.events.context.GGEventsContextPublicationMode;
 import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
-import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
+import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 
 public interface IGGEventsContext {
 
@@ -57,8 +57,8 @@ public interface IGGEventsContext {
 
 	List<IGGEventsContextLock> getLocks();
 
-	IGGEventsContext source(IGGEventsContextItemSource source);
+	IGGEventsContext source(com.garganttua.events.spec.interfaces.context.IGGEventsContextSource source);
 
-	List<IGGEventsContextItemSource> getsources();
+	List<com.garganttua.events.spec.interfaces.context.IGGEventsContextSource> getsources();
 
 }

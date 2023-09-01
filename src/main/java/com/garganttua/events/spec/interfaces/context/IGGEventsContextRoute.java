@@ -3,7 +3,7 @@ package com.garganttua.events.spec.interfaces.context;
 import java.util.List;
 import java.util.Map;
 
-public interface IGGEventsContextRoute extends IGGEventsSourcedContextItem, IGGEventsContextItemLinkedToContext {
+public interface IGGEventsContextRoute extends IGGEventsContextSourcedItem, IGGEventsContextMergeableItem<IGGEventsContextRoute>, IGGEventsContextItemLinkedToContext {
 
 	IGGEventsContextRoute processor(String type, String version, String configuration);
 

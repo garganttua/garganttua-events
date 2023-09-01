@@ -4,7 +4,7 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextLock;
 
 import lombok.Getter;
 
-public class GGEventsContextLock extends GGEventsContextItem<GGEventsContextLock> implements IGGEventsContextLock {
+public class GGEventsContextLock extends GGEventsContextSourcedItem<IGGEventsContextLock> implements IGGEventsContextLock {
 	
 	public GGEventsContextLock(String name, String type, String version, String configuration) {
 		this.name = name;
@@ -37,7 +37,7 @@ public class GGEventsContextLock extends GGEventsContextItem<GGEventsContextLock
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextLock item) {
+	protected boolean isEqualTo(IGGEventsContextLock item) {
 		return this.equals(item) && this.configuration.equals(item.getConfiguration()) && this.type.equals(item.getType())
 				&& this.version.equals(item.getVersion());
 	}

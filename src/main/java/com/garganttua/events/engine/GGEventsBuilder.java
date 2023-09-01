@@ -13,7 +13,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.garganttua.events.context.GGEventsContext;
-import com.garganttua.events.context.GGEventsContextItemSource;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.annotations.GGEventsContextSource;
 import com.garganttua.events.spec.annotations.GGEventsDistributedLock;
@@ -97,7 +96,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 			IGGEventsContextSource source = GGEventsUtils.getSourceObj(type, version, this.sources);
 			IGGEventsContext readContext = source.readContext(configuration);
 			((GGEventsContext) readContext).setAssetId(this.assetId);
-			readContext.source(new GGEventsContextItemSource(this.assetId, readContext.getClusterId(), type+"://"+configuration));
+			readContext.source(new com.garganttua.events.context.GGEventsContextSource(this.assetId, readContext.getClusterId(), type+"://"+configuration));
 			
 			this.context(readContext);
 		} catch (GGEventsException e) {
@@ -111,7 +110,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	public IGGEventsBuilder source(IGGEventsContextSource source) {
 		try {
 			IGGEventsContext context = source.readContext();
-			context.source(new GGEventsContextItemSource(this.assetId, context.getClusterId(), source.getType()+"://"+source.getConfiguration()));
+			context.source(new com.garganttua.events.context.GGEventsContextSource(this.assetId, context.getClusterId(), source.getType()+"://"+source.getConfiguration()));
 			((GGEventsContext) context).setAssetId(this.assetId);
 			this.context(context);
 		} catch (GGEventsException e) {

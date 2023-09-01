@@ -5,11 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContextRoute;
+import com.garganttua.events.context.GGEventsContextSourcedItem;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextExceptions;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextLockObject;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextRoute;
 import com.garganttua.events.spec.objects.context.GGEventsContextItemBinderUtils;
 
@@ -52,9 +50,11 @@ public class GGEventsJsonContextRoute implements IGGEventsContextItemBinder<IGGE
 		if( this.synchronization != null )
 			ggEventsContextRoute.synchronization(this.synchronization.bind());
 		GGEventsJsonContextSourceItem.bindSources(ggEventsContextRoute, this.sources);
+		GGEventsJsonContextSourceItem.bindOtherVersions(ggEventsContextRoute, this.otherVersions);
 		return ggEventsContextRoute;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void build(IGGEventsContextRoute bound) throws GGEventsException {
 		this.uuid = bound.getUuid();
@@ -72,7 +72,8 @@ public class GGEventsJsonContextRoute implements IGGEventsContextItemBinder<IGGE
 			this.synchronization = new GGEventsJsonContextLockObject();
 			this.synchronization.build(bound.getSynchronization());
 		}
-		GGEventsJsonContextSourceItem.buildSources(bound, this.sources);
+		GGEventsJsonContextSourceItem.buildSources((GGEventsContextSourcedItem<?>) bound, this.sources);
+		GGEventsJsonContextSourceItem.buildOtherVersions((GGEventsContextSourcedItem<IGGEventsContextRoute>) bound, this.otherVersions, GGEventsJsonContextRoute.class);
 	}
 
 }

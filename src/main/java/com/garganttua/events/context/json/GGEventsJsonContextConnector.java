@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContextConnector;
-import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.context.GGEventsContextSourcedItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConnector;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;
-import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSourcedItem;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,16 +39,18 @@ public class GGEventsJsonContextConnector implements IGGEventsContextItemBinder<
 	public IGGEventsContextConnector bind() {
 		GGEventsContextConnector item = new GGEventsContextConnector(this.name, this.type, this.version, this.configuration);
 		GGEventsJsonContextSourceItem.bindSources(item, this.sources);
+		GGEventsJsonContextSourceItem.bindOtherVersions(item, this.otherVersions);
 		return item;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void build(IGGEventsContextConnector bound) {
 		this.name = bound.getName();
 		this.type = bound.getType();
 		this.version = bound.getVersion();
 		this.configuration = bound.getConfiguration();
-		GGEventsJsonContextSourceItem.buildSources(bound, this.sources);
-		
+		GGEventsJsonContextSourceItem.buildSources((GGEventsContextSourcedItem<?>) bound, this.sources);
+		GGEventsJsonContextSourceItem.buildOtherVersions((GGEventsContextSourcedItem<IGGEventsContextConnector>) bound, this.otherVersions, GGEventsJsonContextConnector.class);
 	}
 }

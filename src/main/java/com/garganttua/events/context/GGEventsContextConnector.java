@@ -6,12 +6,11 @@ package com.garganttua.events.context;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConnector;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GGEventsContextConnector extends GGEventsContextItem<GGEventsContextConnector> implements IGGEventsContextConnector {
+public class GGEventsContextConnector extends GGEventsContextSourcedItem<IGGEventsContextConnector> implements IGGEventsContextConnector {
 	
 	public GGEventsContextConnector(String name, String type, String version, String configuration) {
 		this.name = name;
@@ -40,7 +39,7 @@ public class GGEventsContextConnector extends GGEventsContextItem<GGEventsContex
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextConnector item) {
+	protected boolean isEqualTo(IGGEventsContextConnector item) {
 		return this.equals(item) 
 				&& this.type.equals(item.getType())
 				&& this.version.equals(item.getVersion())

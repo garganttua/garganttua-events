@@ -1,8 +1,6 @@
 package com.garganttua.events.context;
 
-import java.util.Date;
-
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemSource;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSource;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GGEventsContextItemSource implements Comparable<GGEventsContextItemSource>, IGGEventsContextItemSource {
+public class GGEventsContextSource implements Comparable<GGEventsContextSource>, IGGEventsContextSource {
 	
 	private String assetId;
 	
@@ -21,13 +19,13 @@ public class GGEventsContextItemSource implements Comparable<GGEventsContextItem
 	
 	@Override
 	public boolean equals(Object source) {
-		return ((GGEventsContextItemSource) source).assetId.equals(this.assetId) &&
-				((GGEventsContextItemSource) source).clusterId.equals(this.clusterId) &&
-				((GGEventsContextItemSource) source).source.equals(this.source);
+		return ((GGEventsContextSource) source).assetId.equals(this.assetId) &&
+				((GGEventsContextSource) source).clusterId.equals(this.clusterId) &&
+				((GGEventsContextSource) source).source.equals(this.source);
 	}
 
 	@Override
-	public int compareTo(GGEventsContextItemSource o) {
+	public int compareTo(GGEventsContextSource o) {
 		return this.assetId.compareTo(o.assetId) * this.clusterId.compareTo(o.clusterId) * this.source.compareTo(o.source);
 	}
 	

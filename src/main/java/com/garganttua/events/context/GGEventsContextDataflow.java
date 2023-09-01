@@ -24,7 +24,7 @@ import lombok.Getter;
  * 
  *
  */
-public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContextDataflow> implements IGGEventsContextDataflow {
+public class GGEventsContextDataflow extends GGEventsContextSourcedItem<IGGEventsContextDataflow> implements IGGEventsContextDataflow {
 
 	public GGEventsContextDataflow(String uuid, String name, String type, boolean garanteeOrder, String version, boolean encapsulated) {
 		this.uuid = uuid;
@@ -64,7 +64,7 @@ public class GGEventsContextDataflow extends GGEventsContextItem<GGEventsContext
 	}
 
 	@Override
-	protected boolean isEqualTo(GGEventsContextDataflow item) {
+	protected boolean isEqualTo(IGGEventsContextDataflow item) {
 		return this.equals(item) 
 				&& this.name.equals(item.getName()) 
 				&& this.type.equals(item.getType())

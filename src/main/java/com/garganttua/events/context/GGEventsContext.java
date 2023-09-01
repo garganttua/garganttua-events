@@ -15,13 +15,12 @@ import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConnector;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemSource;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextLock;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextRoute;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSourcedItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextTopic;
-import com.garganttua.events.spec.interfaces.context.IGGEventsSourcedContextItem;
 import com.garganttua.events.spec.objects.GGEventsUtils;
 
 import lombok.Getter;
@@ -53,7 +52,7 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 
 	private Map<String, Map<String, Class<?>>> sourcesClasses;
 
-	private List<IGGEventsContextItemSource> sources = new ArrayList<IGGEventsContextItemSource>();
+	private List<com.garganttua.events.spec.interfaces.context.IGGEventsContextSource> sources = new ArrayList<com.garganttua.events.spec.interfaces.context.IGGEventsContextSource>();
 
 	public GGEventsContext(String assetId, String tenantId, String clusterId) {
 		this.assetId = assetId;
@@ -71,20 +70,21 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T createOrMerge(List<T> items, T item) {
+	private <T extends IGGEventsContextMergeableItem<T>> T createOrMerge(List<T> items, T item) {
 		if( !items.contains(item) ) {
 			items.add(item);
 			return item;
 		} else {
 			T toupdate = items.get(items.indexOf(item));
-			((IGGEventsContextMergeableItem<T>) toupdate).merge(item);
+			toupdate.merge(item);
 			return toupdate;
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private <T> T setSourceIfNeeded(T item) {
-		if( ((IGGEventsSourcedContextItem) item).getsources().isEmpty() ) {
-			((IGGEventsSourcedContextItem) item).getsources().add(new GGEventsContextItemSource(assetId, this.clusterId, "built-in"));
+		if( ((IGGEventsContextSourcedItem) item).getsources().isEmpty() ) {
+			((IGGEventsContextSourcedItem) item).getsources().add(new GGEventsContextSource(assetId, this.clusterId, "built-in"));
 		}
 		return item;
 	}
@@ -164,7 +164,7 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 	}
 	
 	@Override
-	public IGGEventsContext merge(IGGEventsContext item) {
+	public void merge(IGGEventsContext item) {
 		((GGEventsContext) item).topics.forEach(topic -> {
 			topic(topic);
 		});
@@ -184,7 +184,7 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 			route(route);
 		});
 
-		return this;
+//		return this;
 	}
 
 	@Override
@@ -239,33 +239,33 @@ public class GGEventsContext implements IGGEventsContext, IGGEventsContextMergea
 	}
 
 	@Override
-	public IGGEventsContext source(IGGEventsContextItemSource source) {
+	public IGGEventsContext source(com.garganttua.events.spec.interfaces.context.IGGEventsContextSource source) {
 		if( !this.sources.contains(source) )
 			this.sources.add(source);
 		
 		this.topics.forEach(topic -> {
-			topic.source(source);
+			((IGGEventsContextSourcedItem) topic).source(source);
 		});
 		this.dataflows.forEach(dataflow ->{
-			dataflow.source(source);
+			((IGGEventsContextSourcedItem) dataflow).source(source);
 		});
 		this.connectors.forEach(connector -> {
-			connector.source(source);
+			((IGGEventsContextSourcedItem) connector).source(source);
 		});
 		this.subscriptions.forEach(subscription -> {
-			subscription.source(source);
+			((IGGEventsContextSourcedItem) subscription).source(source);
 		});
 		this.locks.forEach(lock -> {
-			lock.source(source);
+			((IGGEventsContextSourcedItem) lock).source(source);
 		});
 		this.routes.forEach(route -> {
-			route.source(source);
+			((IGGEventsContextSourcedItem) route).source(source);
 		});
 		return this;
 	}
 
 	@Override
-	public List<IGGEventsContextItemSource> getsources() {
+	public List<com.garganttua.events.spec.interfaces.context.IGGEventsContextSource> getsources() {
 		return this.sources;
 	}
 }
