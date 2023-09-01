@@ -13,6 +13,7 @@ import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
@@ -64,7 +65,7 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) throws GGEventsException {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) throws GGEventsException {
 		this.configuration = configuration;
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(configuration);
 		__configuration__.forEach((name, values) -> { 

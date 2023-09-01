@@ -39,4 +39,6 @@ public interface IGGEventsBuilder {
 	IGGEventsEngine build();
 
 	IGGEventsBuilder eventHanlder(IGGEventsEventHandler GGEventsEventHandler);
+
+	IGGEventsBuilder registry(String label, IGGEventsObjectRegistry registry);
 }

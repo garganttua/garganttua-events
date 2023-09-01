@@ -17,6 +17,7 @@ import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -69,7 +70,7 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 
 	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
-			IGGEventsObjectRegistryHub objectRegistries) throws GGEventsException {
+			IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) throws GGEventsException {
 		this.configuration = configuration;
 	}
 

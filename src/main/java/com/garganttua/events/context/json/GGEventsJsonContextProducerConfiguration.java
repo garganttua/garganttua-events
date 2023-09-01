@@ -18,10 +18,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsJsonContextProducerConfiguration implements IGGEventsContextItemBinder<IGGEventsContextProducerConfiguration> {
 
-	@JsonInclude
 	private GGEventsContextDestinationPolicy destinationPolicy;
 	
-	@JsonInclude
 	private String destinationUuid;
 	
 	@Override

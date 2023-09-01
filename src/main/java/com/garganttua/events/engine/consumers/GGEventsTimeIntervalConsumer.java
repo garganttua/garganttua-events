@@ -77,7 +77,7 @@ public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable
 
 	@Override
 	public String getType() {
-		return "IGGEventsConsumer::GGEventsTimeIntervalConsumer";
+		return "consumer::time-interval";
 	}
 	
 }

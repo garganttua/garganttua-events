@@ -22,22 +22,20 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsJsonContextRoute implements IGGEventsContextItemBinder<IGGEventsContextRoute> {
 
-	@JsonInclude
 	private String uuid;
-	@JsonInclude
+
 	private String from;
-	@JsonInclude
+
 	private String to;
-	@JsonInclude
+
 	private List<GGEventsJsonContextProcessor> processors;
-	@JsonInclude
+
 	private GGEventsJsonContextExceptions exceptions;
-	@JsonInclude
+
 	private GGEventsJsonContextLockObject synchronization;
 	
-	@JsonInclude
 	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
-	@JsonInclude
+
 	protected List<GGEventsJsonContextRoute> otherVersions = new ArrayList<GGEventsJsonContextRoute>();
 
 	@Override

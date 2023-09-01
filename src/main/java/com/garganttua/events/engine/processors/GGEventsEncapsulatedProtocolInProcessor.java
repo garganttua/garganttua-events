@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
@@ -34,6 +35,7 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 	private String infos;
 	private String manual;
 	private String type;
+	private String name;
 
 	public GGEventsEncapsulatedProtocolInProcessor(String assetId, String clusterId, String subscriptionId,
 			String dataflowVersion) {
@@ -41,12 +43,12 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 		this.cluster = clusterId;
 		this.subscriptionId = subscriptionId;
 		this.version = dataflowVersion;
-		this.type = "IGGEventsProcessor::GGEventsProtocolInProcessor";
+		this.type = "processor::in-protocol";
 	}
 
 	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
-			IGGEventsObjectRegistryHub objectRegistries) {
+			IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 	}
 
@@ -104,14 +106,12 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-		
+		this.name = name;	
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	@Override

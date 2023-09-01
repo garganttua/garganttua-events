@@ -20,27 +20,21 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GGEventsJsonContextDataflow implements IGGEventsContextItemBinder<IGGEventsContextDataflow> {
 	
-	@JsonInclude
+
 	protected String uuid;
 	
-	@JsonInclude
 	protected String name;
 	
-	@JsonInclude
 	protected String type;
 	
-	@JsonInclude
 	protected boolean garanteeOrder;
 	
-	@JsonInclude
 	protected String version;
-	
-	@JsonInclude
+
 	protected boolean encapsulated;
-	
-	@JsonInclude
+
 	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
-	@JsonInclude
+
 	protected List<GGEventsJsonContextDataflow> otherVersions = new ArrayList<GGEventsJsonContextDataflow>();
 
 	@Override

@@ -17,9 +17,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GGEventsJsonContextLockObject implements IGGEventsContextItemBinder<IGGEventsContextLockObject> {
 
-	@JsonInclude
+
 	private String lock;
-	@JsonInclude
+
 	private String lockObject;
 	
 	@Override

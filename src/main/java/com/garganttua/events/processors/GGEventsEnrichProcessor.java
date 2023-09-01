@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEnrichStrategy;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -29,7 +30,7 @@ public class GGEventsEnrichProcessor implements IGGEventsProcessor {
 	private IGGEventsObjectRegistryHub objectRegistries;
 	private String infos;
 	private String manual;
-	private String type = "IGGEventsProcessor::GGEventsEnrichProcessor";
+	private String type = "processor::enricher";
 
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
@@ -42,7 +43,7 @@ public class GGEventsEnrichProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries)
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine)
 			throws GGEventsException {
 		this.configuration = configuration;
 		this.tenantId = tenantId;

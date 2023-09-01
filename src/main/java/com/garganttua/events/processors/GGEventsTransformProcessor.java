@@ -13,6 +13,7 @@ import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsTransformer;
@@ -38,7 +39,7 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 	private Class<?> transformerClazz;
 	private String infos;
 	private String manual;
-	private String type = "IGGEventsProcessor::GGEventsTransformProcessor";
+	private String type = "processor::transform";
 
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
@@ -86,7 +87,7 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries)
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine)
 			throws GGEventsException {
 		this.configuration = configuration;
 		this.tenantId = tenantId;

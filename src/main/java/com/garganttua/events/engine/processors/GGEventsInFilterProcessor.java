@@ -11,6 +11,7 @@ import com.garganttua.events.context.GGEventsContextDestinationPolicy;
 import com.garganttua.events.context.GGEventsContextOriginPolicy;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConsumerConfiguration;
@@ -36,11 +37,11 @@ public class GGEventsInFilterProcessor implements IGGEventsProcessor {
 		this.assetId = assetId;
 		this.clusterId = clusterId;
 		this.dataflowVersion = dataflowVersion;
-		this.type = "IGGEventsProcessor::GGEventsInFilterProcessor";
+		this.type = "processor::in-filter";
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 		
 	}

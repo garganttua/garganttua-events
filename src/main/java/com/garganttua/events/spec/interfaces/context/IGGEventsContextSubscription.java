@@ -10,8 +10,7 @@ import com.garganttua.events.context.GGEventsContextPublicationMode;
 
 public interface IGGEventsContextSubscription extends IGGEventsContextSourcedItem, IGGEventsContextMergeableItem<IGGEventsContextSubscription>, IGGEventsContextItemLinkedToContext {
 
-	IGGEventsContextSubscription producerConfiguration(GGEventsContextDestinationPolicy destinationPolicy,
-			String destinationUuid);
+	IGGEventsContextSubscription producerConfiguration(GGEventsContextDestinationPolicy destinationPolicy, String destinationUuid);
 
 	IGGEventsContextSubscription consumerConfiguration(GGEventsContextDataflowInProcessMode inProcessMode,
 			GGEventsContextOriginPolicy originPolicy, GGEventsContextDestinationPolicy destinationPolicy,

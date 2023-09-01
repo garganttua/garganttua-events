@@ -66,7 +66,7 @@ public class GGEventsTimeIntervalProducer implements IGGEventsProducer, Runnable
 
 	@Override
 	public String getType() {
-		return "IGGEventsProducer::GGEventsTimeIntervalProducer";
+		return "producer::time-interval";
 	}
 
 }

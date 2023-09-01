@@ -19,10 +19,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsJsonContextTimeInterval implements IGGEventsContextItemBinder<IGGEventsContextTimeInterval> {
 	
-	@JsonInclude
 	private long interval; 
 
-	@JsonInclude
 	private TimeUnit timeUnit;
 	
 	@Override

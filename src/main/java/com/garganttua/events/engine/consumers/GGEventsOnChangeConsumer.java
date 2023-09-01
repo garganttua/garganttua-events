@@ -46,6 +46,6 @@ public class GGEventsOnChangeConsumer implements IGGEventsConsumer, IGGEventsTyp
 
 	@Override
 	public String getType() {
-		return "IGGEventsConsumer::GGEventsOnChangeConsumer";
+		return "consumer::on-change";
 	}
 }

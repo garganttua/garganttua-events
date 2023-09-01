@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
@@ -29,7 +30,7 @@ public class GGEventsLoggerProcessor implements IGGEventsProcessor {
 	private boolean withMeta;
 	private String infos;
 	private String manual;
-	private String type = "IGGEventsProcessor::GGEventsLoggerProcessor";
+	private String type = "processor::log";
 	
 	@Override
 	public void handle(GGEventsExchange message) {
@@ -63,7 +64,7 @@ public class GGEventsLoggerProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		String[] params = configuration.split("&");
 	
 		for( int i = 0; i < params.length; i++) {

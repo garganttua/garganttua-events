@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
@@ -47,12 +48,12 @@ public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProces
 		this.dataflowVersion = dataflowVersion;
 		this.toDataFlowUuid = toDataFlowUuid;
 		this.toConnector = toConnector;
-		this.type = "IGGEventsProcessor::GGEventsProtocolOutProcessor";
+		this.type = "processor::out-protocol";
 	}
 
 	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
-			IGGEventsObjectRegistryHub objectRegistries) {
+			IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 	}
 

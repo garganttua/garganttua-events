@@ -17,11 +17,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GGEventsJsonContextProcessor implements IGGEventsContextItemBinder<IGGEventsContextProcessor> {
 	
-	@JsonInclude
+
 	private String type;
-	@JsonInclude
+
 	private String version;
-	@JsonInclude
+
 	private String configuration;
 
 	@Override

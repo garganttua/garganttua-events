@@ -20,21 +20,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GGEventsJsonContextLock implements IGGEventsContextItemBinder<IGGEventsContextLock> {
 
-	@JsonInclude
 	private String name;
 	
-	@JsonInclude
 	private String type;
-	
-	@JsonInclude
+
 	private String version;
 	
-	@JsonInclude
 	private String configuration;
-	
-	@JsonInclude
+
 	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
-	@JsonInclude
+
 	protected List<GGEventsJsonContextLock> otherVersions = new ArrayList<GGEventsJsonContextLock>();
 
 	@JsonInclude

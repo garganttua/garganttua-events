@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.garganttua.events.context.GGEventsContext;
-import com.garganttua.events.context.GGEventsContextProcessor;
 import com.garganttua.events.spec.enums.GGEventsEventCriticity;
 import com.garganttua.events.spec.enums.GGEventsExecutionStage;
-import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsAssetInfos;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
@@ -34,6 +30,7 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextVersionable
 import com.garganttua.events.spec.objects.GGEventsEvent;
 import com.garganttua.events.spec.objects.GGEventsUtils;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,17 +45,25 @@ public class GGEventsEngine implements IGGEventsEngine {
 	private Map<String, Map<String, Class<?>>> lockObjs;
 	private Map<String, Map<String, Class<?>>> processorObjs;
 	
+	@Getter
 	private Map<String, Map<String, Map<String, IGGEventsConnector>>> connectors;
+	@Getter
 	private Map<String, Map<String, Map<String, GGEventsTopic>>> topics;
+	@Getter
 	private Map<String, Map<String, Map<String, GGEventsDataflow>>> dataflows;
+	@Getter
 	private Map<String, Map<String, Map<String, GGEventsSubscription>>> subscriptions;
+	@Getter
 	private Map<String, Map<String, Map<String, GGEventsRoute>>> routes;
+	@Getter
 	private Map<String, Map<String, Map<String, IGGEventsDistributedLock>>> locks;
+	
+	private IGGEventsObjectRegistryHub objectsRegistryHub;
 
 	public GGEventsEngine(String assetId, Map<String, Map<String, IGGEventsContext>> contexts,
 			List<IGGEventsEventHandler> eventsHandlers, ExecutorService executorService,
 			ScheduledExecutorService scheduledExecutorService, Map<String, Map<String, Class<?>>> connectors,
-			Map<String, Map<String, Class<?>>> locks, Map<String, Map<String, Class<?>>> processors) {
+			Map<String, Map<String, Class<?>>> locks, Map<String, Map<String, Class<?>>> processors, IGGEventsObjectRegistryHub objectsRegistryHub) {
 		log.info("============================================");
 		log.info("======                                ======");
 		log.info("====== Starting Garganttua Events     ======");
@@ -74,6 +79,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 		this.connectorObjs = connectors;
 		this.lockObjs = locks;
 		this.processorObjs = processors;
+		this.objectsRegistryHub = objectsRegistryHub;
 		
 		this.connectors = new HashMap<String, Map<String, Map<String, IGGEventsConnector>>>();
 		this.topics = new HashMap<String, Map<String, Map<String, GGEventsTopic>>>();
@@ -158,10 +164,9 @@ public class GGEventsEngine implements IGGEventsEngine {
 
 			List<IGGEventsProcessor> processorsList = new ArrayList<IGGEventsProcessor>();
 			for (IGGEventsContextProcessor ctxtProcessor : route.getProcessors()) {
-				
 				IGGEventsProcessor proc = this.initObject(to, tenantId, clusterId, ctxtProcessor, this.processorObjs);
 				
-//				processorsList.put(entry.getKey(), proc);
+				processorsList.add(proc);
 				
 			}
 			
@@ -295,8 +300,8 @@ public class GGEventsEngine implements IGGEventsEngine {
 			throw new IllegalArgumentException("Cannot find class with type "+type+" and version "+version+".");
 		}
 		if (objectClass == null) {
-			log.error("[" + assetId + "][" + tenantId + "][" + clusterId + "] Cannot find class of type " + objectClass.getName() + " with type "+type+" and version "+version+".");
-			throw new IllegalArgumentException("Cannot find class of type " + objectClass.getName() + " with type "+type+" and version "+version+".");
+			log.error("[" + assetId + "][" + tenantId + "][" + clusterId + "] Cannot find class with type "+type+" and version "+version+".");
+			throw new IllegalArgumentException("Cannot find class with type "+type+" and version "+version+".");
 		}
 		
 		try {
@@ -313,8 +318,8 @@ public class GGEventsEngine implements IGGEventsEngine {
 			}
 		}
 		try {
-			Method setConfigurationMethod = object.getClass().getMethod("setConfiguration", String.class, String.class, String.class, String.class, IGGEventsObjectRegistryHub.class);
-			setConfigurationMethod.invoke(object, configuration, tenantId, clusterId, assetId, null);
+			Method setConfigurationMethod = object.getClass().getMethod("setConfiguration", String.class, String.class, String.class, String.class, IGGEventsObjectRegistryHub.class, IGGEventsEngine.class);
+			setConfigurationMethod.invoke(object, configuration, tenantId, clusterId, assetId, this.objectsRegistryHub, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IllegalArgumentException(e);
@@ -330,20 +335,6 @@ public class GGEventsEngine implements IGGEventsEngine {
 
 	@Override
 	public IGGEventsEngine start() {
-		this.executorService.execute(new Thread() {
-			@Override
-			public void run() {
-				while(true) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		
 		log.info("==== APPLYING CONFIGURATION ====");
 		this.connectors.forEach((tenantId, clusters) -> {
 			clusters.forEach((clusterId, connectors) -> {
@@ -362,7 +353,6 @@ public class GGEventsEngine implements IGGEventsEngine {
 		});
 		
 		log.info("==== STARTING CONNECTORS ====");
-
 		this.connectors.forEach((tenantId, clusters) -> {
 			clusters.forEach((clusterId, connectors) -> {
 				connectors.forEach((type, connector) -> {

@@ -21,17 +21,17 @@ import lombok.Setter;
 @Setter
 public class GGEventsJsonContextConsumerConfiguration implements IGGEventsContextItemBinder<IGGEventsContextConsumerConfiguration> {
 
-	@JsonInclude
+	
 	private GGEventsContextDataflowInProcessMode processMode;
-	@JsonInclude
+
 	private GGEventsContextOriginPolicy originPolicy;
-	@JsonInclude
+
 	private GGEventsContextDestinationPolicy destinationPolicy;
-	@JsonInclude
+
 	private boolean ignoreAssetMessages;
-	@JsonInclude
+
 	private GGEventsContextHighAvailabilityMode highAvailabilityMode;
-	@JsonInclude
+
 	
 	@Override
 	public IGGEventsContextConsumerConfiguration bind() throws GGEventsException {

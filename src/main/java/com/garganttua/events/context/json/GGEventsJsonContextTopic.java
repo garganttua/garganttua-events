@@ -20,10 +20,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GGEventsJsonContextTopic implements IGGEventsContextItemBinder<IGGEventsContextTopic> {
 	
-	@JsonInclude
 	private String ref;
-	
-	@JsonInclude
+
 	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
 	
 	@Override

@@ -30,10 +30,10 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import com.garganttua.events.context.GGEventsContextDataflowInProcessMode;
 import com.garganttua.events.context.GGEventsContextHighAvailabilityMode;
-import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
@@ -197,7 +197,7 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(configuration);

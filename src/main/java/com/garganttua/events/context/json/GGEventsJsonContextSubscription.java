@@ -23,30 +23,22 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsJsonContextSubscription implements IGGEventsContextItemBinder<IGGEventsContextSubscription> {
 	
-	@JsonInclude
 	private String dataflow; 
-	
-	@JsonInclude
+
 	private String topic;
-	
-	@JsonInclude
+
 	private String connector;
-	
-	@JsonInclude
+
 	private GGEventsContextPublicationMode publicationMode; 
-	
-	@JsonInclude
+
 	private GGEventsJsonContextTimeInterval timeInterval;
-	
-	@JsonInclude
+
 	private GGEventsJsonContextConsumerConfiguration consumerConfiguration;
-	
-	@JsonInclude
+
 	private GGEventsJsonContextProducerConfiguration producerConfiguration;
-	
-	@JsonInclude
+
 	protected List<GGEventsJsonContextSourceItem> sources = new ArrayList<GGEventsJsonContextSourceItem>();
-	@JsonInclude
+
 	protected List<GGEventsJsonContextSubscription> otherVersions = new ArrayList<GGEventsJsonContextSubscription>();
 	
 	@Override

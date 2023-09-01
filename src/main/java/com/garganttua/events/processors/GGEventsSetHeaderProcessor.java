@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
@@ -25,10 +26,10 @@ public class GGEventsSetHeaderProcessor implements IGGEventsProcessor {
 	private String headerValue;
 	private String infos;
 	private String manual;
-	private String type = "IGGEventsProcessor::GGEventsSetHeaderProcessor";
+	private String type = "processor::set-header";
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 		
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(configuration);

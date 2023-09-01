@@ -97,7 +97,7 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 
 	@Override
 	public String getType() {
-		return "json-file";
+		return "source::json-file";
 	}
 
 	@Override

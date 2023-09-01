@@ -4,30 +4,24 @@
 package com.garganttua.events.spring;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import com.garganttua.events.engine.GGEventsContextBuilder;
-import com.garganttua.events.engine.GGEventsEngine;
-import com.garganttua.events.spec.interfaces.IGGEventsContextBuilder;
-import com.garganttua.events.spec.interfaces.IGGEventsContextSourceConfigurationRegistry;
-import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
+import com.garganttua.events.engine.GGEventsBuilder;
+import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
+import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
-import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistry;
-import com.garganttua.events.spec.objects.GGEventsContextSourceConfiguration;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 
 @Service
-public class GGEventsContextEngineSpringBean {
+public class GGEventsEngineSpringBean implements IGGEventsEngineSpringBean{
 	
 	@Value("${garganttua.events.assetId:1}")
 	private String assetId;
@@ -40,61 +34,50 @@ public class GGEventsContextEngineSpringBean {
 	@Value("${garganttua.events.assetVersion:0.0.1-SNAPSHOT}")
 	private String assetVersion;
 	
-	@Getter
-	private IGGEventsEngine contextEngine = new GGEventsEngine();
-	
-	@Getter
-	private IGGEventsContextBuilder contextBuilder = new GGEventsContextBuilder();
+	@Inject
+	private List<IGGEventsContextSource> contextSources;
 	
 	@Inject
+	@Qualifier(value = "packages")
+	private List<String> packages;
+	
 	@Getter
-	private IGGEventsContextSourceConfigurationRegistry configRegistry;
+	private IGGEventsEngine engine;
 	
-	@Inject
-	@Getter
-	private List<IGGEventsObjectRegistry> objectsRegistries;
-	
-	@Inject
-	@Getter
-	private List<GGEventsContextSourceConfiguration> contextSourcesConfigurations;
-	
-	@Inject
-	@Qualifier(value="packages")
-	private String[] packages;
-	
-	@Inject
-	@Getter
-	private ExecutorService executorService;
-	
-	@Inject
-	@Getter
-	private ScheduledExecutorService scheduledExecutorService;
-	
-	@Inject
-	@Getter
-	private IGGEventsEventHandler eventHandler;
-	
-	@Bean
-	@Qualifier(value="GGEventsEngine")
-	public IGGEventsEngine getEngine() {
-		return this.contextEngine;
-	}
-	
-	@PostConstruct
-	public void init() {
-		this.objectsRegistries.forEach(c -> {
-			this.contextEngine.getObjectRegistries().addObjectRegistry(c.getLabel(), c);
-		});
-	
-		this.contextSourcesConfigurations.forEach(c -> {
-			this.configRegistry.registerContextSourceConfiguration(c);
+	@Inject 
+	private ApplicationContext springApplicationContext;
+
+	@Bean 
+	private IGGEventsEngine engine() {
+		IGGEventsBuilder builder = GGEventsBuilder.builder(this.assetId);
+		
+		builder.registry(GGEventsSpringBeanRegistry.LABEL, new GGEventsSpringBeanRegistry(this.springApplicationContext));
+		
+		this.packages.forEach( package_ -> {
+			builder.lookup(package_);
 		});
 		
-		this.contextEngine.registerContextSourceConfiguratorRegistry(this.configRegistry);
-		this.contextEngine.registerEventHandler(this.eventHandler);
-		this.contextEngine.init(this.assetId, this.contextBuilder, this.packages, this.executorService, this.scheduledExecutorService, this.assetName, this.assetVersion);
-		this.contextEngine.start();
+		this.contextSources.forEach( source -> {
+			builder.source(source);
+		});
+		
+		this.engine = builder.build();
+		
+		return this.engine;
 	}
+	
+	public void start() {
+		this.engine.start();
+	}
+	
+	public void stop() {
+		this.engine.stop();
+	}
+	
+	public void reload() {
+		this.engine.reload();
+	}
+	
 
 //	@Override
 //	public void start(GGServerServiceCommandRight right) throws GGServerServiceException{

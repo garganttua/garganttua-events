@@ -38,7 +38,7 @@ public class GGEventsOnChangeProducer implements IGGEventsProducer {
 
 	@Override
 	public String getType() {
-		return "IGGEventsProducer::GGEventsOnChangeProducer";
+		return "producer::on-change";
 	}
 
 

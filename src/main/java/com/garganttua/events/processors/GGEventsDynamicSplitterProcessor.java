@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
@@ -34,7 +35,7 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 	private String configuration;
 	private String strategyClassName;
 	private String to;
-	private Map<String, IGGEventsSubscription> subscriptions = new HashMap<String, IGGEventsSubscription>();
+	private Map<String, IGGEventsSubscription> destinationSubscriptions = new HashMap<String, IGGEventsSubscription>();
 	private IGGEventsSplitStrategy strategyObject;
 	private String tenantId;
 	private String clusterId;
@@ -43,10 +44,12 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 	private String infos;
 	private String manual;
 	private ExecutorService service;
-	private String type = "IGGEventsProcessor::GGEventsDynamicSplitterProcessor";
+	private String type = "processor::dynamic-splitter";
+	private String name;
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) throws GGEventsException {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) throws GGEventsException {
 		this.configuration = configuration;
 		this.tenantId = tenantId;
 		this.clusterId = clusterId;
@@ -75,14 +78,15 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 		
 		for( String key: to.keySet()) {
 			String subId = to.get(key);
-			IGGEventsSubscription sub = null/*this.contextEngine.getSubscription(subId, tenantId, clusterId)*/;
+			
+			IGGEventsSubscription sub = engine.getSubscriptions().get(this.tenantId).get(this.clusterId).get(subId);
 			if( sub == null ) {
 				throw new GGEventsException("Cannot configure dynamic splitter as subscription "+subId+" is not registered.");
 			}
 			
 			sub.getConnector().registerProducer(sub.getSubscription(), tenantId, clusterId, assetId);
 
-			this.subscriptions.put(key, sub);
+			this.destinationSubscriptions.put(key, sub);
 		}
 		
 		try {
@@ -113,9 +117,9 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		
-		List<Entry<String, Entry<String, byte[]>>> splitted = this.strategyObject.split(exchange.getTenantId(), exchange.getValue(), this.subscriptions.keySet());
+		List<Entry<String, Entry<String, byte[]>>> splitted = this.strategyObject.split(exchange.getTenantId(), exchange.getValue(), this.destinationSubscriptions.keySet());
 		for( Entry<String, Entry<String, byte[]>> entry: splitted ) {
-			IGGEventsSubscription sub = this.subscriptions.get(entry.getKey());
+			IGGEventsSubscription sub = this.destinationSubscriptions.get(entry.getKey());
 			if( sub != null ) {
 				if( !this.multithreaded ) {
 					log.debug("key "+entry.getKey()+" value "+new String(entry.getValue().getValue()));
@@ -173,14 +177,12 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 
 	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-		
+		this.name = name;
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	@Override

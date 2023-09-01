@@ -24,6 +24,8 @@ import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsDistributedLock;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
+import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistry;
+import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextMergeableItem;
@@ -50,10 +52,20 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	private Map<String, Map<String, Class<?>>> processors = new HashMap<String, Map<String, Class<?>>>();
 	private Map<String, Map<String, Class<?>>> sources = new HashMap<String, Map<String, Class<?>>>();
 
+	private IGGEventsObjectRegistryHub objectsRegistryHub;
+
 	private GGEventsBuilder(String assetId) {
 		this.assetId = assetId;
 		this.contexts = new HashMap<String, Map<String,IGGEventsContext>>();
 		this.packages = new ArrayList<String>();
+		this.objectsRegistryHub = new GGEventsObjectRegistry();
+		this.objectsRegistryHub.addObjectRegistry(GGEventsObjectCreatorRegistry.LABEL, new GGEventsObjectCreatorRegistry());
+	}
+	
+	@Override
+	public IGGEventsBuilder registry(String label, IGGEventsObjectRegistry registry) {
+		this.objectsRegistryHub.addObjectRegistry(label, registry);
+		return this;
 	}
 
 	public static IGGEventsBuilder builder(String assetId) {
@@ -126,7 +138,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		if( this.scheduledExecutorService == null )
 			this.scheduledExecutorService = new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
 
-		IGGEventsEngine engine = new GGEventsEngine(this.assetId, this.contexts, this.eventsHandler, this.executorService, this.scheduledExecutorService, this.connectors, this.locks, this.processors);
+		IGGEventsEngine engine = new GGEventsEngine(this.assetId, this.contexts, this.eventsHandler, this.executorService, this.scheduledExecutorService, this.connectors, this.locks, this.processors, this.objectsRegistryHub);
 		
 		return engine;
 	}

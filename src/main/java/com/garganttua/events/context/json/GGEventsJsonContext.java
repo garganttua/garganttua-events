@@ -21,21 +21,21 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsJsonContext implements IGGEventsContextItemBinder<IGGEventsContext> {
 	
-	@JsonInclude
+
 	private String tenantId;
-	@JsonInclude
+
 	private String clusterId; 
-	@JsonInclude	
+		
 	private List<GGEventsJsonContextTopic> topics;
-	@JsonInclude
+
 	private List<GGEventsJsonContextDataflow> dataflows;
-	@JsonInclude
+
 	private List<GGEventsJsonContextSubscription> subscriptions;
-	@JsonInclude
+
 	private List<GGEventsJsonContextConnector> connectors;
-	@JsonInclude
+
 	private List<GGEventsJsonContextRoute> routes;
-	@JsonInclude
+
 	private List<GGEventsJsonContextLock> locks;
 	
 	@Override

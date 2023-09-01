@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.garganttua.events.context.GGEventsContextDestinationPolicy;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextProducerConfiguration;
@@ -28,11 +29,11 @@ public class GGEventsOutFilterProcessor implements IGGEventsProcessor {
 	
 	public GGEventsOutFilterProcessor(IGGEventsContextProducerConfiguration producerConfiguration) {
 		this.producerConfiguration = producerConfiguration;
-		this.type = "IGGEventsProcessor::GGEventsOutFilterProcessor";
+		this.type = "processor::out-filter";
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 	}
 

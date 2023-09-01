@@ -21,15 +21,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GGEventsJsonContextSourceItem implements IGGEventsContextItemBinder<IGGEventsContextSource> {
-	
-	@JsonInclude
+
 	private String assetId;
-	@JsonInclude
+
 	private String clusterId;
-	@JsonInclude
+
 	private String source;
 	
-
 	@Override
 	public IGGEventsContextSource bind() throws GGEventsException {
 		return new GGEventsContextSource(this.assetId, this.clusterId, this.source);
