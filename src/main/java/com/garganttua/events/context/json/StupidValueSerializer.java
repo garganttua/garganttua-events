@@ -1,4 +1,4 @@
-package com.garganttua.events.context;
+package com.garganttua.events.context.json;
 
 import java.io.IOException;
 

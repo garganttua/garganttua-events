@@ -15,10 +15,12 @@ import java.nio.file.Paths;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.context.json.GGEventsJsonContext;
+import com.garganttua.events.context.json.GGEventsJsonContextBinder;
 import com.garganttua.events.spec.annotations.GGEventsContextSource;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextBinder;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -31,49 +33,59 @@ import lombok.extern.slf4j.Slf4j;
 public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 
 	private String file;
-
+	
 	@Override
 	public IGGEventsContext readContext() throws GGEventsException {
 		return this.readContext(this.file);
 	}
 
 	@Override
-	public void writeContext(IGGEventsContext context) throws GGEventsException {
-		this.writeContext(context, this.file);
-	}
-
-	@Override
 	public IGGEventsContext readContext(String configuration) throws GGEventsException {
-		ObjectMapper mapper = new ObjectMapper();
+		return this.readContext(configuration, true);
+	}	
+	
+	@Override
+	public IGGEventsContext readContext(String configuration, boolean ignoreSources) throws GGEventsException {
+		
 		IGGEventsContext context = null;
-		GGEventsJsonContext jsonContext = null;
+		IGGEventsContextBinder binder = new GGEventsJsonContextBinder();
+
 		if( configuration != null ) {
 			log.info("Getting context from file "+configuration);
 			URI file = new File(configuration).toURI();
-			
-		    try {
-		    			    	
-		    	byte[] fileBytes = Files.readAllBytes(Paths.get(file));
-		    	String fileString = new String(fileBytes, StandardCharsets.UTF_8);
-		    	jsonContext = mapper.readValue(fileString, GGEventsJsonContext.class);
-		    	context= jsonContext.bind();
-			} catch (Exception e) {
-				throw new GGEventsException("Cannot get context from file "+file, e);
+				    	
+	    	byte[] fileBytes = null;
+			try {
+				fileBytes = Files.readAllBytes(Paths.get(file));
+			} catch (IOException e) {
+				throw new GGEventsException(e);
 			}
+	    	String fileString = new String(fileBytes, StandardCharsets.UTF_8);
+	    	
+	    	context = binder.getContextFromString(fileString, ignoreSources);
+		    	
 		}
 		return context;
 	}
 
 	@Override
+	public void writeContext(IGGEventsContext context) throws GGEventsException {
+		this.writeContext(context, this.file);
+	}
+	
+	@Override
 	public void writeContext(IGGEventsContext context, String configuration) throws GGEventsException {
-		ObjectMapper mapper = new ObjectMapper();
+		this.writeContext(context, configuration, true);
+	}
+	
+	@Override
+	public void writeContext(IGGEventsContext context, String configuration, boolean ignoreVersion) throws GGEventsException {
+		IGGEventsContextBinder binder = new GGEventsJsonContextBinder();
 		log.info("Writting context to file "+configuration);
 		
 		try {
+			String contextAsString = binder.getStringFromContext(context);
 			
-			GGEventsJsonContext jsonContext = new GGEventsJsonContext();
-			jsonContext.build(context);
-			String contextAsString = mapper.writeValueAsString(jsonContext);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(configuration));
 		    writer.write(contextAsString);		    
 		    writer.close();
@@ -92,4 +104,11 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	public String getConfiguration() {
 		return this.file;
 	}
+
+	@Override
+	public void setConfiguration(String configuration) {
+		file = configuration;
+	}
+
+	
 }
