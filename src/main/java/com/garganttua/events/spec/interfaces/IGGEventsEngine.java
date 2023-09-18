@@ -9,15 +9,20 @@ import com.garganttua.events.engine.GGEventsDataflow;
 import com.garganttua.events.engine.GGEventsRoute;
 import com.garganttua.events.engine.GGEventsSubscription;
 import com.garganttua.events.engine.GGEventsTopic;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 
 public interface IGGEventsEngine {
 
-	IGGEventsEngine start();
+	IGGEventsEngine start() throws GGEventsException;
 
-	IGGEventsEngine stop();
+	IGGEventsEngine stop() throws GGEventsException;
 
-	IGGEventsEngine reload();
+	IGGEventsEngine reload() throws GGEventsException;
 
+	IGGEventsEngine flush() throws GGEventsException;
+
+	IGGEventsEngine init() throws GGEventsException;
+	
 	IGGEventsAssetInfos getAssetInfos();
 	
 	Map<String, Map<String, Map<String, IGGEventsConnector>>> getConnectors();

@@ -15,6 +15,7 @@ import com.garganttua.events.context.GGEventsContextDestinationPolicy;
 import com.garganttua.events.context.GGEventsContextHighAvailabilityMode;
 import com.garganttua.events.context.GGEventsContextOriginPolicy;
 import com.garganttua.events.context.GGEventsContextPublicationMode;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.objects.GGEventsEvent;
@@ -22,7 +23,7 @@ import com.garganttua.events.spec.objects.GGEventsEvent;
 public class BuilderTest {
 
 	@Test
-	public void test() {
+	public void test() throws GGEventsException {
 		
 		int threadPoolSize = 100;
 		int maxThreadPoolSize = 200;

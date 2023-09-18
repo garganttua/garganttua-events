@@ -88,10 +88,9 @@ public class GGEventsEngine implements IGGEventsEngine {
 		this.routes = new HashMap<String, Map<String, Map<String, GGEventsRoute>>>();
 		this.locks = new HashMap<String, Map<String, Map<String, IGGEventsDistributedLock>>>();
 		
-		this.init();
 	}
 
-	private void init() {
+	public IGGEventsEngine init() throws GGEventsException {
 		this.raiseEvent(new GGEventsEvent("Context construction", GGEventsEventCriticity.INFO, GGEventsExecutionStage.INIT, null));
 		
 		this.contexts.forEach((tenantId, cluster) -> {
@@ -129,6 +128,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 				
 			});
 		});
+		return this;
 	}
 	
 	private void initRoutes(IGGEventsContext context, String tenantId, String clusterId) {
@@ -334,103 +334,131 @@ public class GGEventsEngine implements IGGEventsEngine {
 	}
 
 	@Override
-	public IGGEventsEngine start() {
+	public IGGEventsEngine start() throws GGEventsException {
 		log.info("==== APPLYING CONFIGURATION ====");
-		this.connectors.forEach((tenantId, clusters) -> {
-			clusters.forEach((clusterId, connectors) -> {
-				connectors.forEach((type, connector) -> {
-					log.info("[" + tenantId + "][" + clusterId + "] Configuring connector " + type);
+		for( String tenant: this.connectors.keySet() ) {
+			for( String cluster: this.connectors.get(tenant).keySet() ) {
+				for( String type: this.connectors.get(tenant).get(cluster).keySet() ) {
+					log.info("[" + tenant + "][" + cluster + "] Configuring connector " + type);
 					try {
-						connector.applyConfiguration();
+						this.connectors.get(tenant).get(cluster).get(type).applyConfiguration();
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
-						this.stop();
 						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
+						try {
+							this.stop();
+						} catch (Exception e1) {
+							throw new GGEventsException("Error during starting", e1);
+						}
+						throw new GGEventsException("Error during starting", e);
 					}
-					log.debug("[" + tenantId + "][" + clusterId + "] Configured " + type);
-				});
-			});
-		});
-		
+					log.debug("[" + tenant + "][" + cluster + "] Configured " + type);
+				}
+			}
+		}
+
 		log.info("==== STARTING CONNECTORS ====");
-		this.connectors.forEach((tenantId, clusters) -> {
-			clusters.forEach((clusterId, connectors) -> {
-				connectors.forEach((type, connector) -> {
-					log.info("[" + tenantId + "][" + clusterId + "] Starting connector " + type);
+		for( String tenant: this.connectors.keySet() ) {
+			for( String cluster: this.connectors.get(tenant).keySet() ) {
+				for( String type: this.connectors.get(tenant).get(cluster).keySet() ) {
+					log.info("[" + tenant + "][" + cluster + "] Starting connector " + type);
 					try {
-						connector.start();
+						this.connectors.get(tenant).get(cluster).get(type).start();
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
-						this.stop();
 						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
+						try {
+							this.stop();
+						} catch (Exception e1) {
+							throw new GGEventsException("Error during starting", e1);
+						}
+						throw new GGEventsException("Error during starting", e);
 					}
-					log.debug("[" + tenantId + "][" + clusterId + "] Started connector " + type);
-				});
-			});
-		});
-		
+					log.debug("[" + tenant + "][" + cluster + "] Started connector " + type);
+				}
+			}
+		}
+
 		log.info("==== STARTING ROUTES ====");
-		this.routes.forEach((tenantId, clusters) -> {
-			clusters.forEach((clusterId, routes) -> {
-				routes.forEach((routeId, route) -> {
-					log.info("[" + tenantId + "][" + clusterId + "] Starting route " + routeId);
+		for( String tenant: this.routes.keySet() ) {
+			for( String cluster: this.routes.get(tenant).keySet() ) {
+				for( String route: this.routes.get(tenant).get(cluster).keySet() ) {
+					log.info("[" + tenant + "][" + cluster + "] Starting route " + route);
 					try {
-						route.start(this.scheduledExecutorService);
+						this.routes.get(tenant).get(cluster).get(route).start(this.scheduledExecutorService);
 					} catch (Exception e) {
 						log.error("Unable to start Garganttua Framework", e);
-						this.stop();
 						this.raiseEvent(new GGEventsEvent("Unable to start Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.STARTUP, new GGEventsException(e)));
+						try {
+							this.stop();
+						} catch (Exception e1) {
+							throw new GGEventsException("Error during starting", e1);
+						}
+						throw new GGEventsException("Error during starting", e);
 					}
-					log.debug("[" + tenantId + "][" + clusterId + "] Started route " + routeId);
-				});
-			});
-		});
+					log.debug("[" + tenant + "][" + cluster + "] Started route " + route);
+				}
+			}
+		}
 		this.raiseEvent(new GGEventsEvent("Garganttua Core Context Engine started", GGEventsEventCriticity.INFO, GGEventsExecutionStage.STARTUP, null));
 		return this;
 	}
 
 	@Override
-	public IGGEventsEngine stop() {
+	public IGGEventsEngine stop() throws GGEventsException {
 		log.info("==== STOPPING CONNECTORS ====");
-
-		this.connectors.forEach((tenantId, clusters) -> {
-			clusters.forEach((clusterId, connectors) -> {
-				connectors.forEach((type, connector) -> {
-					log.info("[" + tenantId + "][" + clusterId + "] Stopping " + type);
+		for( String tenant: this.connectors.keySet() ) {
+			for( String cluster: this.connectors.get(tenant).keySet() ) {
+				for( String type: this.connectors.get(tenant).get(cluster).keySet() ) {
+					log.info("[" + tenant + "][" + cluster + "] Stopping " + type);
 					try {
-						connector.stop();
+						this.connectors.get(tenant).get(cluster).get(type).stop();
 					} catch (Exception e) {
 						log.error("Unable to stop Garganttua Framework", e);
 						this.raiseEvent(new GGEventsEvent("Unable to stop Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.SHUTDOWN, new GGEventsException(e)));
+						throw new GGEventsException("Error during stopping", e);
 					}
-					log.debug("[" + tenantId + "][" + clusterId + "] Stopped " + type);
-				});
-			});
-		});
+					log.debug("[" + tenant + "][" + cluster + "] Stopped " + type);
+				}
+			}
+		}
 		
 		log.info("==== STOPPING ROUTES ====");
-		
-		this.routes.forEach((tenantId, clusters) -> {
-			clusters.forEach((clusterId, routes) -> {
-				routes.forEach((routeId, route) -> {
-					log.info("[" + tenantId + "][" + clusterId + "] Stopping route " + routeId);
+		for( String tenant: this.routes.keySet() ) {
+			for( String cluster: this.routes.get(tenant).keySet() ) {
+				for( String route: this.routes.get(tenant).get(cluster).keySet() ) {
+					log.info("[" + tenant + "][" + cluster + "] Stopping route " + route);
 					try {
-						route.stop();
+						this.routes.get(tenant).get(cluster).get(route).stop();
 					} catch (Exception e) {
 						log.error("Unable to stop Garganttua Framework", e);
 						this.raiseEvent(new GGEventsEvent("Unable to stop Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.SHUTDOWN, new GGEventsException(e)));
+						throw new GGEventsException("Error during stopping", e);
 					}
-					log.debug("[" + tenantId + "][" + clusterId + "] Stopped route " + routeId);
-				});
-			});
-		});
+					log.debug("[" + tenant + "][" + cluster + "] Stopped route " + route);
+				}
+			}
+		}
 		return this;
 	}
 
 	@Override
-	public IGGEventsEngine reload() {
+	public IGGEventsEngine reload() throws GGEventsException {
 		this.stop();
+		this.flush();
+		this.init();
 		this.start();
+		return this;
+	}
+
+	@Override
+	public IGGEventsEngine flush() {
+		this.connectors = new HashMap<String, Map<String, Map<String, IGGEventsConnector>>>();
+		this.topics = new HashMap<String, Map<String, Map<String, GGEventsTopic>>>();
+		this.dataflows = new HashMap<String, Map<String, Map<String, GGEventsDataflow>>>();
+		this.subscriptions = new HashMap<String, Map<String, Map<String, GGEventsSubscription>>>();
+		this.routes = new HashMap<String, Map<String, Map<String, GGEventsRoute>>>();
+		this.locks = new HashMap<String, Map<String, Map<String, IGGEventsDistributedLock>>>();
 		return this;
 	}
 
@@ -455,5 +483,4 @@ public class GGEventsEngine implements IGGEventsEngine {
 			};
 		});
 	}
-
 }
