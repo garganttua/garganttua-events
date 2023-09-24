@@ -19,6 +19,7 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.objects.GGEventsEvent;
+import com.garganttua.events.spec.objects.GGEventsMessage;
 
 public class BuilderTest {
 
