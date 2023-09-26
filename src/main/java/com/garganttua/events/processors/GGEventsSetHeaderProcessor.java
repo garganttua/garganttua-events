@@ -43,7 +43,7 @@ public class GGEventsSetHeaderProcessor implements IGGEventsProcessor {
 	@Override
 	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
 		if( exchange.isVariable(this.headerValue)) {
-			exchange.getHeaders().put(this.headerName, exchange.getVariableValue(exchange, this.headerValue));
+			exchange.getHeaders().put(this.headerName, GGEventsExchange.getVariableValue(exchange, this.headerValue));
 		} else {
 			exchange.getHeaders().put(this.headerName, this.headerValue);
 		}

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.jayway.jsonpath.JsonPath;
 
 import lombok.Getter;
@@ -92,7 +93,11 @@ public class GGEventsExchange extends GGEventsMessage {
 		return exchange;
 	}
 
-	public String getVariableValue(GGEventsExchange exchange, String variable) {
+	static public String getVariableValue(GGEventsExchange exchange, String variable) throws GGEventsException {
+		if( !variable.startsWith("${") && !variable.endsWith("}")) {
+			throw new GGEventsException("Invalid variable "+variable+" shoudl start with ${ and end whit }");
+		}
+		
 		String valueVar = variable.substring(2, variable.length()-1);
 		
 		String value = "";
@@ -105,7 +110,8 @@ public class GGEventsExchange extends GGEventsMessage {
 				}
 			}
 			if( varSplit[1].equals("value") ) {
-				if( varSplit[2].startsWith("json") ) {
+				
+				if( varSplit.length > 2 && varSplit[2].startsWith("json") ) {
 					String[] toto = variable.split("\\(");
 					String[] toto2 = toto[1].split("\\)");
 
@@ -119,6 +125,8 @@ public class GGEventsExchange extends GGEventsMessage {
 					if( t instanceof Long ) {
 						value = Long.toString((long) t);
 					}
+				} else {
+					value = new String(exchange.getValue());
 				}
 			}
 			if( varSplit[1].equals("headers") ) {

@@ -48,7 +48,7 @@ public class GGEventsOutFilterProcessor implements IGGEventsProcessor {
 			case ONLY_TO_ASSET:
 			case ONLY_TO_CLUSTER:
 				if( exchange.isVariable(toUuid) ) {
-					toUuid = exchange.getVariableValue(exchange, toUuid);
+					toUuid = GGEventsExchange.getVariableValue(exchange, toUuid);
 				}
 				exchange.setToUuid(toUuid);
 				break;

@@ -69,7 +69,7 @@ public class GGEventsSubscription implements IGGEventsSubscription {
 		
 		if( dataflow.isEncapsulated() ) {
 			this.protocolInProcessor = new GGEventsEncapsulatedProtocolInProcessor(this.assetId, this.clusterId, this.getId(), this.getDataflow().getVersion());
-			this.protocolOutProcessor = new GGEventsEncapsulatedProtocolOutProcessor(this.assetId, this.clusterId, this.topic.getRef(), this.dataflow.getVersion(), this.dataflow.getUuid(), this.connector.getName());
+			this.protocolOutProcessor = new GGEventsEncapsulatedProtocolOutProcessor(this.assetId, this.clusterId, this.topic.getRef(), this.dataflow.getVersion(), this.dataflow.getUuid(), this.connector.getName(), this.getId());
 		} else {
 			
 		}

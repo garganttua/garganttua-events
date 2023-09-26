@@ -41,8 +41,9 @@ public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProces
 	private String type;
 
 	public GGEventsEncapsulatedProtocolOutProcessor(String assetId, String clusterId, String toTopic,
-			String dataflowVersion, String toDataFlowUuid, String toConnector) {
+			String dataflowVersion, String toDataFlowUuid, String toConnector, String subscriptionId) {
 		this.assetId = assetId;
+		this.subscriptionId = subscriptionId;
 		this.clusterId = clusterId;
 		this.toTopic = toTopic;
 		this.dataflowVersion = dataflowVersion;
@@ -62,6 +63,7 @@ public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProces
 		exchange.setToTopic(this.toTopic);
 		exchange.setToConnector(this.toConnector);
 		exchange.setToDataflowUuid(this.toDataFlowUuid);
+		exchange.setMessageId(UUID.randomUUID().toString());
 
 		exchange.getSteps().add(new GGEventsJourneyStep(new Date(), this.assetId, this.subscriptionId,
 				GGEventsJourneyStepDirection.OUT, this.dataflowVersion, UUID.randomUUID().toString(), this.clusterId));
