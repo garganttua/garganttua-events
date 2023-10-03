@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -59,7 +59,7 @@ public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProces
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		exchange.setToTopic(this.toTopic);
 		exchange.setToConnector(this.toConnector);
 		exchange.setToDataflowUuid(this.toDataFlowUuid);
@@ -75,9 +75,10 @@ public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProces
 		try {
 			bytes = mapper.writeValueAsBytes(message);
 		} catch (JsonProcessingException e) {
-			throw new GGEventsProcessingException(e);
+			throw new GGEventsHandlingException(e);
 		}
 		exchange.setValue(bytes);
+		return true;
 	}
 
 	@Override

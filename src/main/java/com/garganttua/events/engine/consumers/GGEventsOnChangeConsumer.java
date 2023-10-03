@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConsumer;
 import com.garganttua.events.spec.interfaces.IGGEventsRoute;
@@ -32,16 +33,17 @@ public class GGEventsOnChangeConsumer implements IGGEventsConsumer, IGGEventsTyp
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		log.info("["+this.subscriptionId+"][ExchangeId:"+exchange.getExchangeId()+"] Message received, dispatching to "+this.routes.size()+" routes");
 		log.debug(new String(exchange.getValue()));
 		this.routes.forEach(r -> {
 			try {
 				r.handle(exchange);
-			} catch (GGEventsException e) {
+			} catch (GGEventsHandlingException e) {
 				log.warn("["+this.subscriptionId+"][ExchangeId:"+exchange.getExchangeId()+"] Route processing aborded", e);
 			}
 		});
+		return true;
 	}
 
 	@Override

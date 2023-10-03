@@ -6,11 +6,10 @@ package com.garganttua.events.engine.processors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.garganttua.events.context.GGEventsContextConsumerConfiguration;
 import com.garganttua.events.context.GGEventsContextDestinationPolicy;
 import com.garganttua.events.context.GGEventsContextOriginPolicy;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -47,32 +46,33 @@ public class GGEventsInFilterProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		GGEventsContextOriginPolicy originPolicy = this.consumerConfiguration.getOpolicy();
 		GGEventsContextDestinationPolicy destinationPolicy = this.consumerConfiguration.getDpolicy();
 		
 		//Check dataflow Version 
 		if( exchange.getDataflowVersion() == null || !exchange.getDataflowVersion().equals(this.dataflowVersion) ) {
-			throw new GGEventsFilterException("version mismatch");
+			throw new GGEventsHandlingException("version mismatch");
 		}
 		
 		if( destinationPolicy != null ) {
 			switch(destinationPolicy) {
 			case ONLY_TO_ASSET:
 				if( !exchange.getToUuid().equals(this.assetId) ) {
-					throw new GGEventsFilterException("assetId mismatch");
+					throw new GGEventsHandlingException("assetId mismatch");
 				}
 				break;
 			case ONLY_TO_CLUSTER:
 				if( !exchange.getToUuid().equals(this.clusterId) ) {
-					throw new GGEventsFilterException("clusterId mismatch");
+					throw new GGEventsHandlingException("clusterId mismatch");
 				}
 				break;
 			case TO_ANY:
 			default:
 				break;	
 			}
-		} 
+		}
+		return true; 
 	}
 
 	@Override

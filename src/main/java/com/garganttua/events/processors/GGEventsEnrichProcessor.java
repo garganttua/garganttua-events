@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEnrichStrategy;
@@ -33,8 +34,13 @@ public class GGEventsEnrichProcessor implements IGGEventsProcessor {
 	private String type = "processor::enricher";
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
-		this.strategyObject.enrich(exchange.getTenantId(), exchange, this.dataSource);
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
+		try {
+			this.strategyObject.enrich(exchange.getTenantId(), exchange, this.dataSource);
+		} catch (GGEventsProcessingException e) {
+			throw new GGEventsHandlingException(e);
+		}
+		return true;
 	}
 
 	@Override
@@ -80,7 +86,7 @@ public class GGEventsEnrichProcessor implements IGGEventsProcessor {
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "enrich", "1.0.0", this.infos, this.manual);
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "enrich", "1.0", this.infos, this.manual);
 	}
 
 	@Override

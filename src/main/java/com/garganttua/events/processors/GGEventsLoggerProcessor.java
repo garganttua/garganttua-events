@@ -33,7 +33,7 @@ public class GGEventsLoggerProcessor implements IGGEventsProcessor {
 	private String type = "processor::log";
 	
 	@Override
-	public void handle(GGEventsExchange message) {
+	public boolean handle(GGEventsExchange message) {
 
 		if( this.level.equals("INFO") ) {
 			if( this.withMeta ) {
@@ -61,6 +61,7 @@ public class GGEventsLoggerProcessor implements IGGEventsProcessor {
 				}
 			}
 		}
+		return true;
 	}
 
 	@Override

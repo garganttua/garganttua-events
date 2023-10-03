@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
@@ -50,7 +51,7 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 	private String manual;
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		String toTopic = exchange.getToTopic();
 		
 		BigQueueImpl queue = this.queues.get(toTopic);
@@ -59,9 +60,10 @@ public class GGEventsBusConnector implements IGGEventsConnector {
 				GGEventsBusMessage message = new GGEventsBusMessage(exchange.getToDataflowUuid(), exchange.getValue());
 				queue.enqueue(message.getBytes());
 			} catch (IOException e) {
-				throw new GGEventsProcessingException(e);
+				throw new GGEventsHandlingException(e);
 			}
 		}
+		return true;
 	}
 
 	@Override

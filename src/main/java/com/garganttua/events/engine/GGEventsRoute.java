@@ -12,6 +12,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.engine.processors.GGEventsFilterException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConfigurable;
 import com.garganttua.events.spec.interfaces.IGGEventsExceptionSubscription;
@@ -76,7 +77,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 	}
 
 	@Override
-	public void handle(GGEventsExchange message) throws GGEventsException, GGEventsProcessingException {
+	public boolean handle(GGEventsExchange message) throws GGEventsHandlingException {
 		String tenantId = message.getTenantId()==null?"unknown":message.getTenantId();
 		String clusterId = message.getSteps().size()==0?"unknown":message.getSteps().get(message.getSteps().size()-1).getClusterId();
 		String messageId = message.getSteps().size()==0?"unknown":message.getSteps().get(message.getSteps().size()-1).getUuid();
@@ -93,7 +94,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 				try {
 					method = this.getClass().getDeclaredMethod("handle", GGEventsExchange.class, GGEventsSynchronizedLinkedProcessorList.class, UUID.class);
 				} catch (NoSuchMethodException | SecurityException e) {
-					throw new GGEventsException(e);
+					throw new GGEventsHandlingException(e);
 				}
 			
 				Object[] args = {message, this.processorsList, uuid};
@@ -105,7 +106,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 		} catch (GGEventsFilterException e) {
 			this.flush(this.processorsList, uuid);
 			log.info("Message dropped by filter : "+e.getMessage());
-		} catch (GGEventsException e) {
+		} catch (GGEventsHandlingException e) {
 			this.flush(this.processorsList, uuid);
 			if( this.exceptionSubscription != null ) {
 				UUID uuidEx = this.exceptionList.createTransaction();
@@ -120,27 +121,34 @@ public class GGEventsRoute implements IGGEventsRoute {
 							try {
 								ctor = clazz.getDeclaredConstructor(Exception.class, String.class);
 							} catch (NoSuchMethodException | SecurityException e1) {
-								throw new GGEventsException(e1);
+								throw new GGEventsHandlingException(e1);
 							}
 							try {
 								obj = ctor.newInstance(e, this.exceptionSubscription.getLabel()==null?e.getMessage():this.exceptionSubscription.getLabel());
 							} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 									| InvocationTargetException e1) {
-								throw new GGEventsException(e1);
+								throw new GGEventsHandlingException(e1);
 							}
 							message.setException((GGEventsException) obj);
 						
 					} catch (ClassNotFoundException e2) {
-						throw new GGEventsException(e2);
+						throw new GGEventsHandlingException(e2);
 					}
 				} else {
-					message.setException(e);
+//					message.setException(e);
 				}
-				e.setClazz(e.getClass().getName());
-				this.handle(message, this.exceptionList, uuidEx);
+//				e.setClazz(e.getClass().getName());
+				try {
+					this.handle(message, this.exceptionList, uuidEx);
+				} catch (GGEventsHandlingException e1) {
+					throw new GGEventsHandlingException(e1);
+				}
 			}
 			throw e; 
+		} catch (GGEventsProcessingException e) {
+			throw new GGEventsHandlingException(e);
 		}
+		return true;
 	}
 	
 	private void flush(GGEventsSynchronizedLinkedProcessorList processorsList, UUID uuid) {
@@ -148,7 +156,7 @@ public class GGEventsRoute implements IGGEventsRoute {
 		while( (processor = processorsList.pop(uuid)) != null ) {/*Nothing to do*/};
 	}
 
-	private void handle(GGEventsExchange message, GGEventsSynchronizedLinkedProcessorList processorsList, UUID uuid) throws GGEventsProcessingException, GGEventsException {
+	private void handle(GGEventsExchange message, GGEventsSynchronizedLinkedProcessorList processorsList, UUID uuid) throws GGEventsHandlingException {
 		String tenantId;
 		String clusterId;
 		String messageId;
@@ -161,8 +169,11 @@ public class GGEventsRoute implements IGGEventsRoute {
 			messageId = message.getSteps().size()==0?"unknown":message.getSteps().get(message.getSteps().size()-1).getUuid();
 			corrId = message.getCorrelationId();
 			
-			log.debug("[TenantId:"+tenantId+"][ClusterId:"+clusterId+"][RouteId:"+this.routeUuid+"][ExchangeId:"+message.getExchangeId()+"][CorrelationId:"+corrId+"][MessageId:"+messageId+"] "+((IGGEventsTypable) processor).getType());
-			processor.handle(message);
+			log.info("[TenantId:"+tenantId+"][ClusterId:"+clusterId+"][RouteId:"+this.routeUuid+"][ExchangeId:"+message.getExchangeId()+"][CorrelationId:"+corrId+"][MessageId:"+messageId+"] "+((IGGEventsTypable) processor).getType());
+			if( processor.handle(message) != true ) {
+				log.info("[TenantId:"+tenantId+"][ClusterId:"+clusterId+"][RouteId:"+this.routeUuid+"][ExchangeId:"+message.getExchangeId()+"][CorrelationId:"+corrId+"][MessageId:"+messageId+"] process stopped due to processor");
+				break;
+			};
 		}
 	}
 

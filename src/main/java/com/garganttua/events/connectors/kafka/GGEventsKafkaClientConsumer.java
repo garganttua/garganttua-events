@@ -9,7 +9,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.errors.WakeupException;
 
-import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
@@ -46,7 +46,7 @@ public class GGEventsKafkaClientConsumer implements Runnable {
 						if( this.garanteeOrder ) {
 							try {
 								messageHandler.handle(GGEventsExchange.emptyExchange(this.name, this.topicRef, this.dataFlowUuid, message));
-							} catch (GGEventsException e) {
+							} catch (GGEventsHandlingException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
@@ -55,7 +55,7 @@ public class GGEventsKafkaClientConsumer implements Runnable {
 							
 							try {
 								messageHandler.handle(GGEventsExchange.emptyExchange(this.name, this.topicRef, this.dataFlowUuid, message));
-							} catch (GGEventsException e) {
+							} catch (GGEventsHandlingException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}

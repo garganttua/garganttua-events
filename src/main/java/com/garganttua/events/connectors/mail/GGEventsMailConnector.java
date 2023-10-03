@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import com.garganttua.events.spec.annotations.GGEventsConnector;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
@@ -35,6 +35,7 @@ public class GGEventsMailConnector implements IGGEventsConnector {
 	private static final String PASSWORD = "password";
 	private static final String BODY = "body";
 	private static final String SMTP_SSL = "ssl";
+	private static final String CONTENT_TYPE = "contentType";
 	private String name;
 	private ExecutorService poolExecutor;
 	private String configuration;
@@ -56,16 +57,16 @@ public class GGEventsMailConnector implements IGGEventsConnector {
 	private Map<String, GGEventsMailSender> mailSenders = new HashMap<String, GGEventsMailSender>();
 	private Object ssl;
 	private String to;
+	private String contentType;
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		try {
-			System.out.println(exchange.getToTopic());
-			
 			this.mailSenders.get(exchange.getToTopic()).sendMail(exchange);
-		} catch (MessagingException e) {
-			throw new GGEventsProcessingException(e);
+		} catch (MessagingException | GGEventsException e) {
+			throw new GGEventsHandlingException(e);
 		}
+		return true;
 	}
 
 	@Override
@@ -95,6 +96,9 @@ public class GGEventsMailConnector implements IGGEventsConnector {
 				break;
 			case OBJECT:
 				this.object = values.get(0);
+				break;
+			case CONTENT_TYPE:
+				this.contentType = values.get(0);
 				break;
 			case SMTP_HOST:
 				this.host = values.get(0);
@@ -181,7 +185,7 @@ public class GGEventsMailConnector implements IGGEventsConnector {
 
 	@Override
 	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId, String assetId) {
-		this.mailSenders .put(subscription.getTopic(), new GGEventsMailSender(this.properties, this.from, this.to, this.object, this.body, this.userName, this.password));
+		this.mailSenders .put(subscription.getTopic(), new GGEventsMailSender(this.properties, this.from, this.to, this.object, this.body, this.userName, this.password, this.contentType));
 	}
 
 }

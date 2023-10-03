@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -42,7 +43,7 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 	private String type = "processor::transform";
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		
 		byte[] fromByte = exchange.getValue();
 		
@@ -62,7 +63,7 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 			try {
 				ctor = this.transformerClazz.getDeclaredConstructor();
 			} catch (NoSuchMethodException | SecurityException e1) {
-				throw new GGEventsProcessingException(e1);
+				throw new GGEventsHandlingException(e1);
 			}
 			try {
 				IGGEventsTransformer transformerObj = (IGGEventsTransformer) ctor.newInstance();
@@ -73,12 +74,13 @@ public class GGEventsTransformProcessor implements IGGEventsProcessor {
 				
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
-				throw new GGEventsException(e);
+				throw new GGEventsHandlingException(e);
 			}
 
 		} catch (IOException | IllegalArgumentException | SecurityException e) {
-			throw new GGEventsProcessingException(e);
+			throw new GGEventsHandlingException(e);
 		}
+		return true;
 	}
 
 	@Override

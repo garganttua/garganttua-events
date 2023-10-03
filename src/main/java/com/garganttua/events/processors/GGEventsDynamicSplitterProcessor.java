@@ -13,6 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
@@ -115,15 +116,24 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		
-		List<Entry<String, Entry<String, byte[]>>> splitted = this.strategyObject.split(exchange.getTenantId(), exchange.getValue(), this.destinationSubscriptions.keySet());
+		List<Entry<String, Entry<String, byte[]>>> splitted;
+		try {
+			splitted = this.strategyObject.split(exchange.getTenantId(), exchange.getValue(), this.destinationSubscriptions.keySet());
+		} catch (GGEventsProcessingException e) {
+			throw new GGEventsHandlingException(e);
+		}
 		for( Entry<String, Entry<String, byte[]>> entry: splitted ) {
 			IGGEventsSubscription sub = this.destinationSubscriptions.get(entry.getKey());
 			if( sub != null ) {
 				if( !this.multithreaded ) {
 					log.debug("key "+entry.getKey()+" value "+new String(entry.getValue().getValue()));
-					this.handleSplittedMessage(exchange, entry.getValue().getValue(), entry.getKey(), sub, entry.getValue().getKey());
+					try {
+						this.handleSplittedMessage(exchange, entry.getValue().getValue(), entry.getKey(), sub, entry.getValue().getKey());
+					} catch (GGEventsHandlingException e) {
+						throw new GGEventsHandlingException(e);
+					}
 				} else {
 					this.service.execute(new Thread() {
 						@Override
@@ -131,7 +141,7 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 							try {
 								log.debug("key "+entry.getKey()+" value "+new String(entry.getValue().getValue()));
 								handleSplittedMessage(exchange, entry.getValue().getValue(), entry.getKey(), sub, entry.getValue().getKey());
-							} catch (GGEventsException e) {
+							} catch (GGEventsHandlingException e) {
 								log.warn("Unable to send splitted message to subscription "+sub.getId(), e);
 							}
 						}
@@ -142,10 +152,11 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 				log.warn("No subscription found for key "+entry.getKey()+". Ignoring.");
 			}
 		}
+		return true;
 	}
 
 	private void handleSplittedMessage(GGEventsExchange exchange, byte[] message, String key, IGGEventsSubscription sub, String contentType)
-			throws GGEventsProcessingException, GGEventsException {
+			throws GGEventsHandlingException {
 		GGEventsExchange clone = exchange.clone();
 		clone.setValue(message);
 		clone.setContentType(contentType);

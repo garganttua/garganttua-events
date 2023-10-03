@@ -26,7 +26,7 @@ public class GGEventsMailSender {
 	private String object;
 	private String contentType;
 
-	public GGEventsMailSender(Properties properties, String from, String to, String object, String body, String username, String password) {
+	public GGEventsMailSender(Properties properties, String from, String to, String object, String body, String username, String password, String contentType) {
 		this.properties = properties;
 		this.from = from;
 		this.to = to;
@@ -34,6 +34,7 @@ public class GGEventsMailSender {
 		this.object = object;
 		this.username = username;
 		this.password = password;
+		this.contentType = contentType;
 	}
 
 	public void sendMail(GGEventsExchange exchange) throws AddressException, MessagingException, GGEventsException {
@@ -59,7 +60,11 @@ public class GGEventsMailSender {
 		if( this.object == null ) {
 			subject = exchange.getToDataflowUuid()+exchange.getToTopic();
 		} else {
-			GGEventsExchange.getVariableValue(exchange, subject);
+			if( GGEventsExchange.isVariable(this.object) ) {
+				subject = GGEventsExchange.getVariableValue(exchange, this.object);
+			} else {
+				subject = this.object;
+			}
 		}
 		return subject;
 	}
@@ -85,7 +90,11 @@ public class GGEventsMailSender {
 			body = new String(exchange.getValue());
 		} else {
 			try {
-				body = GGEventsExchange.getVariableValue(exchange, this.body);
+				if( GGEventsExchange.isVariable(this.body) ) {
+					body = GGEventsExchange.getVariableValue(exchange, this.body);
+				} else {
+					body = this.body;
+				}
 			} catch (GGEventsException e) {
 				body = this.body;
 			}
@@ -97,7 +106,11 @@ public class GGEventsMailSender {
 		String to = null;
 		
 		try {
-			body = GGEventsExchange.getVariableValue(exchange, this.to);
+			if( GGEventsExchange.isVariable(this.to) ) {
+				to = GGEventsExchange.getVariableValue(exchange, this.to);
+			} else {
+				to = this.to;
+			}
 		} catch (GGEventsException e) {
 			to = this.to;
 		}

@@ -15,7 +15,7 @@ import com.garganttua.events.spec.enums.GGEventsExecutionStage;
 import com.garganttua.events.spec.enums.GGEventsMediaType;
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
@@ -59,8 +59,8 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	private String message;
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
-
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
+		return true;
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 						public void run(){
 							try {
 								handler.handle(exchange);
-							} catch (GGEventsException e) {
+							} catch (GGEventsHandlingException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}

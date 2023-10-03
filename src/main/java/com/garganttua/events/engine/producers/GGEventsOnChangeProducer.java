@@ -6,7 +6,7 @@ package com.garganttua.events.engine.producers;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -26,13 +26,14 @@ public class GGEventsOnChangeProducer implements IGGEventsProducer {
 
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsException, GGEventsProcessingException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		log.info("["+this.subscriptionId+"][ExchangeId:"+exchange.getExchangeId()+"] Sending message");
 		try {
 			this.connector.handle(exchange);
-		} catch (GGEventsProcessingException e) {
+		} catch (GGEventsHandlingException e) {
 			throw e;
 		}
+		return true;
 	}
 
 

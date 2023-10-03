@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -53,7 +53,7 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		byte[] body = exchange.getValue();
 
 		String bodyString = new String(body, StandardCharsets.UTF_8);
@@ -63,7 +63,7 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 		try {
 			message = mapper.readValue(bodyString, GGEventsMessage.class);
 		} catch (IOException e) {
-			throw new GGEventsProcessingException(e);
+			throw new GGEventsHandlingException(e);
 		}
 		exchange.setCorrelationId(message.getCorrelationId());
 		exchange.setDataflowVersion(message.getDataflowVersion());
@@ -85,6 +85,8 @@ public class GGEventsEncapsulatedProtocolInProcessor implements IGGEventsProcess
 
 		exchange.getSteps().add(new GGEventsJourneyStep(new Date(), this.assetId, this.subscriptionId,
 				GGEventsJourneyStepDirection.IN, this.version, id, this.cluster));
+		
+		return true;
 	}
 
 	@Override

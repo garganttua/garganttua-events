@@ -172,9 +172,10 @@ public class GGEventsKafkaConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) {
+	public boolean handle(GGEventsExchange exchange) {
 		String topic = this.formatTopicRef(exchange.getToTopic());
 		this.producers.get(topic).publishValue(exchange.getValue());
+		return true;
 	}
 
 	@Override

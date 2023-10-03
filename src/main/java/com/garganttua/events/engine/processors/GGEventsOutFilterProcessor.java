@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.context.GGEventsContextDestinationPolicy;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -38,7 +38,7 @@ public class GGEventsOutFilterProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		String toUuid = this.producerConfiguration.getDestinationUuid();
 
 		GGEventsContextDestinationPolicy dpolicy = this.producerConfiguration.getDpolicy();
@@ -48,7 +48,11 @@ public class GGEventsOutFilterProcessor implements IGGEventsProcessor {
 			case ONLY_TO_ASSET:
 			case ONLY_TO_CLUSTER:
 				if( exchange.isVariable(toUuid) ) {
-					toUuid = GGEventsExchange.getVariableValue(exchange, toUuid);
+					try {
+						toUuid = GGEventsExchange.getVariableValue(exchange, toUuid);
+					} catch (GGEventsException e) {
+						throw new GGEventsHandlingException(e);
+					}
 				}
 				exchange.setToUuid(toUuid);
 				break;
@@ -58,6 +62,7 @@ public class GGEventsOutFilterProcessor implements IGGEventsProcessor {
 				break;	
 			}
 		}
+		return true;
 	}
 
 	@Override

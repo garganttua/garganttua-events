@@ -119,6 +119,9 @@ public class GGEventsExchange extends GGEventsMessage {
 											
 					Object t = JsonPath.parse(targetStream).read(toto2[0]);
 					
+					if( t instanceof Integer ) {
+						value = Integer.toString((int)t);
+					}
 					if( t instanceof String ) {
 						value = (String) t;
 					} 
@@ -140,7 +143,7 @@ public class GGEventsExchange extends GGEventsMessage {
 		return value;
 	}
 
-	public boolean isVariable(String value) {
+	static public boolean isVariable(String value) {
 		return value.startsWith("${") && value.endsWith("}");
 	}
 

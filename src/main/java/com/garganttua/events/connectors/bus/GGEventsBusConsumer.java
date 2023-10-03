@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.leansoft.bigqueue.BigQueueImpl;
@@ -70,7 +71,7 @@ public class GGEventsBusConsumer {
 									GGEventsExchange m = GGEventsExchange.emptyExchange(this.name, this.topicRef, d, message.getValue());
 									try {
 										h.handle(m);
-									} catch (GGEventsException e) {
+									} catch (GGEventsHandlingException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
@@ -81,7 +82,7 @@ public class GGEventsBusConsumer {
 											GGEventsExchange m = GGEventsExchange.emptyExchange(name, topicRef, d, message.getValue());
 											try {
 												h.handle(m);
-											} catch (GGEventsException e) {
+											} catch (GGEventsHandlingException e) {
 												// TODO Auto-generated catch block
 												e.printStackTrace();
 											}

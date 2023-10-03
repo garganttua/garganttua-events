@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
@@ -41,12 +41,17 @@ public class GGEventsSetHeaderProcessor implements IGGEventsProcessor {
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsProcessingException, GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		if( exchange.isVariable(this.headerValue)) {
-			exchange.getHeaders().put(this.headerName, GGEventsExchange.getVariableValue(exchange, this.headerValue));
+			try {
+				exchange.getHeaders().put(this.headerName, GGEventsExchange.getVariableValue(exchange, this.headerValue));
+			} catch (GGEventsException e) {
+				throw new GGEventsHandlingException(e);
+			}
 		} else {
 			exchange.getHeaders().put(this.headerName, this.headerValue);
 		}
+		return true;
 	}
 
 	@Override
@@ -57,7 +62,7 @@ public class GGEventsSetHeaderProcessor implements IGGEventsProcessor {
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "setHeader", "1.0.0", this.infos, this.manual);
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "setHeader", "1.0", this.infos, this.manual);
 	}
 
 	@Override

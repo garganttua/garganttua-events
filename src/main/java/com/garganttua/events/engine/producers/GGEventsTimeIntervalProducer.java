@@ -6,6 +6,7 @@ package com.garganttua.events.engine.producers;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
@@ -39,10 +40,8 @@ public class GGEventsTimeIntervalProducer implements IGGEventsProducer, Runnable
 				try {
 					log.info("[" + this.subscriptionId + "][ExchangeId:" + this.message.getExchangeId()
 							+ "] Sending message");
-//					log.debug(new String(this.message.getValue()));
 					this.connector.handle(this.message);
-				} catch (GGEventsException e) {
-					// TODO Auto-generated catch block
+				} catch (GGEventsHandlingException e) {
 					e.printStackTrace();
 				}
 			} else {
@@ -58,10 +57,11 @@ public class GGEventsTimeIntervalProducer implements IGGEventsProducer, Runnable
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		synchronized (this.blocker) {
 			this.message = exchange;
 		}
+		return true;
 	}
 
 	@Override
