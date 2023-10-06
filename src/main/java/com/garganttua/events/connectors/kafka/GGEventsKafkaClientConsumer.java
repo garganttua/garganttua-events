@@ -4,81 +4,44 @@
 package com.garganttua.events.connectors.kafka;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.common.errors.WakeupException;
 
-import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
-import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
-import com.garganttua.events.spec.objects.GGEventsExchange;
+import com.garganttua.events.connectors.AbstractGGEventsConsumer;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-public class GGEventsKafkaClientConsumer implements Runnable {
-
+public class GGEventsKafkaClientConsumer extends AbstractGGEventsConsumer {
+	
 	private Consumer<String, byte[]> consumer;
-	private IGGEventsMessageHandler messageHandler;
-	private String topicRef;
-	private String name;
-	private String dataFlowUuid;
-	private boolean garanteeOrder;
+	private boolean autoCommit;
 
-	public void stop() {
-		this.consumer.wakeup();
-	}
-
-	public void run() {
-		Duration timeout = Duration.ofMillis(10000);
-
-		try {
-			while (true) {
-				
-				ConsumerRecords<String, byte[]> records = this.consumer.poll(timeout);
-				records.forEach(record -> {
-					log.debug("Message received "+record.key()+ " : "+new String(record.value()));
-					final byte[] message = record.value();
-					final String dfUuid = record.key();
-
-					if (message != null && dfUuid.equals(dataFlowUuid)) {
-
-						if( this.garanteeOrder ) {
-							try {
-								messageHandler.handle(GGEventsExchange.emptyExchange(this.name, this.topicRef, this.dataFlowUuid, message));
-							} catch (GGEventsHandlingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						} else {
-							//TODO : implémenter le handle dans un thread
-							
-							try {
-								messageHandler.handle(GGEventsExchange.emptyExchange(this.name, this.topicRef, this.dataFlowUuid, message));
-							} catch (GGEventsHandlingException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				});
-				this.consumer.commitSync();
-			}
-		} catch (WakeupException e) {
-			// Nothing to do
-		} finally {
-			this.consumer.unsubscribe();
-			this.consumer.close();
-		}
-
-	}
-
-	public GGEventsKafkaClientConsumer(Consumer<String, byte[]> consumer, IGGEventsMessageHandler messageHandler, String topicRef, String name, String dataFlowUuid, boolean garanteeOrder) {
+	public GGEventsKafkaClientConsumer(boolean autoCommit, Consumer<String, byte[]> consumer, String topicRef, String name, Integer pollInterval, TimeUnit pollIntervalUnit, ExecutorService poolExecutor) {
+		super(topicRef, name, pollInterval, pollIntervalUnit, poolExecutor);
+		this.autoCommit = autoCommit;
 		this.consumer = consumer;
-		this.messageHandler = messageHandler;
-		this.topicRef = topicRef;
-		this.name = name;
-		this.dataFlowUuid = dataFlowUuid;
-		this.garanteeOrder = garanteeOrder;
+	}
+
+	@Override
+	protected Map<String, byte[]> doWaitForMessages(long timeout) {
+		Map<String, byte[]> messages = new HashMap<String, byte[]>();
+		Duration duration = Duration.ofMillis(timeout);
+		ConsumerRecords<String, byte[]> records = this.consumer.poll(duration);
+		records.forEach(record -> {
+			final byte[] message = record.value();
+			final String dfUuid = record.key();
+			messages.put(dfUuid, message);
+		});
+		return messages;
+	}
+
+	@Override
+	protected void ackMessages(Map<String, byte[]> receivedMessages) {
+		if( !this.autoCommit ) {
+			this.consumer.commitSync();
+		}
 	}
 }

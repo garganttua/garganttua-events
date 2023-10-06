@@ -12,10 +12,10 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
-import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
+import com.garganttua.events.spec.objects.GGEventsConnectorConsumerRegistrationRequest;
+import com.garganttua.events.spec.objects.GGEventsConnectorProducerRegistrationRequest;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
@@ -178,14 +178,14 @@ public class GGEventsMailConnector implements IGGEventsConnector {
 	}
 
 	@Override
-	public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId, String clusterId, String assetId) {
+	public void registerConsumer(GGEventsConnectorConsumerRegistrationRequest request) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
-	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId, String assetId) {
-		this.mailSenders .put(subscription.getTopic(), new GGEventsMailSender(this.properties, this.from, this.to, this.object, this.body, this.userName, this.password, this.contentType));
+	public void registerProducer(GGEventsConnectorProducerRegistrationRequest request) {
+		this.mailSenders.put(request.subscription().getTopic(), new GGEventsMailSender(this.properties, this.from, this.to, this.object, this.body, this.userName, this.password, this.contentType));
 	}
 
 }

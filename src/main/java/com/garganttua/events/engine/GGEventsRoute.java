@@ -22,6 +22,9 @@ import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.interfaces.IGGEventsRoute;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
 import com.garganttua.events.spec.interfaces.IGGEventsTypable;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
+import com.garganttua.events.spec.objects.GGEventsConnectorConsumerRegistrationRequest;
+import com.garganttua.events.spec.objects.GGEventsConnectorProducerRegistrationRequest;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.Getter;
@@ -51,8 +54,10 @@ public class GGEventsRoute implements IGGEventsRoute {
 		this.processorsList = new GGEventsSynchronizedLinkedProcessorList();
 		this.exceptionList = new GGEventsSynchronizedLinkedProcessorList();
 		
+		IGGEventsContextDataflow fromDataflow = ((GGEventsDataflow) fromSubscription.getDataflow()).getDataflow();
+		
 		fromSubscription.getConsumer().registerRoute(this);
-		fromSubscription.getConnector().registerConsumer(fromSubscription.getSubscription(), this, this.tenantId, this.clusterId, this.assetId);
+		fromSubscription.getConnector().registerConsumer(new GGEventsConnectorConsumerRegistrationRequest(fromDataflow, fromSubscription.getSubscription(), this));
 		
 		this.processorsList.add(fromSubscription.getProtocolInProcessor());
 		this.processorsList.add(fromSubscription.getInFilterProcessor());
@@ -62,17 +67,19 @@ public class GGEventsRoute implements IGGEventsRoute {
 		});
 		
 		if( toSubscription != null ) {
+			IGGEventsContextDataflow toDataflow = ((GGEventsDataflow) toSubscription.getDataflow()).getDataflow();
 			this.processorsList.add(toSubscription.getOutFilterProcessor());
 			this.processorsList.add(toSubscription.getProtocolOutProcessor());
 			this.producer = toSubscription.getProducer();
 			this.processorsList.add(this.producer);
-			toSubscription.getConnector().registerProducer(toSubscription.getSubscription(), this.tenantId, this.clusterId, this.assetId);
+			toSubscription.getConnector().registerProducer(new GGEventsConnectorProducerRegistrationRequest(toDataflow, toSubscription.getSubscription()));
 		}
 		if( exceptionSubscription != null ) {
+			IGGEventsContextDataflow exceptionDataflow = ((GGEventsDataflow) exceptionSubscription.getDataflow()).getDataflow();
 			this.exceptionList.add(exceptionSubscription.getOutFilterProcessor());
 			this.exceptionList.add(toSubscription.getProtocolOutProcessor());
 			this.exceptionList.add(exceptionSubscription.getProducer());
-			exceptionSubscription.getConnector().registerProducer(exceptionSubscription.getSubscription(), this.tenantId, this.clusterId, this.assetId);
+			exceptionSubscription.getConnector().registerProducer(new GGEventsConnectorProducerRegistrationRequest(exceptionDataflow, exceptionSubscription.getSubscription()));
 		}	
 	}
 

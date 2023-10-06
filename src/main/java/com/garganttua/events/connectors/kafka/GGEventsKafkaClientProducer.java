@@ -6,10 +6,11 @@ package com.garganttua.events.connectors.kafka;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import com.garganttua.events.connectors.AbstractGGEventsProducer;
+
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class GGEventsKafkaClientProducer {
+public class GGEventsKafkaClientProducer extends AbstractGGEventsProducer {
 
 	private KafkaProducer<String, byte[]> kafkaProducer;
 	private String topicRef;
@@ -23,13 +24,7 @@ public class GGEventsKafkaClientProducer {
 
 	public void publishValue(byte[] value) {
 		ProducerRecord<String, byte[]> record = new ProducerRecord<String, byte[]>(this.topicRef, this.dataflowUuid, value);
-
 		this.kafkaProducer.send(record);
-		log.debug("Message sent "+this.dataflowUuid+ " : "+new String(value));
-	}
-
-	public void stop() {
-		this.kafkaProducer.close();
 	}
 
 }

@@ -50,7 +50,7 @@ public class GGEventsMailSender {
 		message.addRecipient(Message.RecipientType.TO, new InternetAddress(getRecipient(exchange)));
 		message.setSubject(this.getObject(exchange));
 		message.setContent(this.getBody(exchange), this.getContentType(exchange));
-		
+		message.setHeader("dataflowUuid", exchange.getToDataflowUuid());
 		Transport.send(message);
 	}
 

@@ -6,118 +6,82 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
-import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
-import com.garganttua.events.spec.objects.GGEventsExchange;
-import com.leansoft.bigqueue.BigQueueImpl;
+import com.garganttua.events.connectors.AbstractGGEventsConsumer;
+import com.leansoft.bigqueue.IBigQueue;
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@NoArgsConstructor
 @Slf4j
-public class GGEventsBusConsumer {
+public class GGEventsBusConsumer extends AbstractGGEventsConsumer {
 
-	private BigQueueImpl queue;
-	private String topicRef;
-	private String name;
-	private Integer pollInterval;
-	private TimeUnit pollIntervalUnit;
-	private ExecutorService poolExecutor;
+	private IBigQueue queue;
+	private Integer gcInterval;
+	private TimeUnit gcIntervalUnit;
+
+	public GGEventsBusConsumer(IBigQueue queue, String topicRef, String name, Integer pollInterval, TimeUnit pollIntervalUnit, ExecutorService poolExecutor, Integer gcInterval, TimeUnit gcIntervalUnit) {
+		super(topicRef, name, pollInterval, pollIntervalUnit, poolExecutor);
+		this.queue = queue;
+		this.gcInterval = gcInterval;
+		this.gcIntervalUnit = gcIntervalUnit;
+	}
+
+	@Override
+	protected Map<String, byte[]> doWaitForMessages(long timeout) {
+		Map<String, byte[]> messages = new HashMap<String, byte[]>();
+		try {
+			Thread.sleep(timeout);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		if (this.queue.isEmpty()) {
+			return messages;
+		}
+
+		while (this.queue.isEmpty() != true) {
+			try {
+				byte[] bytes = this.queue.dequeue();
+				GGEventsBusMessage message = GGEventsBusMessage.fromBytes(bytes);
+				String dataflowUuid = message.getToDataflowUuid();
+				
+				messages.put(dataflowUuid, message.getValue());
+				
+			} catch (Exception e) {
+				log.warn("[Connector:{}][Topic:{}][Timeout:{}] Error reading message from queue {}", this.name, this.topicRef, timeout, e.getMessage(), e);
+			}
+		}
+		return messages;
+	}
 	
-	private Map<String, IGGEventsMessageHandler> handlers = new HashMap<String, IGGEventsMessageHandler>();
-	private Map<String, Boolean> garanteeOrder = new HashMap<String, Boolean>();
-	
-	public void start() {
+	@Override
+	public void run() {
+		super.run();
 		this.poolExecutor.execute(new Thread() {
 			@Override
 			public void run() {
-				exec();
+				while(true) {
+					
+					long time = TimeUnit.MILLISECONDS.convert(gcInterval, gcIntervalUnit);
+					
+					try {
+						Thread.sleep(time);
+					} catch (InterruptedException e) {
+						log.warn("[Connector:{}][Topic:{}][Timeout:{}] Error reading queue GC {}", name, topicRef, time, e.getMessage(), e);
+					}
+					try {
+						queue.gc();
+					} catch (IOException e) {
+						log.warn("[Connector:{}][Topic:{}][Timeout:{}] Error reading queue GC {}", name, topicRef, time, e.getMessage(), e);
+					}
+				}
 			}
 		});
 	}
 
-	public void stop() {
-		
-	}
-	
-	public void exec() {
-		while(true) {
-			
-			long time = TimeUnit.MILLISECONDS.convert(this.pollInterval, this.pollIntervalUnit);
-			
-			try {
-				Thread.sleep(time);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			if( this.queue.isEmpty() ) {
-				continue;
-			}
-			
-			while( this.queue.isEmpty() != true ) {
-				try {
-					byte[] bytes = this.queue.dequeue();
-					
-					try {
-						GGEventsBusMessage message = GGEventsBusMessage.fromBytes(bytes);
-
-						this.handlers.forEach((d,h)-> {
-							if( d.equals(message.getToDataflowUuid()) ) {
-								if( this.garanteeOrder.get(d) ) {
-									GGEventsExchange m = GGEventsExchange.emptyExchange(this.name, this.topicRef, d, message.getValue());
-									try {
-										h.handle(m);
-									} catch (GGEventsHandlingException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-								} else {
-									this.poolExecutor.execute(new Thread() {
-
-										public void run() {
-											GGEventsExchange m = GGEventsExchange.emptyExchange(name, topicRef, d, message.getValue());
-											try {
-												h.handle(m);
-											} catch (GGEventsHandlingException e) {
-												// TODO Auto-generated catch block
-												e.printStackTrace();
-											}
-										}
-									});
-								}
-							}
-						});
-					} catch(Exception e) {
-						log.warn("Unable to decode the received message, dropping", e);
-					}
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	public void registerHandler(String dataflowUuid, IGGEventsMessageHandler handler) {
-		this.handlers.put(dataflowUuid, handler);
-	}
-
-	public GGEventsBusConsumer(BigQueueImpl queue, String topicRef, String name, Integer pollInterval, TimeUnit pollIntervalUnit, ExecutorService poolExecutor) {
-		this.queue = queue;
-		this.topicRef = topicRef;
-		this.name = name;
-		this.pollInterval = pollInterval;
-		this.pollIntervalUnit = pollIntervalUnit;
-		this.poolExecutor = poolExecutor;
-	}
-
-	public void setGaranteeOrder(String dataflowUuid, boolean b) {
-		this.garanteeOrder.put(dataflowUuid, b);
+	@Override
+	protected void ackMessages(Map<String, byte[]> receivedMessages) {
+		//Nothing to do
 	}
 
 }

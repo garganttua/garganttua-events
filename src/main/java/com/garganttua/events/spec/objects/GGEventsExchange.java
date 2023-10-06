@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.jayway.jsonpath.JsonPath;
 
@@ -145,6 +147,19 @@ public class GGEventsExchange extends GGEventsMessage {
 
 	static public boolean isVariable(String value) {
 		return value.startsWith("${") && value.endsWith("}");
+	}
+	
+	@Override
+	public String toString() {
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return mapper.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return super.toString();
 	}
 
 }

@@ -23,6 +23,8 @@ import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
+import com.garganttua.events.spec.objects.GGEventsConnectorConsumerRegistrationRequest;
+import com.garganttua.events.spec.objects.GGEventsConnectorProducerRegistrationRequest;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsEvent;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -72,6 +74,9 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
 			IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) throws GGEventsException {
 		this.configuration = configuration;
+		this.tenantId = tenantId;
+		this.clusterId = clusterId;
+		this.assetId = assetId;
 	}
 
 	@Override
@@ -121,20 +126,13 @@ public class GGEventsEventsConnector implements IGGEventsConnector, IGGEventsEve
 	}
 
 	@Override
-	public void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId,
-			String clusterId, String assetId) {
-		this.tenantId = tenantId;
-		this.assetId = assetId;
-		this.clusterId = clusterId;
-		
-		this.handlers.put(messageHandler, subscription);
+	public void registerConsumer(GGEventsConnectorConsumerRegistrationRequest request) {
+		this.handlers.put(request.messageHandler(), request.subscription());
 	}
 
 	@Override
-	public void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId,
-			String assetId) {
+	public void registerProducer(GGEventsConnectorProducerRegistrationRequest request) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

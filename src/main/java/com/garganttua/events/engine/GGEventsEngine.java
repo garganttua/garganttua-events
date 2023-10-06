@@ -20,6 +20,7 @@ import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConfigurable;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextLockObject;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextNamable;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextProcessor;
@@ -134,7 +135,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 	private void initRoutes(IGGEventsContext context, String tenantId, String clusterId) {
 
 		for (IGGEventsContextRoute route : context.getRoutes()) {
-
+			
 			String from = route.getFrom();
 			GGEventsSubscription fromSubscription = this.subscriptions.get(tenantId).get(clusterId).get(from);
 			if (fromSubscription == null) {
@@ -167,7 +168,6 @@ public class GGEventsEngine implements IGGEventsEngine {
 				IGGEventsProcessor proc = this.initObject(to, tenantId, clusterId, ctxtProcessor, this.processorObjs);
 				
 				processorsList.add(proc);
-				
 			}
 			
 			GGEventsLockObject lock = null;
@@ -183,14 +183,13 @@ public class GGEventsEngine implements IGGEventsEngine {
 					throw new IllegalArgumentException("Cannot construct route " + route.getUuid() + " : the distributed lock "
 							+ ctxtLockObject.getLock() + " is not registered");
 				}
-				
 			}
 
 			GGEventsRoute r = new GGEventsRoute(fromSubscription, toSubscription, exceptionSubscription, lock, processorsList, route.getUuid(), tenantId, clusterId, this.assetId);
 			
 			this.routes.get(tenantId).get(clusterId).put(r.getRouteUuid(), r);
 			
-			log.info("[" + tenantId + "][" + tenantId + "][" + clusterId + "] -> Route " + route.getUuid() + " registered");
+			log.info("[" + assetId + "][" + tenantId + "][" + clusterId + "] -> Route " + route.getUuid() + " registered");
 
 		}
 	}
@@ -267,16 +266,15 @@ public class GGEventsEngine implements IGGEventsEngine {
 		
 		for (T ctxtObject : ctxtObjects) {
 			
-			V object = this.initObject(assetId, tenantId, clusterId, ctxtObject, classes);
-			
 			String type = ((IGGEventsContextTypable) ctxtObject).getType();
 			String name = ((IGGEventsContextNamable) ctxtObject).getName();
 			String version = ((IGGEventsContextVersionable) ctxtObject).getVersion();
+			
+			V object = this.initObject(assetId, tenantId, clusterId, ctxtObject, classes);
 
 			objects.put(name, (V) object);
 
 			log.info("[" + assetId + "][" + tenantId + "][" + clusterId + "] -> object registered : " + object.getClass().getName() + " of type " + type+" and version "+version);
-			
 		}
 	}
 	
@@ -339,7 +337,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 		for( String tenant: this.connectors.keySet() ) {
 			for( String cluster: this.connectors.get(tenant).keySet() ) {
 				for( String type: this.connectors.get(tenant).get(cluster).keySet() ) {
-					log.info("[" + tenant + "][" + cluster + "] Configuring connector " + type);
+					log.info("[" + assetId + "][" + tenant + "][" + cluster + "] Configuring connector " + type);
 					try {
 						this.connectors.get(tenant).get(cluster).get(type).applyConfiguration();
 					} catch (Exception e) {
@@ -352,7 +350,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 						}
 						throw new GGEventsException("Error during starting", e);
 					}
-					log.debug("[" + tenant + "][" + cluster + "] Configured " + type);
+					log.debug("[" + assetId + "][" + tenant + "][" + cluster + "] Configured " + type);
 				}
 			}
 		}
@@ -361,7 +359,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 		for( String tenant: this.connectors.keySet() ) {
 			for( String cluster: this.connectors.get(tenant).keySet() ) {
 				for( String type: this.connectors.get(tenant).get(cluster).keySet() ) {
-					log.info("[" + tenant + "][" + cluster + "] Starting connector " + type);
+					log.info("[" + assetId + "][" + tenant + "][" + cluster + "] Starting connector " + type);
 					try {
 						this.connectors.get(tenant).get(cluster).get(type).start();
 					} catch (Exception e) {
@@ -374,7 +372,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 						}
 						throw new GGEventsException("Error during starting", e);
 					}
-					log.debug("[" + tenant + "][" + cluster + "] Started connector " + type);
+					log.debug("[" + assetId + "][" + tenant + "][" + cluster + "] Started connector " + type);
 				}
 			}
 		}
@@ -383,7 +381,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 		for( String tenant: this.routes.keySet() ) {
 			for( String cluster: this.routes.get(tenant).keySet() ) {
 				for( String route: this.routes.get(tenant).get(cluster).keySet() ) {
-					log.info("[" + tenant + "][" + cluster + "] Starting route " + route);
+					log.info("[" + assetId + "][" + tenant + "][" + cluster + "] Starting route " + route);
 					try {
 						this.routes.get(tenant).get(cluster).get(route).start(this.scheduledExecutorService);
 					} catch (Exception e) {
@@ -396,7 +394,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 						}
 						throw new GGEventsException("Error during starting", e);
 					}
-					log.debug("[" + tenant + "][" + cluster + "] Started route " + route);
+					log.debug("[" + assetId + "][" + tenant + "][" + cluster + "] Started route " + route);
 				}
 			}
 		}
@@ -410,7 +408,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 		for( String tenant: this.connectors.keySet() ) {
 			for( String cluster: this.connectors.get(tenant).keySet() ) {
 				for( String type: this.connectors.get(tenant).get(cluster).keySet() ) {
-					log.info("[" + tenant + "][" + cluster + "] Stopping " + type);
+					log.info("[" + assetId + "][" + tenant + "][" + cluster + "] Stopping " + type);
 					try {
 						this.connectors.get(tenant).get(cluster).get(type).stop();
 					} catch (Exception e) {
@@ -418,7 +416,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 						this.raiseEvent(new GGEventsEvent("Unable to stop Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.SHUTDOWN, new GGEventsException(e)));
 						throw new GGEventsException("Error during stopping", e);
 					}
-					log.debug("[" + tenant + "][" + cluster + "] Stopped " + type);
+					log.debug("[" + assetId + "][" + tenant + "][" + cluster + "] Stopped " + type);
 				}
 			}
 		}
@@ -427,7 +425,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 		for( String tenant: this.routes.keySet() ) {
 			for( String cluster: this.routes.get(tenant).keySet() ) {
 				for( String route: this.routes.get(tenant).get(cluster).keySet() ) {
-					log.info("[" + tenant + "][" + cluster + "] Stopping route " + route);
+					log.info("[" + assetId + "][" + tenant + "][" + cluster + "] Stopping route " + route);
 					try {
 						this.routes.get(tenant).get(cluster).get(route).stop();
 					} catch (Exception e) {
@@ -435,7 +433,7 @@ public class GGEventsEngine implements IGGEventsEngine {
 						this.raiseEvent(new GGEventsEvent("Unable to stop Garganttua Framework", GGEventsEventCriticity.FATAL, GGEventsExecutionStage.SHUTDOWN, new GGEventsException(e)));
 						throw new GGEventsException("Error during stopping", e);
 					}
-					log.debug("[" + tenant + "][" + cluster + "] Stopped route " + route);
+					log.debug("[" + assetId + "][" + tenant + "][" + cluster + "] Stopped route " + route);
 				}
 			}
 		}

@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.garganttua.events.context.GGEventsContextDataflow;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
@@ -22,6 +23,7 @@ import com.garganttua.events.spec.interfaces.IGGEventsProducer;
 import com.garganttua.events.spec.interfaces.IGGEventsSplitStrategy;
 import com.garganttua.events.spec.interfaces.IGGEventsSubscription;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
+import com.garganttua.events.spec.objects.GGEventsConnectorProducerRegistrationRequest;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
@@ -84,8 +86,8 @@ public class GGEventsDynamicSplitterProcessor implements IGGEventsProcessor {
 			if( sub == null ) {
 				throw new GGEventsException("Cannot configure dynamic splitter as subscription "+subId+" is not registered.");
 			}
-			
-			sub.getConnector().registerProducer(sub.getSubscription(), tenantId, clusterId, assetId);
+
+			sub.getConnector().registerProducer(new GGEventsConnectorProducerRegistrationRequest(((GGEventsContextDataflow) sub.getDataflow()), sub.getSubscription()));
 
 			this.destinationSubscriptions.put(key, sub);
 		}

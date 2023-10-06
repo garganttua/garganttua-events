@@ -6,7 +6,8 @@ package com.garganttua.events.spec.interfaces;
 import java.util.concurrent.ExecutorService;
 
 import com.garganttua.events.spec.exceptions.GGEventsConnectorException;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
+import com.garganttua.events.spec.objects.GGEventsConnectorConsumerRegistrationRequest;
+import com.garganttua.events.spec.objects.GGEventsConnectorProducerRegistrationRequest;
 
 public interface IGGEventsConnector extends IGGEventsMessageHandler, IGGEventsConfigurable, IGGEventsDescribable, IGGEventsNamable {
 	
@@ -16,8 +17,8 @@ public interface IGGEventsConnector extends IGGEventsMessageHandler, IGGEventsCo
 
 	void stop() throws GGEventsConnectorException;
 
-	void registerConsumer(IGGEventsContextSubscription subscription, IGGEventsMessageHandler messageHandler, String tenantId, String clusterId, String assetId);
+	void registerConsumer(GGEventsConnectorConsumerRegistrationRequest request);
 
-	void registerProducer(IGGEventsContextSubscription subscription, String tenantId, String clusterId, String assetId);
+	void registerProducer(GGEventsConnectorProducerRegistrationRequest request);
 	
 }

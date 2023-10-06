@@ -70,7 +70,7 @@ public class GGEventsFilterProcessor implements IGGEventsProcessor {
 			boolean result = (boolean) exp.getValue();
 			
 			if( !result ) {
-				log.info("[TenantId:"+this.tenantId+"][ClusterId:"+this.clusterId+"][ExchangeId:"+exchange.getExchangeId()+"][CorrelationId:"+exchange.getCorrelationId()+"][MessageId:"+exchange.getMessageId()+"] Exchange does not match filter expression "+this.filter);
+				log.info("[TenantId:"+exchange.getTenantId()+"][ClusterId:"+this.clusterId+"][ExchangeId:"+exchange.getExchangeId()+"][CorrelationId:"+exchange.getCorrelationId()+"][MessageId:"+exchange.getMessageId()+"] Exchange does not match filter expression "+this.filter);
 				return false;
 			}
 		} catch(Exception e) {
