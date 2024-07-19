@@ -1,13 +1,9 @@
-/*******************************************************************************
- * Copyright (c) 2022 Jérémy COLOMBET
- *******************************************************************************/
 package com.garganttua.events.context.json.sources.file;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -24,11 +20,11 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@GGEventsContextSource(type="json-file", version="1.0")
+@GGEventsContextSource(type="json-resource-file", version="1.0")
 @AllArgsConstructor
 @NoArgsConstructor
-public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
-
+public class GGEventsContextJsonResourceFileSource implements IGGEventsContextSource {
+	
 	private String file;
 	
 	@Override
@@ -48,8 +44,14 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 		IGGEventsContextBinder binder = new GGEventsJsonContextBinder();
 
 		if( configuration != null ) {
-			log.info("Getting context from file "+configuration);
-			URI file = new File(configuration).toURI();
+			log.info("Getting context from resource file "+configuration);
+			URL resource = getClass().getClassLoader().getResource(configuration);
+			URI file = null;
+			try {
+				file = resource.toURI();
+			} catch (URISyntaxException e) {
+				throw new GGEventsException(e);
+			}
 				    	
 	    	byte[] fileBytes = null;
 			try {
@@ -78,23 +80,14 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	@Override
 	public void writeContext(IGGEventsContext context, String configuration, boolean ignoreVersion) throws GGEventsException {
 		IGGEventsContextBinder binder = new GGEventsJsonContextBinder();
-		log.info("Writting context to file "+configuration);
+		log.info("Writting context to resource file "+configuration);
 		
-		try {
-			String contextAsString = binder.getStringFromContext(context);
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(configuration));
-		    writer.write(contextAsString);		    
-		    writer.close();
-		} catch (IOException e) {
-			throw new GGEventsException(e);
-		}
-		
+		throw new GGEventsException("Cannot write file ["+configuration+"] in resources");
 	}
 
 	@Override
 	public String getType() {
-		return "source::json-file";
+		return "source::json-resource-file";
 	}
 
 	@Override
@@ -106,6 +99,4 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	public void setConfiguration(String configuration) {
 		file = configuration;
 	}
-
-	
 }

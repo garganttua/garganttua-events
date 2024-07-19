@@ -1,7 +1,6 @@
 package com.garganttua.events.engine;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -10,9 +9,7 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import com.garganttua.events.spec.annotations.GGEventsContextSource;
 import com.garganttua.events.spec.exceptions.GGEventsException;
-import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.objects.GGEventsUtils;
 
 import lombok.extern.slf4j.Slf4j;
