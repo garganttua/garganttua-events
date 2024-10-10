@@ -8,8 +8,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import com.garganttua.events.connectors.AbstractGGEventsProducer;
 
-import lombok.extern.slf4j.Slf4j;
-
 public class GGEventsKafkaClientProducer extends AbstractGGEventsProducer {
 
 	private KafkaProducer<String, byte[]> kafkaProducer;

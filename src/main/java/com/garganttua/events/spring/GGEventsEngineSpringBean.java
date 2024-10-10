@@ -5,6 +5,7 @@ package com.garganttua.events.spring;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,6 +30,8 @@ public class GGEventsEngineSpringBean implements IGGEventsEngineSpringBean {
 	private String assetName;
 	@Value("${com.garganttua.events.assetVersion:0.0.1-SNAPSHOT}")
 	private String assetVersion;
+	@Value("${com.garganttua.events.threadPoolSize:10}")
+	private int poolSize;
 	
 	@Autowired
 	private Optional<List<IGGEventsContextSource>> contextSources;
@@ -78,6 +81,9 @@ public class GGEventsEngineSpringBean implements IGGEventsEngineSpringBean {
 			});
 		});
 		
+		builder.maxThreadPoolSize(this.poolSize);
+		builder.threadPoolKeepAliveTime(30);
+		builder.threadPoolKeepAliveTimeUnit(TimeUnit.SECONDS);
 		this.engine = builder.build();
 		this.engine.init();
 	}

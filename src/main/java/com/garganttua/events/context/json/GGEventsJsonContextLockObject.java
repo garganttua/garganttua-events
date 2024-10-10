@@ -1,6 +1,5 @@
 package com.garganttua.events.context.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContextLockObject;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;
