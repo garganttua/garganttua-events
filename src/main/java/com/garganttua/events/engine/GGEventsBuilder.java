@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.garganttua.events.context.GGEventsContext;
@@ -134,7 +134,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 	@Override
 	public IGGEventsEngine build() {
 		if( this.executorService == null )
-			this.executorService = new ThreadPoolExecutor(this.threadPoolSize/2, this.maxThreadPoolSize/2, this.threadPoolKeepAliveTime, this.threadPoolKeepAliveTimeUnit, this.workQueue);
+			this.executorService = Executors.newFixedThreadPool(this.maxThreadPoolSize/2);//new ThreadPoolExecutor(this.threadPoolSize/2, this.maxThreadPoolSize/2, this.threadPoolKeepAliveTime, this.threadPoolKeepAliveTimeUnit, this.workQueue);
 		if( this.scheduledExecutorService == null )
 			this.scheduledExecutorService = new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
 

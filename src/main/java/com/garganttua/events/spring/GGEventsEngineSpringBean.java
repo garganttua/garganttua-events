@@ -31,7 +31,7 @@ public class GGEventsEngineSpringBean implements IGGEventsEngineSpringBean {
 	@Value("${com.garganttua.events.assetVersion:0.0.1-SNAPSHOT}")
 	private String assetVersion;
 	@Value("${com.garganttua.events.threadPoolSize:10}")
-	private int poolSize;
+	private int poolSize = 10;
 	
 	@Autowired
 	private Optional<List<IGGEventsContextSource>> contextSources;
@@ -81,7 +81,7 @@ public class GGEventsEngineSpringBean implements IGGEventsEngineSpringBean {
 			});
 		});
 		
-		builder.maxThreadPoolSize(this.poolSize);
+		builder.maxThreadPoolSize(10);
 		builder.threadPoolKeepAliveTime(30);
 		builder.threadPoolKeepAliveTimeUnit(TimeUnit.SECONDS);
 		this.engine = builder.build();
