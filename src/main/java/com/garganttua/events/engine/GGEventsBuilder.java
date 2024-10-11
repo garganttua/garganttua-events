@@ -136,7 +136,7 @@ public class GGEventsBuilder implements IGGEventsBuilder {
 		if( this.executorService == null )
 			this.executorService = Executors.newFixedThreadPool(this.maxThreadPoolSize/2);//new ThreadPoolExecutor(this.threadPoolSize/2, this.maxThreadPoolSize/2, this.threadPoolKeepAliveTime, this.threadPoolKeepAliveTimeUnit, this.workQueue);
 		if( this.scheduledExecutorService == null )
-			this.scheduledExecutorService = new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
+			this.scheduledExecutorService = Executors.newScheduledThreadPool(this.maxThreadPoolSize/2);//new ScheduledThreadPoolExecutor(this.maxThreadPoolSize/2);
 
 		IGGEventsEngine engine = new GGEventsEngine(this.assetId, this.contexts, this.eventsHandler, this.executorService, this.scheduledExecutorService, this.connectors, this.locks, this.processors, this.objectsRegistryHub);
 		
