@@ -1,6 +1,7 @@
 package com.garganttua.events.context.json.sources.file;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -45,17 +46,11 @@ public class GGEventsContextJsonResourceFileSource implements IGGEventsContextSo
 
 		if( configuration != null ) {
 			log.info("Getting context from resource file "+configuration);
-			URL resource = getClass().getClassLoader().getResource(configuration);
-			URI file = null;
-			try {
-				file = resource.toURI();
-			} catch (URISyntaxException e) {
-				throw new GGEventsException(e);
-			}
+			InputStream resource = getClass().getClassLoader().getResourceAsStream(configuration);
 				    	
 	    	byte[] fileBytes = null;
 			try {
-				fileBytes = Files.readAllBytes(Paths.get(file));
+				fileBytes = resource.readAllBytes();
 			} catch (IOException e) {
 				throw new GGEventsException(e);
 			}
