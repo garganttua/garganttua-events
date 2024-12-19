@@ -18,11 +18,17 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsBuilder;
 import com.garganttua.events.spec.interfaces.IGGEventsContextSource;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
+import com.garganttua.reflection.annotation.scanner.GGSpringAnnotationScanner;
+import com.garganttua.reflection.utils.GGObjectReflectionHelper;
 
 import lombok.Getter;
 
 @Service
 public class GGEventsEngineSpringBean implements IGGEventsEngineSpringBean {
+	
+	static {
+		GGObjectReflectionHelper.annotationScanner = new GGSpringAnnotationScanner();
+	}
 	
 	@Value("${com.garganttua.events.assetId:1}")
 	private String assetId;

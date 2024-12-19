@@ -4,13 +4,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.reflections.Reflections;
 
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.objects.GGEventsUtils;
+import com.garganttua.reflection.utils.GGObjectReflectionHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,8 +18,8 @@ public class GGEventsContextAnnotateClassesRegistry {
 
 	public static Map<String, Map<String, Class<?>>> findClassesWithAnnotationAndInterface(String packageName, Class<? extends Annotation> annotation, Class<?> implementedInterface, Map<String, Map<String, Class<?>>> annotateClasses) throws GGEventsException{
 		log.info("Scanning package " + packageName);
-		Reflections reflections = new Reflections(packageName);
-		Set<Class<?>> sources = reflections.getTypesAnnotatedWith(annotation);
+
+		List<Class<?>> sources = GGObjectReflectionHelper.getClassesWithAnnotation(packageName, annotation);
 
 		log.info(" -> Found " + sources.size() + " annotate classes");
 		for (Class<?> clazz : sources) {

@@ -1,0 +1,43 @@
+{
+	"resources": {
+		"includes": [
+			{
+				"pattern": "\\Qcom/garganttua/events/connectors/kafka/GGEventsKafkaConnector.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/connectors/core/events/GGEventsEventsConnector.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/connectors/kafka/GGEventsKafkaConnector.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/connectors/bus/GGEventsBusConnector.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/context/json/sources/file/GGEventsContextJsonFileSource.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/context/json/sources/file/GGEventsContextJsonResourceFileSource.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/processors/GGEventsDynamicSplitterProcessor.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/processors/GGEventsEnrichProcessor.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/processors/GGEventsFilterProcessor.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/processors/GGEventsLoggerProcessor.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/processors/GGEventsSetHeaderProcessor.class\\E"
+			},
+			{
+				"pattern": "\\Qcom/garganttua/events/processors/GGEventsTransformProcessor.class\\E"
+			}
+		]
+	},
+	"bundles": []
+}

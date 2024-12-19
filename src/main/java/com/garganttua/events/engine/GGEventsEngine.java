@@ -20,7 +20,6 @@ import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextConfigurable;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextDataflow;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextLockObject;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextNamable;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextProcessor;

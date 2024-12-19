@@ -19,9 +19,14 @@ import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEventHandler;
 import com.garganttua.events.spec.objects.GGEventsEvent;
-import com.garganttua.events.spec.objects.GGEventsMessage;
+import com.garganttua.reflection.annotation.scanner.GGSpringAnnotationScanner;
+import com.garganttua.reflection.utils.GGObjectReflectionHelper;
 
 public class BuilderTest {
+	
+	static {
+		GGObjectReflectionHelper.annotationScanner = new GGSpringAnnotationScanner();
+	}
 
 	@Test
 	public void test() throws GGEventsException {
