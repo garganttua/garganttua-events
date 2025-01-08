@@ -2,7 +2,6 @@ package com.garganttua.events.context.json;
 
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContextTimeInterval;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;

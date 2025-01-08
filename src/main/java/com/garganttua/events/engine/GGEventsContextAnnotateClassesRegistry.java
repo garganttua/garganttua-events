@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GGEventsContextAnnotateClassesRegistry {
 
 	public static Map<String, Map<String, Class<?>>> findClassesWithAnnotationAndInterface(String packageName, Class<? extends Annotation> annotation, Class<?> implementedInterface, Map<String, Map<String, Class<?>>> annotateClasses) throws GGEventsException{
-		log.info("Scanning package " + packageName);
+		log.info("Scanning package " + packageName+ " for annotation "+annotation.getSimpleName()+ " implementing interface "+implementedInterface.getSimpleName());
 
 		List<Class<?>> sources = GGObjectReflectionHelper.getClassesWithAnnotation(packageName, annotation);
 

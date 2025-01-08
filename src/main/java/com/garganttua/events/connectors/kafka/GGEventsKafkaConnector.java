@@ -38,8 +38,6 @@ import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscriptio
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 
-import lombok.extern.slf4j.Slf4j;
-
 @GGEventsConnector(type = "kafka", version = "1.0")
 public class GGEventsKafkaConnector extends AbstractGGEventsConnector {
 

@@ -42,6 +42,11 @@
 			<url>
 				https://repository.mulesoft.org/nexus/content/repositories/public</url>
 		</repository>
+		<repository>
+			<id>github garganttua tooling</id>
+			<name>github garganttua tooling</name>
+			<url>https://maven.pkg.github.com/garganttua/garganttua-tooling</url>
+		</repository>
 	</repositories>
 
 	<properties>
@@ -53,15 +58,20 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.garganttua</groupId>
+			<artifactId>garganttua-native-image-utils</artifactId>
+			<version>1.0.15</version>
+		</dependency>
+		<dependency>
+			<groupId>com.garganttua</groupId>
 			<artifactId>garganttua-reflection</artifactId>
-			<version>1.0.14</version>
+			<version>1.0.15</version>
 		</dependency>
 		<dependency>
 			<groupId>com.garganttua</groupId>
 			<artifactId>garganttua-annotation-scanner-spring</artifactId>
-			<version>1.0.14</version>
+			<version>1.0.15</version>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
@@ -123,7 +133,7 @@
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.10.2</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -157,6 +167,27 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<phase>process-classes</phase>
+						<configuration>
+							<classpathScope>compile</classpathScope>
+							<mainClass>
+								com.garganttua.events.nativve.image.config.NativeImageConfigBuilder</mainClass>
+							<arguments>
+								<argument>${project.build.outputDirectory}</argument>
+							</arguments>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

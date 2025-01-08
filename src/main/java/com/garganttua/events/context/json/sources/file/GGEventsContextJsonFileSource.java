@@ -106,6 +106,4 @@ public class GGEventsContextJsonFileSource implements IGGEventsContextSource {
 	public void setConfiguration(String configuration) {
 		file = configuration;
 	}
-
-	
 }

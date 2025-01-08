@@ -10,7 +10,6 @@ import com.garganttua.events.context.GGEventsContextSourcedItem;
 import com.garganttua.events.context.GGEventsContextSubscription;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextItemBinder;
-import com.garganttua.events.spec.interfaces.context.IGGEventsContextSourcedItem;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
 
 import lombok.Getter;

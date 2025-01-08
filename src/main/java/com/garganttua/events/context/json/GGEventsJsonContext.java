@@ -3,7 +3,6 @@ package com.garganttua.events.context.json;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContext;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
@@ -21,7 +20,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class GGEventsJsonContext implements IGGEventsContextItemBinder<IGGEventsContext> {
 	
-
 	private String tenantId;
 
 	private String clusterId; 

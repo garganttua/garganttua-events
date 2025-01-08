@@ -1,6 +1,5 @@
 package com.garganttua.events.context.json;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.garganttua.events.context.GGEventsContextConsumerConfiguration;
 import com.garganttua.events.context.GGEventsContextDataflowInProcessMode;
 import com.garganttua.events.context.GGEventsContextDestinationPolicy;
