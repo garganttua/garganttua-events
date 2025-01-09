@@ -26,8 +26,6 @@ bug boucles infini sur serialization exception dans GGMEssage uniquement en mode
 
 Implémenter la possibilité de transmettre un fichier + notification au lieu de tout mettre dans le exchange
 
-Implémenter le connecteur Mail
-
 Améliorer le dynamiquesplitter pour recevoir une configuration plutot que implémenter l'algo de split
 
 Sortir tous les setHeader domain des enricher et les remplacer par des processeurs setHeader dans les routes du context signup
@@ -35,3 +33,7 @@ Sortir tous les setHeader domain des enricher et les remplacer par des processeu
 Topics => supprimer le tenant- dans l'identifiant (champ id) 
 
 Ajouter option kafka partition auto scalling => le nomùbre de partitions sur un topic kafka augmente si nb de consommer > nb de ^partitions
+
+connecteur mail => à améliorer car ne respecte pas la phylosophie de l'envoi d'un GGEventsMessage => faire un adapter et spécifier "non encapsulé" pour les mails plus libres
+
+CRéer un abstract Connector basé sur le connecteur kafka et le bus

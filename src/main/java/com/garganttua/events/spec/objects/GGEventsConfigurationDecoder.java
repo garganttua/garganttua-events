@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 
 public class GGEventsConfigurationDecoder {
 	
@@ -25,7 +25,7 @@ public class GGEventsConfigurationDecoder {
 	    	 SimpleImmutableEntry<String, String> toto = null;
 					try {
 						toto = splitQueryParameter(t);
-					} catch (GGEventsCoreException e) {
+					} catch (GGEventsException e) {
 						e.printStackTrace();
 					}
 					return toto;
@@ -33,7 +33,7 @@ public class GGEventsConfigurationDecoder {
 	            .collect(Collectors.groupingBy(SimpleImmutableEntry::getKey, LinkedHashMap::new, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
 	}
 
-	private static SimpleImmutableEntry<String, String> splitQueryParameter(String it) throws GGEventsCoreException {
+	private static SimpleImmutableEntry<String, String> splitQueryParameter(String it) throws GGEventsException {
 		try {
 			if( it != null || !it.isEmpty() ) {
 			    final int idx = it.indexOf("=");
@@ -42,7 +42,7 @@ public class GGEventsConfigurationDecoder {
 			    return new SimpleImmutableEntry<>(URLDecoder.decode(key, "UTF-8"),URLDecoder.decode(value, "UTF-8"));
 			} return null;
 		} catch(Exception e) {
-			throw new GGEventsCoreException("Invalid configuration \""+it+"\"", e);
+			throw new GGEventsException("Invalid configuration \""+it+"\"", e);
 		}
 	}
 

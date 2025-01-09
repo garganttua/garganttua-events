@@ -5,20 +5,28 @@ package com.garganttua.events.context;
 
 import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-public class GGEventsContextTimeInterval {
+public class GGEventsContextTimeInterval implements IGGEventsContextTimeInterval {
 	
-	@JsonProperty(value ="interval",required = true)
-	private int interval; 
-	
-	@JsonProperty(value ="timeUnit",required = true)
+	private long interval; 
+
 	private TimeUnit timeUnit;
+	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextTimeInterval item = (GGEventsContextTimeInterval) obj;
+		return this.interval == item.interval
+			&& this.timeUnit.equals(item.timeUnit);
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (this.interval * this.timeUnit.hashCode());
+	}
 }

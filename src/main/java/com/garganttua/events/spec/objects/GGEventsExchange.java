@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.jayway.jsonpath.JsonPath;
 
 import lombok.Getter;
@@ -92,7 +95,11 @@ public class GGEventsExchange extends GGEventsMessage {
 		return exchange;
 	}
 
-	public String getVariableValue(GGEventsExchange exchange, String variable) {
+	static public String getVariableValue(GGEventsExchange exchange, String variable) throws GGEventsException {
+		if( !variable.startsWith("${") && !variable.endsWith("}")) {
+			throw new GGEventsException("Invalid variable "+variable+" shoudl start with ${ and end whit }");
+		}
+		
 		String valueVar = variable.substring(2, variable.length()-1);
 		
 		String value = "";
@@ -105,7 +112,8 @@ public class GGEventsExchange extends GGEventsMessage {
 				}
 			}
 			if( varSplit[1].equals("value") ) {
-				if( varSplit[2].startsWith("json") ) {
+				
+				if( varSplit.length > 2 && varSplit[2].startsWith("json") ) {
 					String[] toto = variable.split("\\(");
 					String[] toto2 = toto[1].split("\\)");
 
@@ -113,12 +121,17 @@ public class GGEventsExchange extends GGEventsMessage {
 											
 					Object t = JsonPath.parse(targetStream).read(toto2[0]);
 					
+					if( t instanceof Integer ) {
+						value = Integer.toString((int)t);
+					}
 					if( t instanceof String ) {
 						value = (String) t;
 					} 
 					if( t instanceof Long ) {
 						value = Long.toString((long) t);
 					}
+				} else {
+					value = new String(exchange.getValue());
 				}
 			}
 			if( varSplit[1].equals("headers") ) {
@@ -132,8 +145,21 @@ public class GGEventsExchange extends GGEventsMessage {
 		return value;
 	}
 
-	public boolean isVariable(String value) {
+	static public boolean isVariable(String value) {
 		return value.startsWith("${") && value.endsWith("}");
+	}
+	
+	@Override
+	public String toString() {
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			return mapper.writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return super.toString();
 	}
 
 }

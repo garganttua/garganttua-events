@@ -3,15 +3,15 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContext;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextConsumerConfiguration;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextProducerConfiguration;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextSubscription;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextTimeInterval;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -21,15 +21,38 @@ import lombok.Setter;
  * 
  *
  */
-@Getter
-@Setter
-@JsonInclude(Include.NON_NULL)
-@NoArgsConstructor
-public class GGEventsContextSubscription extends GGEventsSourcedContextItem {
+public class GGEventsContextSubscription extends GGEventsContextSourcedItem<IGGEventsContextSubscription> implements IGGEventsContextSubscription {
 	
-	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, GGEventsContextTimeInterval timeInterval, GGEventsContextConsumerConfiguration cconfiguration, GGEventsContextProducerConfiguration pconfiguration, List<GGEventsContextItemSource> sources) {
-		super(sources);
-		this.dataFlow = dataflow;
+	@Getter
+	private String dataflow; 
+	
+	@Getter
+	private String topic;
+	
+	@Getter
+	private String connector;
+	
+	@Getter
+	private GGEventsContextPublicationMode publicationMode; 
+	
+	@Getter
+	private IGGEventsContextTimeInterval timeInterval;
+	
+	@Getter
+	private IGGEventsContextConsumerConfiguration cconfiguration;
+	
+	@Getter
+	private IGGEventsContextProducerConfiguration pconfiguration;
+
+	@Setter
+	private IGGEventsContext context;
+	
+	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode) {
+		this(dataflow, topic, connector, publicationMode, new GGEventsContextTimeInterval(1L, TimeUnit.MINUTES), new GGEventsContextConsumerConfiguration(), new GGEventsContextProducerConfiguration());
+	}
+	
+	public GGEventsContextSubscription(String dataflow, String topic, String connector, GGEventsContextPublicationMode publicationMode, IGGEventsContextTimeInterval timeInterval, IGGEventsContextConsumerConfiguration cconfiguration, IGGEventsContextProducerConfiguration pconfiguration) {
+		this.dataflow = dataflow;
 		this.topic = topic;
 		this.connector = connector;
 		this.publicationMode = publicationMode;
@@ -38,31 +61,73 @@ public class GGEventsContextSubscription extends GGEventsSourcedContextItem {
 		this.pconfiguration = pconfiguration;
 	}
 
-	@JsonProperty(value ="dataflow",required = true)
-	private String dataFlow; 
+	@Override
+	public IGGEventsContextSubscription producerConfiguration(GGEventsContextDestinationPolicy destinationPolicy, String destinationUuid) {
+		return this.producerConfiguration(new GGEventsContextProducerConfiguration(destinationPolicy, destinationUuid));		
+	}
 	
-	@JsonProperty(value ="topic",required = true)
-	private String topic;
+	@Override
+	public IGGEventsContextSubscription consumerConfiguration(GGEventsContextDataflowInProcessMode inProcessMode,
+			GGEventsContextOriginPolicy originPolicy, GGEventsContextDestinationPolicy destinationPolicy, boolean ignoreAssetMessages,
+			GGEventsContextHighAvailabilityMode haMode) {
+				return this.consumerConfiguration(new GGEventsContextConsumerConfiguration(inProcessMode, originPolicy, destinationPolicy, ignoreAssetMessages, haMode));
+	}
 	
-	@JsonProperty(value ="connector",required = true)
-	private String connector;
+	@Override
+	public IGGEventsContext context() {
+		return this.context;
+	}
 	
-	@JsonProperty(value ="publicationMode",required = true)
-	private GGEventsContextPublicationMode publicationMode; 
-	
-	@JsonProperty(value ="timeInterval",required = false)
-	private GGEventsContextTimeInterval timeInterval;
-	
-	@JsonProperty(value ="consumerConfiguration",required = false)
-	private GGEventsContextConsumerConfiguration cconfiguration;
-	
-	@JsonProperty(value ="producerConfiguration",required = false)
-	private GGEventsContextProducerConfiguration pconfiguration;
-	
-	@JsonIgnore
-//	@JsonProperty(value ="uuid",required = false)
 	public String getId() {
-		String subscriptionId = connector+"://"+this.getDataFlow()+this.getTopic();
+		String subscriptionId = connector+"://"+this.dataflow+this.topic;
 		return subscriptionId;
+	}
+
+	@Override
+	public boolean equals(Object subscription) {
+		return this.getId().equals(((GGEventsContextSubscription) subscription).getId());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getId().hashCode();
+	}
+
+	@Override
+	public void context(IGGEventsContext context) {
+		this.context = context;
+	}
+
+	@Override
+	public IGGEventsContextSubscription producerConfiguration(IGGEventsContextProducerConfiguration configuration) {
+		this.pconfiguration = configuration;
+		return this;
+	}
+
+	@Override
+	public IGGEventsContextSubscription consumerConfiguration(IGGEventsContextConsumerConfiguration configuration) {
+		cconfiguration = configuration;
+		return this;
+	}
+
+	@Override
+	public IGGEventsContextSubscription timeInterval(IGGEventsContextTimeInterval timeInterval) {
+		this.timeInterval = timeInterval;
+		return this;
+	}
+
+	@Override
+	public IGGEventsContextSubscription timeInterval(long time, TimeUnit unit) {
+		this.timeInterval(new GGEventsContextTimeInterval(time, unit));
+		return this;
+	}
+
+	@Override
+	protected boolean isEqualTo(IGGEventsContextSubscription item) {
+		return this.equals(item) && 
+				this.publicationMode == item.getPublicationMode() &&
+				this.timeInterval == item.getTimeInterval() &&
+				this.cconfiguration.equals(item.getCconfiguration()) &&
+				this.pconfiguration.equals(item.getPconfiguration());
 	}
 }

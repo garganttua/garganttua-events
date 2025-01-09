@@ -3,19 +3,23 @@ package com.garganttua.events.processors;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
+import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsEnrichStrategy;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
-@GGEventsProcessor(type="enrich", version="1.0.0")
-public class GGEventsEnrichProcessor extends GGEventsAbstractProcessor {
+@GGEventsProcessor(type="enrich", version="1.0")
+public class GGEventsEnrichProcessor implements IGGEventsProcessor {
 
 	private String configuration;
 	private String tenantId;
@@ -27,10 +31,16 @@ public class GGEventsEnrichProcessor extends GGEventsAbstractProcessor {
 	private IGGEventsObjectRegistryHub objectRegistries;
 	private String infos;
 	private String manual;
+	private String type = "processor::enricher";
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
-		this.strategyObject.enrich(exchange.getTenantId(), exchange, this.dataSource);
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
+		try {
+			this.strategyObject.enrich(exchange.getTenantId(), exchange, this.dataSource);
+		} catch (GGEventsProcessingException e) {
+			throw new GGEventsHandlingException(e);
+		}
+		return true;
 	}
 
 	@Override
@@ -39,8 +49,8 @@ public class GGEventsEnrichProcessor extends GGEventsAbstractProcessor {
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries)
-			throws GGEventsCoreException {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine)
+			throws GGEventsException {
 		this.configuration = configuration;
 		this.tenantId = tenantId;
 		this.clusterId = clusterId;
@@ -50,7 +60,7 @@ public class GGEventsEnrichProcessor extends GGEventsAbstractProcessor {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 
 		Map<String, List<String>> __configuration__ = GGEventsConfigurationDecoder.getConfigurationFromString(this.configuration);
 		
@@ -59,14 +69,14 @@ public class GGEventsEnrichProcessor extends GGEventsAbstractProcessor {
 			case "enrichStrategy":
 				try {
 					this.strategyObject = (IGGEventsEnrichStrategy) this.objectRegistries.getObject(entry.getValue().get(0));
-				} catch (GGEventsCoreException e) {
+				} catch (GGEventsException e) {
 					throw e;
 				}
 				break;
 			case "dataSource":
 				try {
 					this.dataSource = this.objectRegistries.getObject(entry.getValue().get(0));
-				} catch (GGEventsCoreException e) {
+				} catch (GGEventsException e) {
 					throw e;
 				}
 				break;
@@ -76,6 +86,35 @@ public class GGEventsEnrichProcessor extends GGEventsAbstractProcessor {
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "enrich", "1.0.0", this.infos, this.manual);
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "enrich", "1.0", this.infos, this.manual);
+	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 }

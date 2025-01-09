@@ -12,6 +12,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface GGEventsContextSource {
 
-	String name();
+	String type();
+	
+	String version();
 
 }

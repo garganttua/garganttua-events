@@ -3,14 +3,12 @@
  *******************************************************************************/
 package com.garganttua.events.spec.interfaces;
 
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
+@FunctionalInterface
 public interface IGGEventsMessageHandler {
 	
-	void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException;
-	
-	String getType();
+	boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException;
 	
 }

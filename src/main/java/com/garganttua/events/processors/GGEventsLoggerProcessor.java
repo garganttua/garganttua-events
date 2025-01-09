@@ -3,10 +3,14 @@
  *******************************************************************************/
 package com.garganttua.events.processors;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
@@ -16,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Setter
-@GGEventsProcessor(type="log", version="1.0.0")
+@GGEventsProcessor(type="log", version="1.0")
 @Slf4j
-public class GGEventsLoggerProcessor extends GGEventsAbstractProcessor {
+public class GGEventsLoggerProcessor implements IGGEventsProcessor {
 
 	@Getter
 	private String configuration;
@@ -26,9 +30,10 @@ public class GGEventsLoggerProcessor extends GGEventsAbstractProcessor {
 	private boolean withMeta;
 	private String infos;
 	private String manual;
+	private String type = "processor::log";
 	
 	@Override
-	public void handle(GGEventsExchange message) {
+	public boolean handle(GGEventsExchange message) {
 
 		if( this.level.equals("INFO") ) {
 			if( this.withMeta ) {
@@ -56,10 +61,11 @@ public class GGEventsLoggerProcessor extends GGEventsAbstractProcessor {
 				}
 			}
 		}
+		return true;
 	}
 
 	@Override
-	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries) {
+	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId, IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		String[] params = configuration.split("&");
 	
 		for( int i = 0; i < params.length; i++) {
@@ -74,13 +80,42 @@ public class GGEventsLoggerProcessor extends GGEventsAbstractProcessor {
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "log", "1.0.0", this.infos, this.manual);
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "log", "1.0", this.infos, this.manual);
+	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 }

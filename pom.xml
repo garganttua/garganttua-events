@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.garganttua</groupId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<artifactId>garganttua-events</artifactId>
 	<packaging>jar</packaging>
 
@@ -42,15 +42,36 @@
 			<url>
 				https://repository.mulesoft.org/nexus/content/repositories/public</url>
 		</repository>
+		<repository>
+			<id>github garganttua tooling</id>
+			<name>github garganttua tooling</name>
+			<url>https://maven.pkg.github.com/garganttua/garganttua-tooling</url>
+		</repository>
 	</repositories>
 
 	<properties>
-		<spring.version>3.0.5</spring.version>
+		<spring.version>3.3.1</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 
 	<dependencies>
+		<dependency>
+			<groupId>com.garganttua</groupId>
+			<artifactId>garganttua-native-image-utils</artifactId>
+			<version>1.0.15</version>
+		</dependency>
+		<dependency>
+			<groupId>com.garganttua</groupId>
+			<artifactId>garganttua-reflection</artifactId>
+			<version>1.0.15</version>
+		</dependency>
+		<dependency>
+			<groupId>com.garganttua</groupId>
+			<artifactId>garganttua-annotation-scanner-spring</artifactId>
+			<version>1.0.15</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
@@ -75,7 +96,7 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
-			<version>1.18.26</version>
+			<version>1.18.36</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -86,7 +107,7 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
-			<version>2.7.1</version>
+			<version>3.9.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
@@ -102,22 +123,17 @@
 			<groupId>com.leansoft</groupId>
 			<artifactId>bigqueue</artifactId>
 			<version>0.7.0</version>
-
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-mail</artifactId>
+			<version>2.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.10.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-				</exclusion>
-			</exclusions>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -138,9 +154,42 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>18</source>
-					<target>18</target>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<phase>process-classes</phase>
+						<configuration>
+							<classpathScope>compile</classpathScope>
+							<mainClass>
+								com.garganttua.events.nativve.image.config.NativeImageConfigBuilder</mainClass>
+							<arguments>
+								<argument>${project.build.outputDirectory}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

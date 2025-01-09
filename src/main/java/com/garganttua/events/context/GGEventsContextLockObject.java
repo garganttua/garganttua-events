@@ -1,22 +1,28 @@
 package com.garganttua.events.context;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextLockObject;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
-public class GGEventsContextLockObject {
+public class GGEventsContextLockObject implements IGGEventsContextLockObject {
 	
-	@JsonProperty
 	private String lock;
 	
-	@JsonProperty
 	private String lockObject;
+	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextLockObject item = (GGEventsContextLockObject) obj;
+		return item.lock.equals(item.lock)
+				&& item.lockObject.equals(item.lockObject);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.lock.hashCode() * this.lockObject.hashCode();
+	}
 
 }

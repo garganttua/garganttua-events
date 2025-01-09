@@ -11,8 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.garganttua.events.spec.interfaces.IGGEventsMessageHandler;
 
+import lombok.Getter;
+
 public class GGEventsSynchronizedLinkedProcessorList implements IGGEventsSynchronizedLinkedList<IGGEventsMessageHandler> {
 	
+	@Getter
 	private LinkedList<IGGEventsMessageHandler> list = new LinkedList<IGGEventsMessageHandler>();
 	
 	private Map<UUID, Integer> indexes = new ConcurrentHashMap<UUID, Integer>();

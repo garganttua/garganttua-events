@@ -3,35 +3,40 @@
  *******************************************************************************/
 package com.garganttua.events.context;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextConsumerConfiguration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GGEventsContextConsumerConfiguration {
+public class GGEventsContextConsumerConfiguration implements IGGEventsContextConsumerConfiguration {
 
-	@JsonProperty(value ="inClusterProcessingMode",required = true)
-	private GGEventsContextDataflowInProcessMode processMode;
+	private GGEventsContextDataflowInProcessMode processMode = GGEventsContextDataflowInProcessMode.EVERYBODY;
 	
-	@JsonProperty(value="originPolicy", required = true)
-	private GGEventsContextOriginPolicy opolicy;
+	private GGEventsContextOriginPolicy opolicy = GGEventsContextOriginPolicy.FROM_ANY;
 	
-	@JsonProperty(value="destinationPolicy", required = true)
-	private GGEventsContextDestinationPolicy dpolicy;
+	private GGEventsContextDestinationPolicy dpolicy = GGEventsContextDestinationPolicy.TO_ANY;
+
+	private boolean ignoreAssetMessages = true;
 	
-	@JsonProperty(value="tenantPartioningPolicy", required = true)
-	private GGEventsContextTenantPartitioningPolicy tpolicy;
-	
-	@JsonProperty(value ="ignoreAssetMessages", required = true)
-	private boolean ignoreAssetMessages;
-	
-	@JsonProperty(value ="highAvailabilityMode", required = false)
 	private GGEventsContextHighAvailabilityMode highAvailabilityMode = GGEventsContextHighAvailabilityMode.MASTER_SLAVE;
-		
+	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextConsumerConfiguration item = (GGEventsContextConsumerConfiguration) obj;
+		return this.processMode.equals(item.getProcessMode())
+				&& this.opolicy.equals(item.getOpolicy())
+				&& this.dpolicy.equals(item.getDpolicy())
+				&& this.ignoreAssetMessages == item.isIgnoreAssetMessages()
+				&& highAvailabilityMode.equals(item.getHighAvailabilityMode());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.processMode.hashCode() * this.opolicy.hashCode() * this.dpolicy.hashCode() * (ignoreAssetMessages==true?1:2) * this.highAvailabilityMode.hashCode();
+	}
+	
 }

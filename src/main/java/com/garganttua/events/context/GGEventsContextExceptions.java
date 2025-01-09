@@ -1,25 +1,33 @@
 package com.garganttua.events.context;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextExceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class GGEventsContextExceptions {
+public class GGEventsContextExceptions implements IGGEventsContextExceptions {
 	
-	@JsonProperty(value ="to",required = true)
+	@Getter
 	private String to;
 	
-	@JsonProperty(value ="cast",required = true)
+	@Getter
 	private String cast;
-	
-	@JsonProperty(value ="label",required = true)
+
+	@Getter
 	private String label;
+	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextExceptions item = (GGEventsContextExceptions) obj;
+		return item.to.equals(item.to)
+				&& item.cast.equals(item.cast)
+				&& item.label.equals(item.label);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.to.hashCode() * this.cast.hashCode() * this.label.hashCode();
+	}
 
 }

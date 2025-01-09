@@ -8,11 +8,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import com.garganttua.events.context.GGEventsContextTimeInterval;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
 import com.garganttua.events.spec.interfaces.IGGEventsConnector;
 import com.garganttua.events.spec.interfaces.IGGEventsConsumer;
 import com.garganttua.events.spec.interfaces.IGGEventsRoute;
+import com.garganttua.events.spec.interfaces.IGGEventsTypable;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 
 import lombok.Getter;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
-public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable {
+public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable, IGGEventsTypable {
 	
 	private ScheduledExecutorService scheduledExecutorService;
 	private ExecutorService executorService;
@@ -52,7 +52,7 @@ public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable
 								r.handle(message);
 							}
 						}
-					} catch (GGEventsCoreException e) {
+					} catch (GGEventsHandlingException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} 
@@ -68,15 +68,16 @@ public class GGEventsTimeIntervalConsumer implements IGGEventsConsumer, Runnable
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		synchronized (this.locker) {
 			this.message = exchange;
 		}
+		return true;
 	}
 
 	@Override
 	public String getType() {
-		return "IGGEventsConsumer::GGEventsTimeIntervalConsumer";
+		return "consumer::time-interval";
 	}
 	
 }

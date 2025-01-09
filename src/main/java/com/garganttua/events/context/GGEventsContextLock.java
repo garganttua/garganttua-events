@@ -1,39 +1,45 @@
 package com.garganttua.events.context;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.garganttua.events.spec.interfaces.context.IGGEventsContextLock;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class GGEventsContextLock extends GGEventsSourcedContextItem {
+public class GGEventsContextLock extends GGEventsContextSourcedItem<IGGEventsContextLock> implements IGGEventsContextLock {
 	
-	public GGEventsContextLock(String name, String type, String configuration, List<GGEventsContextItemSource> sources) {
-		super(sources);
+	public GGEventsContextLock(String name, String type, String version, String configuration) {
 		this.name = name;
 		this.type = type;
+		this.version = version;
 		this.configuration = configuration;
 	}
 
-	@JsonProperty(value ="name",required = true)
+	@Getter
 	private String name;
 	
-	@JsonProperty(value ="type",required = true)
+	@Getter
 	private String type;
 	
-	@JsonProperty(value ="version", required = true)
+	@Getter
 	private String version;
 	
-	@JsonProperty(value ="configuration",required = true)
-	@JsonDeserialize(using = StupidValueDeserializer.class)
-//	@JsonSerialize(using = StupidValueSerializer.class)
-	private String configuration = "";
+	@Getter
+	private String configuration;
+	
+	@Override
+	public boolean equals(Object obj) {
+		GGEventsContextLock item = (GGEventsContextLock) obj;
+		return this.name.equals(item.getName());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.name.hashCode();
+	}
+
+	@Override
+	protected boolean isEqualTo(IGGEventsContextLock item) {
+		return this.equals(item) && this.configuration.equals(item.getConfiguration()) && this.type.equals(item.getType())
+				&& this.version.equals(item.getVersion());
+	}
 
 }

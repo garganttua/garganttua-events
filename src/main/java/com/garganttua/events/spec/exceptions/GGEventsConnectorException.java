@@ -3,7 +3,7 @@
  *******************************************************************************/
 package com.garganttua.events.spec.exceptions;
 
-public class GGEventsConnectorException extends GGEventsCoreException {
+public class GGEventsConnectorException extends GGEventsException {
 
 	/**
 	 * 

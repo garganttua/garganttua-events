@@ -5,15 +5,18 @@ package com.garganttua.events.engine.processors;
 
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.garganttua.events.spec.enums.GGEventsJourneyStepDirection;
-import com.garganttua.events.spec.exceptions.GGEventsCoreException;
-import com.garganttua.events.spec.exceptions.GGEventsCoreProcessingException;
+import com.garganttua.events.spec.exceptions.GGEventsException;
+import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
+import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
-import com.garganttua.events.spec.objects.GGEventsAbstractProcessor;
+import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
 import com.garganttua.events.spec.objects.GGEventsJourneyStep;
@@ -21,7 +24,7 @@ import com.garganttua.events.spec.objects.GGEventsMessage;
 
 import lombok.Getter;
 
-public class GGEventsEncapsulatedProtocolOutProcessor extends GGEventsAbstractProcessor {
+public class GGEventsEncapsulatedProtocolOutProcessor implements IGGEventsProcessor {
 
 	private String assetId;
 	private String subscriptionId;
@@ -35,29 +38,32 @@ public class GGEventsEncapsulatedProtocolOutProcessor extends GGEventsAbstractPr
 	private String manual;
 	private String toDataFlowUuid;
 	private String toConnector;
+	private String type;
 
 	public GGEventsEncapsulatedProtocolOutProcessor(String assetId, String clusterId, String toTopic,
-			String dataflowVersion, String toDataFlowUuid, String toConnector) {
+			String dataflowVersion, String toDataFlowUuid, String toConnector, String subscriptionId) {
 		this.assetId = assetId;
+		this.subscriptionId = subscriptionId;
 		this.clusterId = clusterId;
 		this.toTopic = toTopic;
 		this.dataflowVersion = dataflowVersion;
 		this.toDataFlowUuid = toDataFlowUuid;
 		this.toConnector = toConnector;
-		this.type = "IGGEventsProcessor::GGEventsProtocolOutProcessor";
+		this.type = "processor::out-protocol";
 	}
 
 	@Override
 	public void setConfiguration(String configuration, String tenantId, String clusterId, String assetId,
-			IGGEventsObjectRegistryHub objectRegistries) {
+			IGGEventsObjectRegistryHub objectRegistries, IGGEventsEngine engine) {
 		this.configuration = configuration;
 	}
 
 	@Override
-	public void handle(GGEventsExchange exchange) throws GGEventsCoreProcessingException, GGEventsCoreException {
+	public boolean handle(GGEventsExchange exchange) throws GGEventsHandlingException {
 		exchange.setToTopic(this.toTopic);
 		exchange.setToConnector(this.toConnector);
 		exchange.setToDataflowUuid(this.toDataFlowUuid);
+		exchange.setMessageId(UUID.randomUUID().toString());
 
 		exchange.getSteps().add(new GGEventsJourneyStep(new Date(), this.assetId, this.subscriptionId,
 				GGEventsJourneyStepDirection.OUT, this.dataflowVersion, UUID.randomUUID().toString(), this.clusterId));
@@ -69,21 +75,51 @@ public class GGEventsEncapsulatedProtocolOutProcessor extends GGEventsAbstractPr
 		try {
 			bytes = mapper.writeValueAsBytes(message);
 		} catch (JsonProcessingException e) {
-			throw new GGEventsCoreProcessingException(e);
+			throw new GGEventsHandlingException(e);
 		}
 		exchange.setValue(bytes);
+		return true;
 	}
 
 	@Override
-	public void applyConfiguration() throws GGEventsCoreException {
+	public void applyConfiguration() throws GGEventsException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public GGEventsContextObjDescriptor getDescriptor() {
-		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "outProtocolProcessor", "1.0.0",
+		return new GGEventsContextObjDescriptor(this.getClass().getCanonicalName(), "outProtocolProcessor", "1.0",
 				this.infos, this.manual);
+	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
+	@Override
+	public void setName(String name) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setExecutorService(ExecutorService service) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setScheduledExecutorService(ScheduledExecutorService service) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
