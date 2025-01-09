@@ -282,7 +282,7 @@ public class NativeImageConfigBuilder {
 
 	private static ReflectConfigEntry processProcessorClass(ReflectConfig reflectConfig, Class<?> entityClass)
 			throws NoSuchMethodException, SecurityException {
-		log.info("Processing connector " + entityClass.getSimpleName());
+		log.info("Processing processor " + entityClass.getSimpleName());
 		IReflectConfigEntryBuilder entryBuilder = getReflectConfigEntryBuilder(reflectConfig, entityClass);
 
 		entryBuilder.allDeclaredFields(true).queryAllDeclaredConstructors(true).queryAllDeclaredMethods(true)
@@ -297,7 +297,7 @@ public class NativeImageConfigBuilder {
 
 	private static ReflectConfigEntry processContextSourceClass(ReflectConfig reflectConfig, Class<?> entityClass)
 			throws NoSuchMethodException, SecurityException {
-		log.info("Processing connector " + entityClass.getSimpleName());
+		log.info("Processing context source " + entityClass.getSimpleName());
 		IReflectConfigEntryBuilder entryBuilder = getReflectConfigEntryBuilder(reflectConfig, entityClass);
 
 		entryBuilder.allDeclaredFields(true).queryAllDeclaredConstructors(true).queryAllDeclaredMethods(true)
@@ -315,8 +315,14 @@ public class NativeImageConfigBuilder {
 
 	private static ReflectConfigEntry processLockClass(ReflectConfig reflectConfig, Class<?> entityClass)
 			throws NoSuchMethodException, SecurityException {
-		log.info("Processing connector " + entityClass.getSimpleName());
+		log.info("Processing lock " + entityClass.getSimpleName());
 		IReflectConfigEntryBuilder entryBuilder = getReflectConfigEntryBuilder(reflectConfig, entityClass);
+
+		entryBuilder.allDeclaredFields(true).queryAllDeclaredConstructors(true).queryAllDeclaredMethods(true)
+				.constructor(entityClass.getDeclaredConstructor())
+				.method(entityClass.getMethod("setConfiguration", String.class, String.class, String.class,
+						String.class, IGGEventsObjectRegistryHub.class, IGGEventsEngine.class))
+				.method(entityClass.getMethod("setName", String.class));
 
 		return entryBuilder.build();
 	}
