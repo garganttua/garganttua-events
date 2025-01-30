@@ -16,11 +16,9 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import com.garganttua.events.spec.annotations.GGEventsProcessor;
 import com.garganttua.events.spec.exceptions.GGEventsException;
 import com.garganttua.events.spec.exceptions.GGEventsHandlingException;
-import com.garganttua.events.spec.exceptions.GGEventsProcessingException;
 import com.garganttua.events.spec.interfaces.IGGEventsEngine;
 import com.garganttua.events.spec.interfaces.IGGEventsObjectRegistryHub;
 import com.garganttua.events.spec.interfaces.IGGEventsProcessor;
-import com.garganttua.events.spec.interfaces.IGGEventsTypable;
 import com.garganttua.events.spec.objects.GGEventsConfigurationDecoder;
 import com.garganttua.events.spec.objects.GGEventsContextObjDescriptor;
 import com.garganttua.events.spec.objects.GGEventsExchange;
@@ -58,9 +56,7 @@ public class GGEventsFilterProcessor implements IGGEventsProcessor {
 			} catch (GGEventsException e) {
 				throw new GGEventsHandlingException(e);
 			}
-			if( value.contains(".")) {
-				value = "'"+value+"'";
-			}
+			value = formatString(value);
 			expression = expression.replace(variable, value);
 		}
 		
@@ -153,5 +149,37 @@ public class GGEventsFilterProcessor implements IGGEventsProcessor {
 	public String getType() {
 		return this.type;
 	}
+	
+    public static String formatString(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            return "''"; 
+        }
+
+      
+        if (isNumeric(input)) {
+            return input; 
+        }
+
+      
+        return "'" + input + "'";
+    }
+
+    private static boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+           
+        }
+
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+           
+        }
+
+        return false;
+    }
 
 }
