@@ -3,9 +3,9 @@ name: Maven Package
 on:
   push:
     branches: 
-      - "**"  # Build on any branch push
+      - "**"
     tags:
-      - "*"  # Trigger on any tag creation
+      - "*"
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
         java-version: '18'
         distribution: 'temurin'
         server-id: github-garganttua-events
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+        settings-path: ${{ github.workspace }}
 
     - name: Generate Maven Settings
       uses: whelk-io/maven-settings-xml-action@v22
@@ -45,7 +45,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: |
-      github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/')
+      startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: read
       packages: write
@@ -59,7 +59,7 @@ jobs:
         java-version: '18'
         distribution: 'temurin'
         server-id: github garganttua events
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+        settings-path: ${{ github.workspace }} 
 
     - name: Generate Maven Settings
       uses: whelk-io/maven-settings-xml-action@v22
